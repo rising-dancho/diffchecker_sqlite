@@ -482,15 +482,20 @@ public class SplitTextTabPanel extends JPanel {
 
     private RSyntaxTextArea createRSyntaxArea() {
         RSyntaxTextArea area = new RSyntaxTextArea();
-        area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        // area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
         area.setAntiAliasingEnabled(true);
         area.setEditable(true); // Allow editing if you still want to diff edited text
         area.setBackground(EDITOR_BACKGROUND);
         area.setForeground(EDITOR_FONT_COLOR);
         area.setCaretColor(EDITOR_FONT_COLOR);
         area.setBorder(BorderFactory.createEmptyBorder());
-        area.setCodeFoldingEnabled(true);
+        // area.setCodeFoldingEnabled(true);
+
+        // ✅ Enable line wrapping
+        area.setLineWrap(true);
+        area.setWrapStyleWord(true); // optional, wraps at word boundaries
         return area;
+
     }
 
     private void highlightDiffs() throws BadLocationException {
