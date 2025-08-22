@@ -28,6 +28,7 @@ com\diffchecker\components\RoundedButton$1.class
 com\diffchecker\java_fundamentals\swing_and_awt\pos_system\CustomersPanel$2.class
 com\diffchecker\components\SplitTextTabPanel$2.class
 com\diffchecker\java_fundamentals\JavaFundamentals_string_methods.class
+com\diffchecker\java_fundamentals\swing_and_awt\MainFrame.class
 com\diffchecker\components\SplitTextTabPanel$1.class
 com\diffchecker\components\RoundedTabbedPaneUI.class
 com\diffchecker\java_fundamentals\swing_and_awt\JLabel_$1.class
@@ -35,6 +36,7 @@ com\diffchecker\java_fundamentals\swing_and_awt\Border_Layout.class
 com\diffchecker\java_fundamentals\JavaFundamentals_remove_item_array.class
 com\diffchecker\java_fundamentals\swing_and_awt\JTabbed_pane.class
 com\diffchecker\java_fundamentals\object_oriented_prog\method_overloading.class
+com\diffchecker\components\SplitTextTabPanel$DiffGroup.class
 com\diffchecker\java_fundamentals\swing_and_awt\JText_area$1.class
 com\diffchecker\java_fundamentals\object_oriented_prog\youtube_tutorials\AboutClasses.class
 com\diffchecker\java_fundamentals\swing_and_awt\pos_system\CustomersPanel$3.class
@@ -48,6 +50,9 @@ com\diffchecker\java_fundamentals\swing_and_awt\JButton_.class
 com\diffchecker\components\TitlebarMover.class
 com\diffchecker\java_fundamentals\JavaFundamentals_primitives_floating_point.class
 com\diffchecker\java_fundamentals\JavaFundamentals_get_prime_numbers.class
+com\diffchecker\java_fundamentals\RSyntaxDiffViewer$1.class
+com\diffchecker\java_fundamentals\RSyntaxDiffViewer.class
+com\diffchecker\components\SplitTextTabPanel$HighlightInfo.class
 com\diffchecker\java_fundamentals\swing_and_awt\JMenu_bar.class
 com\diffchecker\java_fundamentals\JavaFundamentals_BMI.class
 com\diffchecker\components\RoundedButton.class

@@ -1,0 +1,68 @@
+package com.diffchecker.components;
+
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rtextarea.SearchContext;
+import org.fife.ui.rtextarea.SearchEngine;
+import org.fife.ui.rtextarea.SearchResult;
+import org.fife.rsta.ui.search.ReplaceDialog;
+import org.fife.rsta.ui.search.SearchEvent;
+import org.fife.rsta.ui.search.SearchListener;
+
+import javax.swing.*;
+
+public class FindReplaceSupport {
+
+  private final RSyntaxTextArea textArea;
+  private final ReplaceDialog replaceDialog;
+  private final SearchContext searchContext;
+
+  public FindReplaceSupport(JFrame parentFrame, RSyntaxTextArea textArea) {
+    this.textArea = textArea;
+    this.searchContext = new SearchContext();
+
+    // ✅ enable wrap-around by default
+    this.searchContext.setSearchWrap(true);
+
+    // Listener handles actual searching/replacing
+    SearchListener listener = new SearchListener() {
+      @Override
+      public void searchEvent(SearchEvent e) {
+        SearchResult result = switch (e.getType()) {
+          case FIND -> SearchEngine.find(textArea, e.getSearchContext());
+          case REPLACE -> SearchEngine.replace(textArea, e.getSearchContext());
+          case REPLACE_ALL -> SearchEngine.replaceAll(textArea, e.getSearchContext());
+          case MARK_ALL -> SearchEngine.markAll(textArea, e.getSearchContext());
+        };
+        if (result != null && !result.wasFound()) {
+          UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+        }
+      }
+
+      @Override
+      public String getSelectedText() {
+        return textArea.getSelectedText();
+      }
+    };
+
+    this.replaceDialog = new ReplaceDialog(parentFrame, listener);
+    this.replaceDialog.setSearchContext(searchContext);
+
+    // Register keyboard shortcuts so both Ctrl+F and Ctrl+H open Replace dialog
+    InputMap im = textArea.getInputMap();
+    ActionMap am = textArea.getActionMap();
+
+    im.put(KeyStroke.getKeyStroke("control F"), "Replace");
+    im.put(KeyStroke.getKeyStroke("control H"), "Replace");
+
+    am.put("Replace", new AbstractAction() {
+      @Override
+      public void actionPerformed(java.awt.event.ActionEvent e) {
+        showReplaceDialog();
+      }
+    });
+  }
+
+  public void showReplaceDialog() {
+    replaceDialog.setVisible(true);
+  }
+}

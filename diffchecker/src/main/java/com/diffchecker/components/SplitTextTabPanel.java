@@ -94,6 +94,14 @@ public class SplitTextTabPanel extends JPanel {
 
         jt1 = createRSyntaxArea();
         jt2 = createRSyntaxArea();
+
+        // FIND AND REPLACE SUPPORT
+        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
+
+        // Add find/replace support to both editors
+        FindReplaceSupport findReplace1 = new FindReplaceSupport(parentFrame, jt1);
+        FindReplaceSupport findReplace2 = new FindReplaceSupport(parentFrame, jt2);
+
         scroll1 = new RTextScrollPane(jt1);
         scroll2 = new RTextScrollPane(jt2);
 
@@ -232,32 +240,15 @@ public class SplitTextTabPanel extends JPanel {
         findBtn.setBorderThickness(2);
         findBtn.setCornerRadius(10);
         findBtn.setMargin(new Insets(5, 10, 5, 10));
-        // findBtn.addActionListener(e -> {
-        // // Use jt1 if it's currently active, otherwise jt2
-        // RSyntaxTextArea target = jt1IsActive ? jt1 : jt2;
-
-        // String term = JOptionPane.showInputDialog(this, "Find:");
-        // if (term == null || term.isBlank())
-        // return;
-        // String replace = JOptionPane.showInputDialog(this, "Replace with:");
-        // if (replace == null)
-        // return; // allow empty string as replacement
-
-        // SearchContext context = new SearchContext();
-        // context.setSearchFor(term);
-        // context.setReplaceWith(replace);
-        // context.setRegularExpression(false);
-
-        // SearchEngine.replace(target, context);
-        // if (term == null || term.isBlank())
-        // return;
-
-        // SearchResult result = SearchEngine.find(target, context);
-        // if (!result.wasFound()) {
-        // JOptionPane.showMessageDialog(this, "No results found for: " + term,
-        // "Search Result", JOptionPane.INFORMATION_MESSAGE);
-        // }
-        // });
+        // Hook the 🔍 button
+        findBtn.addActionListener(e -> {
+            RSyntaxTextArea target = jt1IsActive ? jt1 : jt2;
+            if (target == jt1) {
+                findReplace1.showReplaceDialog();
+            } else {
+                findReplace2.showReplaceDialog();
+            }
+        });
 
         RoundedButton previousBtn = new RoundedButton("◀️");
         previousBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
