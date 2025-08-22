@@ -179,8 +179,8 @@ public class Main extends JFrame {
         for (DiffData data : diffs) {
             SplitTextTabPanel panel = new SplitTextTabPanel();
             panel.loadFromDatabase(data); // populate the text areas
-            tabbedPane.addTab(data.title, panel); // add as a new tab
-            int index = tabbedPane.getTabCount() - 1;
+            int index = tabbedPane.getTabCount();
+            tabbedPane.insertTab(data.title, null, panel, null, index);
             tabbedPane.setTabComponentAt(index,
                     new ClosableTabTitleComponent(tabbedPane, data.title, () -> addNewTab(tabbedPane)));
         }
@@ -202,20 +202,25 @@ public class Main extends JFrame {
     private int untitledCounter = 1;
 
     private void addNewTab(JTabbedPane tabbedPane) {
-        int plusTabIndex = tabbedPane.getTabCount() - 1;
+        // Decide where to insert:
+        // - If the last tab is the "+" button, insert before it
+        // - Otherwise, append at the end (e.g., on first run before "+" exists)
+        int insertIndex = tabbedPane.getTabCount();
+        if (insertIndex > 0) {
+            Component lastTabComponent = tabbedPane.getTabComponentAt(insertIndex - 1);
+            if (lastTabComponent instanceof JButton) {
+                insertIndex--; // keep new tab before the "+" tab
+            }
+        }
+
         String title = "Untitled-" + untitledCounter++;
+        SplitTextTabPanel splitArea = new SplitTextTabPanel();
 
-        // Create your custom panel with 2 text areas
-        SplitTextTabPanel split_area = new SplitTextTabPanel();
-
-        // However the insertTab and check the parameters (title, icon, component (this
-        // is what gets displayed), tip,
-        // index)
-        tabbedPane.insertTab(title, null, split_area, null, plusTabIndex);
+        tabbedPane.insertTab(title, null, splitArea, null, insertIndex);
         tabbedPane.setTabComponentAt(
-                plusTabIndex,
+                insertIndex,
                 new ClosableTabTitleComponent(tabbedPane, title, () -> addNewTab(tabbedPane)));
-        tabbedPane.setSelectedIndex(plusTabIndex);
+        tabbedPane.setSelectedIndex(insertIndex);
     }
 
     // ─── 6. Window Positioning ─────────────────────────────────────────────────

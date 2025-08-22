@@ -1,9 +1,6 @@
 package com.diffchecker.components.Database;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +23,7 @@ public class DiffRepository {
         String title = rs.getString("title");
         String left = rs.getString("left_text");
         String right = rs.getString("right_text");
-
-        list.add(new DiffData(id, title, left, right)); // ✅ preserve id
+        list.add(new DiffData(id, title, left, right));
       }
     } catch (SQLException e) {
       e.printStackTrace();
@@ -65,7 +61,7 @@ public class DiffRepository {
   public boolean saveDiff(DiffData data) {
     String sql = "INSERT INTO diff_tabs (title, left_text, right_text) VALUES (?, ?, ?)";
     try (Connection conn = db.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+        PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
       stmt.setString(1, data.title);
       stmt.setString(2, data.leftText);
       stmt.setString(3, data.rightText);
@@ -74,7 +70,7 @@ public class DiffRepository {
       if (affected > 0) {
         try (ResultSet keys = stmt.getGeneratedKeys()) {
           if (keys.next()) {
-            data.id = keys.getInt(1); // ✅ store new ID in object
+            data.id = keys.getInt(1); // ✅ SQLite supports getGeneratedKeys
           }
         }
         return true;
@@ -84,5 +80,4 @@ public class DiffRepository {
     }
     return false;
   }
-
 }
