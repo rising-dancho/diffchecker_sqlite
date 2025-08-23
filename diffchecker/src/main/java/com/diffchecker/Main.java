@@ -151,19 +151,20 @@ public class Main extends JFrame {
         // container.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 
         tabbedPane = new JTabbedPane();
+        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap actionMap = getRootPane().getActionMap();
 
         // HOTKEY FOR CLOSING TABS (CTRL + W)
-        tabbedPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK), "closeSelectedTab");
-
-        tabbedPane.getActionMap().put("closeSelectedTab", new AbstractAction() {
+        // Ctrl+W → Close tab
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK), "closeSelectedTab");
+        actionMap.put("closeSelectedTab", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int index = tabbedPane.getSelectedIndex();
                 if (index != -1) {
                     Component comp = tabbedPane.getTabComponentAt(index);
 
-                    // 🔒 prevent closing the ➕ button tab
+                    // 🔒 don’t close the ➕ button tab
                     if (comp instanceof JButton) {
                         return;
                     }
@@ -178,13 +179,11 @@ public class Main extends JFrame {
         });
 
         // --- NEW: Ctrl+T for new tab ---
-        tabbedPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK), "newTab");
-
-        tabbedPane.getActionMap().put("newTab", new AbstractAction() {
+        // Ctrl+T → New tab
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK), "newTab");
+        actionMap.put("newTab", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Add a new tab
                 addNewTab(tabbedPane);
             }
         });
