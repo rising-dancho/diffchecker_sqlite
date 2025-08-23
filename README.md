@@ -3,6 +3,7 @@
 
 # dependencies: 
 - https://github.com/bobbylight/RSyntaxTextArea
+- https://github.com/bobbylight/RSTAUI
 - https://github.com/java-diff-utils/java-diff-utils
 - https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
 
