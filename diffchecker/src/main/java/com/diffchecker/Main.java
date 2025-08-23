@@ -152,8 +152,7 @@ public class Main extends JFrame {
 
         tabbedPane = new JTabbedPane();
 
-        // Somewhere when you create your JTabbedPane (not inside
-        // ClosableTabTitleComponent)
+        // HOTKEY FOR CLOSING TABS (CTRL + W)
         tabbedPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK), "closeSelectedTab");
 
@@ -175,6 +174,18 @@ public class Main extends JFrame {
                         onTabEmptyFallback.run();
                     }
                 }
+            }
+        });
+
+        // --- NEW: Ctrl+T for new tab ---
+        tabbedPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK), "newTab");
+
+        tabbedPane.getActionMap().put("newTab", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Add a new tab
+                addNewTab(tabbedPane);
             }
         });
 
