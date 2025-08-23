@@ -1,6 +1,10 @@
 package com.diffchecker;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+
 import javax.swing.*;
 
 import com.diffchecker.components.ClosableTabContextMenu;
@@ -26,6 +30,10 @@ public class Main extends JFrame {
     // ─── Instance Fields ───────────────────────────────────────────────────────
     private final JPanel container = new JPanel();
     private final Color FONT_COLOR = new Color(0xd6d6d6);
+
+    // FOR CLOSING TABS WITH CTRL+W
+    JTabbedPane tabbedPane;
+    private final Runnable onTabEmptyFallback = () -> addNewTab(tabbedPane);
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Main::new);
@@ -142,7 +150,33 @@ public class Main extends JFrame {
         // container.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
         // container.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane();
+
+        // Somewhere when you create your JTabbedPane (not inside
+        // ClosableTabTitleComponent)
+        tabbedPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK), "closeSelectedTab");
+
+        tabbedPane.getActionMap().put("closeSelectedTab", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int index = tabbedPane.getSelectedIndex();
+                if (index != -1) {
+                    Component comp = tabbedPane.getTabComponentAt(index);
+
+                    // 🔒 prevent closing the ➕ button tab
+                    if (comp instanceof JButton) {
+                        return;
+                    }
+
+                    tabbedPane.remove(index);
+
+                    if (tabbedPane.getTabCount() == 1) { // keep + tab
+                        onTabEmptyFallback.run();
+                    }
+                }
+            }
+        });
 
         RoundedTabbedPaneUI ui = new RoundedTabbedPaneUI();
         tabbedPane.setUI(ui); // Set only once
@@ -170,7 +204,7 @@ public class Main extends JFrame {
         addButton.addActionListener(e -> addNewTab(tabbedPane));
         addButton.setForeground(FONT_COLOR);
         addButton.setFont(addButton.getFont().deriveFont(13.8f));
- 
+
         // ---- Restore last session (load all diffs from DB) ----
         DB db = new DB();
         DiffRepository repo = new DiffRepository(db);
@@ -182,7 +216,7 @@ public class Main extends JFrame {
             int index = tabbedPane.getTabCount();
             tabbedPane.insertTab(data.title, null, panel, null, index);
             tabbedPane.setTabComponentAt(index,
-                    new ClosableTabTitleComponent(tabbedPane, data.title, () -> addNewTab(tabbedPane)));
+                    new ClosableTabTitleComponent(tabbedPane, data.title, onTabEmptyFallback));
         }
 
         // Only add an empty "Untitled" tab if nothing was loaded from DB

@@ -162,6 +162,13 @@ public class ClosableTabTitleComponent extends JPanel {
         closeButton.addActionListener(e -> {
             int index = tabbedPane.indexOfTabComponent(this);
             if (index != -1) {
+                Component comp = tabbedPane.getTabComponentAt(index);
+
+                // 🔒 prevent closing the ➕ button tab
+                if (comp instanceof JButton) {
+                    return;
+                }
+
                 tabbedPane.remove(index);
                 if (tabbedPane.getTabCount() == 1 && onTabEmptyFallback != null) {
                     onTabEmptyFallback.run();
