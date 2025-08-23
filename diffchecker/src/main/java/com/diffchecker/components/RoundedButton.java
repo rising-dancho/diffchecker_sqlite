@@ -15,6 +15,11 @@ public class RoundedButton extends JButton {
     private int borderThickness = 2;
     private boolean hovered = false;
 
+    // SELECTED STATE (FOR TOGGLE BUTTONS)
+    private boolean selected = false;
+    private Color activeBackgroundColor = new Color(0x009966); // when ON
+    private Color activeBorderColor = new Color(0x009966); // optional border for ON state
+
     public RoundedButton(String text) {
         super(text);
         setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -25,7 +30,7 @@ public class RoundedButton extends JButton {
         setForeground(textColor);
         setMargin(new Insets(5, 10, 5, 10));
         setCursor(Cursor.getDefaultCursor());
-        
+
         // CENTER THE TEXT
         setHorizontalAlignment(SwingConstants.CENTER);
         setVerticalAlignment(SwingConstants.CENTER);
@@ -93,12 +98,34 @@ public class RoundedButton extends JButton {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Background
-        g2.setColor(hovered ? hoverBackgroundColor : backgroundColor);
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
+        if (selected) {
+            g2.setColor(hovered ? activeBackgroundColor.darker() : activeBackgroundColor);
+        } else {
+            g2.setColor(hovered ? hoverBackgroundColor : backgroundColor);
+        }
 
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
         super.paintComponent(g);
         g2.dispose();
+    }
+
+    public void setSelectedState(boolean selected) {
+        this.selected = selected;
+        repaint();
+    }
+
+    public boolean isSelectedState() {
+        return selected;
+    }
+
+    public void setActiveBackgroundColor(Color color) {
+        this.activeBackgroundColor = color;
+        repaint();
+    }
+
+    public void setActiveBorderColor(Color color) {
+        this.activeBorderColor = color;
+        repaint();
     }
 
     @Override
@@ -106,8 +133,12 @@ public class RoundedButton extends JButton {
         Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Border
-        g2.setColor(hovered ? hoverBorderColor : borderColor);
+        if (selected) {
+            g2.setColor(hovered ? activeBorderColor.darker() : activeBorderColor);
+        } else {
+            g2.setColor(hovered ? hoverBorderColor : borderColor);
+        }
+
         g2.setStroke(new BasicStroke(borderThickness));
         g2.drawRoundRect(borderThickness / 2, borderThickness / 2,
                 getWidth() - borderThickness, getHeight() - borderThickness,

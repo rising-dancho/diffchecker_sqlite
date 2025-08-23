@@ -3,6 +3,8 @@ package com.diffchecker.components;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
+import javax.swing.text.JTextComponent;
 
 import com.diffchecker.components.Database.DB;
 import com.diffchecker.components.Database.DiffData;
@@ -64,6 +66,9 @@ public class SplitTextTabPanel extends JPanel {
     // SUMMARY LABELS
     private final JPanel leftLabelPanel;
     private final JPanel rightLabelPanel;
+
+    // TOGGLE WORD HIGHLIGHT
+    private boolean wordHighlightEnabled = false;
 
     private final java.util.List<HighlightInfo> highlightPositions = new ArrayList<>();
 
@@ -294,6 +299,29 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
+        RoundedButton highlightBtn = new RoundedButton("🔦");
+        highlightBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
+        highlightBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
+        highlightBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
+        highlightBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
+        highlightBtn.setBorderThickness(2);
+        highlightBtn.setCornerRadius(10);
+        highlightBtn.setMargin(new Insets(5, 10, 5, 10));
+        highlightBtn.addActionListener(e -> {
+            wordHighlightEnabled = !wordHighlightEnabled; // toggle state
+            highlightBtn.setSelectedState(wordHighlightEnabled);
+
+            try {
+                // clear old highlights
+                jt1.getHighlighter().removeAllHighlights();
+                jt2.getHighlighter().removeAllHighlights();
+                highlightPositions.clear();
+                highlightDiffs();
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
+            }
+        });
+
         RoundedButton previousBtn = new RoundedButton("◀️");
         previousBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
         previousBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
@@ -420,6 +448,7 @@ public class SplitTextTabPanel extends JPanel {
 
         JPanel rightButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightButtonPanel.setBackground(BACKGROUND_DARK);
+        rightButtonPanel.add(highlightBtn);
         rightButtonPanel.add(saveBtn);
         bottomPanel.add(rightButtonPanel, BorderLayout.EAST);
 
@@ -526,7 +555,8 @@ public class SplitTextTabPanel extends JPanel {
 
     private RSyntaxTextArea createRSyntaxArea() {
         RSyntaxTextArea area = new RSyntaxTextArea();
-        area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+        // area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+        area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         area.setAntiAliasingEnabled(true);
         area.setEditable(true); // Allow editing if you still want to diff edited text
         area.setBackground(EDITOR_BACKGROUND);
@@ -583,12 +613,20 @@ public class SplitTextTabPanel extends JPanel {
                     group.left = new HighlightInfo(jt1, lOff, lOff);
                     group.right = new HighlightInfo(jt2, rOff, rOff);
 
-                    // still highlight words as usual
-                    for (int i = 0; i < Math.min(delta.getSource().size(), delta.getTarget().size()); i++) {
-                        highlightWordDiffs(jt1, origPos + i, delta.getSource().getLines().get(i),
-                                delta.getTarget().getLines().get(i), WORD_REMOVED, true);
-                        highlightWordDiffs(jt2, revPos + i, delta.getSource().getLines().get(i),
-                                delta.getTarget().getLines().get(i), WORD_ADDED, false);
+                    // Word-level highlighting (only if toggle ON)
+                    if (wordHighlightEnabled) {
+                        for (int i = 0; i < Math.min(delta.getSource().size(), delta.getTarget().size()); i++) {
+                            highlightWordDiffs(
+                                    jt1, origPos + i,
+                                    delta.getSource().getLines().get(i),
+                                    delta.getTarget().getLines().get(i),
+                                    WORD_REMOVED, true);
+                            highlightWordDiffs(
+                                    jt2, revPos + i,
+                                    delta.getSource().getLines().get(i),
+                                    delta.getTarget().getLines().get(i),
+                                    WORD_ADDED, false);
+                        }
                     }
                     break;
             }
@@ -639,6 +677,35 @@ public class SplitTextTabPanel extends JPanel {
             try {
                 area.addLineHighlight(startLine + i, color);
             } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class TextHighlightPainter implements Highlighter.HighlightPainter {
+        private final Color background;
+        private final Color foreground;
+
+        public TextHighlightPainter(Color background, Color foreground) {
+            this.background = background;
+            this.foreground = foreground;
+        }
+
+        @Override
+        public void paint(Graphics g, int p0, int p1, Shape bounds, JTextComponent c) {
+            try {
+                Rectangle rect = c.modelToView(p0).union(c.modelToView(p1));
+
+                // Background
+                g.setColor(background);
+                g.fillRect(rect.x, rect.y, rect.width, rect.height);
+
+                // Text (draw manually in new color)
+                String text = c.getDocument().getText(p0, p1 - p0);
+                g.setColor(foreground);
+                g.setFont(c.getFont());
+                g.drawString(text, rect.x, rect.y + g.getFontMetrics().getAscent());
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
