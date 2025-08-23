@@ -577,7 +577,6 @@ public class SplitTextTabPanel extends JPanel {
         area.setLineWrap(true);
         area.setWrapStyleWord(true); // optional, wraps at word boundaries
         return area;
-
     }
 
     private void highlightDiffs() throws BadLocationException {
