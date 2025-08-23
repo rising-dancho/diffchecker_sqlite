@@ -8,6 +8,7 @@ import java.awt.event.MouseEvent;
 public class ClosableTabTitleComponent extends JPanel {
     private final Color ACTIVE_COLOR = new Color(0xF9FAFA); // Active tab color
     private final Color INACTIVE_COLOR = new Color(0x888690); // Inactive tab color
+    private final Color FONT_COLOR = new Color(0xd6d6d6);
 
     private final JLabel titleLabel;
     private final Color HOVER_COLOR = new Color(0xd6d6d6); // your desired hover text color
@@ -81,23 +82,61 @@ public class ClosableTabTitleComponent extends JPanel {
         ImageIcon defaultIcon = new ImageIcon(iconDefault.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH));
         ImageIcon hoverIcon = new ImageIcon(iconHover.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH));
 
-        JButton closeButton = new JButton(defaultIcon);
-        closeButton.setBorder(BorderFactory.createEmptyBorder());
-        closeButton.setFocusPainted(false);
-        closeButton.setContentAreaFilled(false);
-        closeButton.setMargin(new Insets(0, 5, 0, 5));
+        // JButton closeButton = new JButton(defaultIcon);
+        // closeButton.setBorder(BorderFactory.createEmptyBorder());
+        // closeButton.setFocusPainted(false);
+        // closeButton.setContentAreaFilled(false);
+        // closeButton.setMargin(new Insets(0, 5, 0, 5));
 
-        closeButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                closeButton.setIcon(hoverIcon);
+        // closeButton.addMouseListener(new MouseAdapter() {
+        // @Override
+        // public void mouseEntered(MouseEvent e) {
+        // closeButton.setIcon(hoverIcon);
+        // }
+
+        // @Override
+        // public void mouseExited(MouseEvent e) {
+        // closeButton.setIcon(defaultIcon);
+        // }
+        // });
+        JButton closeButton = new JButton("✕") {
+            private boolean hover = false;
+
+            {
+                setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 4));
+                setFocusPainted(false);
+                setContentAreaFilled(false);
+                setOpaque(false);
+                setForeground(FONT_COLOR);
+
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        hover = true;
+                        repaint();
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        hover = false;
+                        repaint();
+                    }
+                });
             }
 
             @Override
-            public void mouseExited(MouseEvent e) {
-                closeButton.setIcon(defaultIcon);
+            protected void paintComponent(Graphics g) {
+                if (hover) {
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(new Color(80, 80, 80, 180)); // hover color
+                    g2.fillRoundRect(0, 0, getWidth(), getHeight(), 6, 6); // rounded background
+                    g2.dispose();
+                }
+                super.paintComponent(g);
             }
-        });
+        };
+        closeButton.setFont(closeButton.getFont().deriveFont(14f));
 
         closeButton.addActionListener(e -> {
             int index = tabbedPane.indexOfTabComponent(this);

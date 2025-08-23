@@ -166,10 +166,10 @@ public class Main extends JFrame {
         addButton.setBorder(null);
         addButton.setFocusPainted(false);
         addButton.setContentAreaFilled(false);
-        addButton.setPreferredSize(new Dimension(28, 28));
+        addButton.setPreferredSize(new Dimension(26, 26));
         addButton.addActionListener(e -> addNewTab(tabbedPane));
         addButton.setForeground(FONT_COLOR);
-        addButton.setMargin(new Insets(0, 0, 100, 0)); // top, left, bottom, right
+        addButton.setFont(addButton.getFont().deriveFont(12.5f));
 
         // ---- Restore last session (load all diffs from DB) ----
         DB db = new DB();

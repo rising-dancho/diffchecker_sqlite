@@ -482,7 +482,7 @@ public class SplitTextTabPanel extends JPanel {
 
     private RSyntaxTextArea createRSyntaxArea() {
         RSyntaxTextArea area = new RSyntaxTextArea();
-        // area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+        area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         area.setAntiAliasingEnabled(true);
         area.setEditable(true); // Allow editing if you still want to diff edited text
         area.setBackground(EDITOR_BACKGROUND);
