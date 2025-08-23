@@ -12,8 +12,11 @@ import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,6 +94,47 @@ public class SplitTextTabPanel extends JPanel {
 
     public SplitTextTabPanel() {
         setLayout(new BorderLayout());
+
+        // CTRL + S HOTKEY FOR SAVING
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("control S"), "saveDiff");
+
+        getActionMap().put("saveDiff", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveToDatabase();
+            }
+        });
+
+        // CTRL + SHIFT + ENTER hotkey for diff checking
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+                        "highlightDiffs");
+
+        getActionMap().put("highlightDiffs", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    highlightDiffs();
+                } catch (BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        // CTRL + R HOTKEY FOR CLEARING
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("control R"), "clearTextAreas");
+
+        getActionMap().put("clearTextAreas", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jt1.setText("");
+                jt2.setText("");
+                leftLabelPanel.setVisible(false);
+                rightLabelPanel.setVisible(false);
+            }
+        });
 
         jt1 = createRSyntaxArea();
         jt2 = createRSyntaxArea();

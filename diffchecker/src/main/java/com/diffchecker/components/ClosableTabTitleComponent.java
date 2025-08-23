@@ -51,6 +51,8 @@ public class ClosableTabTitleComponent extends JPanel {
         setOpaque(false);
 
         titleLabel = new JLabel(title);
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setVerticalAlignment(SwingConstants.BOTTOM);
 
         // CHANGE FONT COLOR OF TAB TITLE
         // Add a listener to repaint text color when tab selection changes
@@ -77,11 +79,17 @@ public class ClosableTabTitleComponent extends JPanel {
         Font base = new Font("SansSerif", Font.BOLD, titleLabel.getFont().getSize());
         titleLabel.setFont(base.deriveFont(14f));
 
-        // ImageIcon iconDefault = new ImageIcon(getClass().getResource("/diffchecker/images/close_def.png"));
-        // ImageIcon iconHover = new ImageIcon(getClass().getResource("/diffchecker/images/close_hover.png"));
+        // ImageIcon iconDefault = new
+        // ImageIcon(getClass().getResource("/diffchecker/images/close_def.png"));
+        // ImageIcon iconHover = new
+        // ImageIcon(getClass().getResource("/diffchecker/images/close_hover.png"));
 
-        // ImageIcon defaultIcon = new ImageIcon(iconDefault.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH));
-        // ImageIcon hoverIcon = new ImageIcon(iconHover.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH));
+        // ImageIcon defaultIcon = new
+        // ImageIcon(iconDefault.getImage().getScaledInstance(14, 14,
+        // Image.SCALE_SMOOTH));
+        // ImageIcon hoverIcon = new
+        // ImageIcon(iconHover.getImage().getScaledInstance(14, 14,
+        // Image.SCALE_SMOOTH));
 
         // JButton closeButton = new JButton(defaultIcon);
         // closeButton.setBorder(BorderFactory.createEmptyBorder());
@@ -100,6 +108,18 @@ public class ClosableTabTitleComponent extends JPanel {
         // closeButton.setIcon(defaultIcon);
         // }
         // });
+
+        // closeButton.addActionListener(e -> {
+        // int index = tabbedPane.indexOfTabComponent(this);
+        // if (index != -1) {
+        // tabbedPane.remove(index);
+        // if (tabbedPane.getTabCount() == 1 && onTabEmptyFallback != null) {
+        // onTabEmptyFallback.run();
+        // }
+        // }
+        // });
+
+        // NO IMAGE CLOSE BUTTON HOVER EFFECT
         JButton closeButton = new JButton("✕") {
             private boolean hover = false;
 
@@ -149,7 +169,7 @@ public class ClosableTabTitleComponent extends JPanel {
             }
         });
 
-        add(titleLabel, BorderLayout.WEST);
+        add(titleLabel, BorderLayout.CENTER);
         add(closeButton, BorderLayout.EAST);
         setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5)); // optional: horizontal padding
     }
