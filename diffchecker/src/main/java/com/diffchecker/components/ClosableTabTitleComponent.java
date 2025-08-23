@@ -160,19 +160,36 @@ public class ClosableTabTitleComponent extends JPanel {
         closeButton.setFont(closeButton.getFont().deriveFont(14f));
 
         closeButton.addActionListener(e -> {
-            int index = tabbedPane.indexOfTabComponent(this);
+            int index = tabbedPane.getSelectedIndex();
             if (index != -1) {
                 Component comp = tabbedPane.getTabComponentAt(index);
 
-                // 🔒 prevent closing the ➕ button tab
+                // 🔒 don’t close the ➕ button tab
                 if (comp instanceof JButton) {
                     return;
                 }
 
                 tabbedPane.remove(index);
-                if (tabbedPane.getTabCount() == 1 && onTabEmptyFallback != null) {
+
+                // if only "+" tab is left, run fallback
+                if (tabbedPane.getTabCount() == 1) {
                     onTabEmptyFallback.run();
+                    return;
                 }
+
+                // ── Ensure selection is valid (skip "+" tab) ──
+                int newIndex = index;
+                if (newIndex >= tabbedPane.getTabCount()) {
+                    newIndex = tabbedPane.getTabCount() - 1; // clamp to last tab
+                }
+
+                Component newComp = tabbedPane.getTabComponentAt(newIndex);
+                if (newComp instanceof JButton) {
+                    // If "+" is here, move left
+                    newIndex = Math.max(0, newIndex - 1);
+                }
+
+                tabbedPane.setSelectedIndex(newIndex);
             }
         });
 
