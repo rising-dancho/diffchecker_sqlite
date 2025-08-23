@@ -556,7 +556,7 @@ public class SplitTextTabPanel extends JPanel {
     private RSyntaxTextArea createRSyntaxArea() {
         RSyntaxTextArea area = new RSyntaxTextArea();
         // area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
-        // area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
+        area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
         area.setAntiAliasingEnabled(true);
         area.setEditable(true); // Allow editing if you still want to diff edited text
         area.setBackground(EDITOR_BACKGROUND);
@@ -565,7 +565,15 @@ public class SplitTextTabPanel extends JPanel {
         area.setBorder(BorderFactory.createEmptyBorder());
         // area.setCodeFoldingEnabled(true);
 
-        // ✅ Enable line wrapping
+        // COMMENT AND UNCOMMENT HOTKEY (Ctrl+/ on Win/Linux, Cmd+/ on macOS)
+        int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
+        InputMap im = area.getInputMap();
+        ActionMap am = area.getActionMap();
+
+        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, menuMask), "toggleComment");
+        am.put("toggleComment", new ToggleCommentWrapper(area));
+
+        // LINE WRAPPING FOR LONG LINES
         area.setLineWrap(true);
         area.setWrapStyleWord(true); // optional, wraps at word boundaries
         return area;
@@ -707,6 +715,22 @@ public class SplitTextTabPanel extends JPanel {
                 g.drawString(text, rect.x, rect.y + g.getFontMetrics().getAscent());
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    class ToggleCommentWrapper extends AbstractAction {
+        private final RSyntaxTextArea area;
+
+        public ToggleCommentWrapper(RSyntaxTextArea area) {
+            this.area = area;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Action toggleComment = area.getActionMap().get(RSyntaxTextAreaEditorKit.rstaToggleCommentAction);
+            if (toggleComment != null) {
+                toggleComment.actionPerformed(e);
             }
         }
     }
