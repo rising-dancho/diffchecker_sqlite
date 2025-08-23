@@ -74,13 +74,14 @@ public class ClosableTabTitleComponent extends JPanel {
                 titleLabel.setForeground(INACTIVE_COLOR);
             }
         });
-        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 13));
+        Font base = new Font("SansSerif", Font.BOLD, titleLabel.getFont().getSize());
+        titleLabel.setFont(base.deriveFont(14f));
 
-        ImageIcon iconDefault = new ImageIcon(getClass().getResource("/diffchecker/images/close_def.png"));
-        ImageIcon iconHover = new ImageIcon(getClass().getResource("/diffchecker/images/close_hover.png"));
+        // ImageIcon iconDefault = new ImageIcon(getClass().getResource("/diffchecker/images/close_def.png"));
+        // ImageIcon iconHover = new ImageIcon(getClass().getResource("/diffchecker/images/close_hover.png"));
 
-        ImageIcon defaultIcon = new ImageIcon(iconDefault.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH));
-        ImageIcon hoverIcon = new ImageIcon(iconHover.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH));
+        // ImageIcon defaultIcon = new ImageIcon(iconDefault.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH));
+        // ImageIcon hoverIcon = new ImageIcon(iconHover.getImage().getScaledInstance(14, 14, Image.SCALE_SMOOTH));
 
         // JButton closeButton = new JButton(defaultIcon);
         // closeButton.setBorder(BorderFactory.createEmptyBorder());
