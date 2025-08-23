@@ -171,14 +171,30 @@ public class Main extends JFrame {
 
                     tabbedPane.remove(index);
 
-                    if (tabbedPane.getTabCount() == 1) { // keep + tab
+                    // if only "+" tab is left, run fallback
+                    if (tabbedPane.getTabCount() == 1) {
                         onTabEmptyFallback.run();
+                        return;
                     }
+
+                    // ── Ensure selection is valid (skip "+" tab) ──
+                    int newIndex = index;
+                    if (newIndex >= tabbedPane.getTabCount()) {
+                        newIndex = tabbedPane.getTabCount() - 1; // clamp to last tab
+                    }
+
+                    Component newComp = tabbedPane.getTabComponentAt(newIndex);
+                    if (newComp instanceof JButton) {
+                        // If "+" is here, move left
+                        newIndex = Math.max(0, newIndex - 1);
+                    }
+
+                    tabbedPane.setSelectedIndex(newIndex);
                 }
             }
         });
 
-        // --- NEW: Ctrl+T for new tab ---
+        // HOTKEY FOR OPENING TABS (CTRL + T)
         // Ctrl+T → New tab
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.CTRL_DOWN_MASK), "newTab");
         actionMap.put("newTab", new AbstractAction() {
