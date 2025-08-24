@@ -12,4 +12,5 @@
 - https://github.com/bobbylight/RSyntaxTextArea/wiki/Example:-Setting-the-theme
 
 # sample
-<img width="1283" height="915" alt="image" src="https://github.com/user-attachments/assets/3c8a5a79-46eb-4027-ac81-154f16f0d5ef" />
+<img width="1085" height="724" alt="image" src="https://github.com/user-attachments/assets/d2ee4907-91be-480a-ab01-0f47991f1c00" />
+
