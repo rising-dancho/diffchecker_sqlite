@@ -981,7 +981,7 @@ public class SplitTextTabPanel extends JPanel {
             currentDiff = newData; // track this record now
         }
 
-        // JOptionPane.showMessageDialog(this, success ? "Saved successfully!" : "Save failed.");
+        JOptionPane.showMessageDialog(this, success ? "Saved successfully!" : "Save failed.");
 
         if (success) {
             // 🔹 Update the tab title in the JTabbedPane
