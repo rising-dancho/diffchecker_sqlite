@@ -5,8 +5,7 @@
 - https://github.com/bobbylight/RSyntaxTextArea
 - https://github.com/bobbylight/RSTAUI
 - https://github.com/java-diff-utils/java-diff-utils
-- https://github.com/kordamp/ikonli
-- https://kordamp.org/ikonli/#_antdesignicons
+- https://github.com/kordamp/ikonli | https://kordamp.org/ikonli/#_antdesignicons
 - https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
 
 # changing the RSyntaxTextArea theme
