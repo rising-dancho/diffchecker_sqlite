@@ -1022,11 +1022,42 @@ public class SplitTextTabPanel extends JPanel {
         jt2.setText(data.rightText);
     }
 
+    private String capitalizeTitle(String input) {
+        String[] words = input.trim().toLowerCase().split("\\s+");
+        StringBuilder result = new StringBuilder();
+        for (String word : words) {
+            if (word.isEmpty())
+                continue;
+            result.append(Character.toUpperCase(word.charAt(0)))
+                    .append(word.substring(1))
+                    .append(" ");
+        }
+        return result.toString().trim();
+    }
+
     public void saveToDatabase() {
-        String title = JOptionPane.showInputDialog(this, "Whats the title of this diff?",
+        String title = JOptionPane.showInputDialog(
+                this,
+                "What's the title of this diff?",
                 currentDiff != null ? currentDiff.title : "");
-        if (title == null || title.trim().isEmpty())
+
+        // User pressed Cancel or closed the dialog → do nothing
+        if (title == null) {
             return;
+        }
+
+        // User pressed OK but left input blank → show error and stop
+        if (title.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Title cannot be empty.",
+                    "Invalid Title",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Capitalize the title
+        title = capitalizeTitle(title);
 
         String leftText = jt1.getText();
         String rightText = jt2.getText();

@@ -251,11 +251,16 @@ public class Main extends JFrame {
                     this,
                     "You have unsaved changes. Save before closing?",
                     "Unsaved Changes",
-                    JOptionPane.YES_NO_CANCEL_OPTION);
-            if (option == JOptionPane.CANCEL_OPTION)
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+            
+            if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION) {
+                // Do nothing if cancelled or dialog closed
                 return;
-            if (option == JOptionPane.YES_OPTION)
+            }
+            if (option == JOptionPane.YES_OPTION) {
                 panel.saveToDatabase();
+            }
         }
 
         tabbedPane.remove(index);
