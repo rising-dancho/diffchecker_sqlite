@@ -20,6 +20,10 @@ public class RoundedButton extends JButton {
     private Color activeBackgroundColor = new Color(0x009966); // when ON
     private Color activeBorderColor = new Color(0x009966); // optional border for ON state
 
+    public RoundedButton() {
+        this("");
+    }
+
     public RoundedButton(String text) {
         super(text);
         setFont(new Font("SansSerif", Font.BOLD, 14));

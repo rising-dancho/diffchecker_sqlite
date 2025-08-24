@@ -23,6 +23,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ import java.util.List;
 import org.fife.ui.rsyntaxtextarea.*;
 // RSyntaxTextArea search and replace dependencies
 import org.fife.ui.rtextarea.*;
+
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class SplitTextTabPanel extends JPanel {
     // DEFAULT DECLARATIONS
@@ -72,7 +75,10 @@ public class SplitTextTabPanel extends JPanel {
 
     private FindReplaceSupport findReplace1;
     private FindReplaceSupport findReplace2;
+
+    // TOGGLE BUTTONS
     RoundedButton highlightBtn;
+    RoundedButton wordWrapToggleBtn;
 
     // TRACKING UNSAVED CHANGES
     private boolean isDirty = false;
@@ -91,6 +97,9 @@ public class SplitTextTabPanel extends JPanel {
 
     // TOGGLE WORD HIGHLIGHT
     private boolean wordHighlightEnabled = false;
+
+    // TOGGLE WORD WRAP
+    private boolean wordWrapEnabled = false;
 
     private final java.util.List<HighlightInfo> highlightPositions = new ArrayList<>();
 
@@ -141,6 +150,28 @@ public class SplitTextTabPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 saveToDatabase();
+            }
+        });
+
+        // CTRL + E HOTKEY FOR TOGGLING WORD WRAP
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("control E"), "toggleWordWrap");
+
+        getActionMap().put("toggleWordWrap", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                wordWrapToggle();
+            }
+        });
+
+        // CTRL + Q HOTKEY FOR TOGGLING WORD HIGHLIGHT
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("control Q"), "toggleHighlightWord");
+
+        getActionMap().put("toggleHighlightWord", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                highlightWordToggle();
             }
         });
 
@@ -205,17 +236,6 @@ public class SplitTextTabPanel extends JPanel {
                 jt2.setText("");
                 leftLabelPanel.setVisible(false);
                 rightLabelPanel.setVisible(false);
-            }
-        });
-
-        // CTRL + Q HOTKEY FOR TOGGLING WORD HIGHLIGHT
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("control Q"), "toggleHighlightWord");
-
-        getActionMap().put("toggleHighlightWord", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                highlightWordToggle();
             }
         });
 
@@ -428,14 +448,20 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        highlightBtn = new RoundedButton("🔦");
+        highlightBtn = new RoundedButton();
+        highlightBtn.setText(null);
+        // Load local SVG (supports recoloring and scaling)
+        FlatSVGIcon highlightIcon = new FlatSVGIcon("diffchecker/images/icons/highlight.svg", 20, 20);
+        // turn the icon monochrome white
+        highlightIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
+        highlightBtn.setIcon(highlightIcon);
         highlightBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
         highlightBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
         highlightBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
         highlightBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
         highlightBtn.setBorderThickness(2);
         highlightBtn.setCornerRadius(10);
-        highlightBtn.setMargin(new Insets(5, 10, 5, 10));
+        highlightBtn.setMargin(new Insets(5, 5, 5, 5));
         highlightBtn.addActionListener(e -> {
             wordHighlightEnabled = !wordHighlightEnabled; // toggle state
             highlightBtn.setSelectedState(wordHighlightEnabled);
@@ -451,6 +477,23 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
+        wordWrapToggleBtn = new RoundedButton();
+        highlightBtn.setText(null);
+        // Load local SVG (supports recoloring and scaling)
+        FlatSVGIcon wordWrapIcon = new FlatSVGIcon("diffchecker/images/icons/wrap_text.svg", 20, 20);
+        // turn the icon monochrome white
+        wordWrapIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
+        wordWrapToggleBtn.setIcon(wordWrapIcon);
+        wordWrapToggleBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
+        wordWrapToggleBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
+        wordWrapToggleBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
+        wordWrapToggleBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
+        wordWrapToggleBtn.setBorderThickness(2);
+        wordWrapToggleBtn.setCornerRadius(10);
+        wordWrapToggleBtn.setMargin(new Insets(5, 5, 5, 5));
+        wordWrapToggleBtn.addActionListener(e -> {
+            wordWrapToggle();
+        });
         RoundedButton previousBtn = new RoundedButton("◀️");
         previousBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
         previousBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
@@ -520,6 +563,7 @@ public class SplitTextTabPanel extends JPanel {
         clearBtn.setToolTipText("<html><strong>Clear</strong> <br> ( Ctrl + R )</html>");
         deleteBtn.setToolTipText("<html><strong>Delete</strong> <br> ( Ctrl + Shift + X )</html>");
         saveBtn.setToolTipText("<html><strong>Save</strong> <br> ( Ctrl + S )</html>");
+        wordWrapToggleBtn.setToolTipText("<html><strong>Toggle Word Wrap</strong> <br> ( Ctrl + E )</html>");
 
         JPanel bottomPanel = new JPanel(new BorderLayout()); // CENTER = button centered
         bottomPanel.setBackground(BACKGROUND_DARK);
@@ -543,6 +587,7 @@ public class SplitTextTabPanel extends JPanel {
 
         JPanel rightButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightButtonPanel.setBackground(BACKGROUND_DARK);
+        rightButtonPanel.add(wordWrapToggleBtn);
         rightButtonPanel.add(highlightBtn);
         rightButtonPanel.add(saveBtn);
         bottomPanel.add(rightButtonPanel, BorderLayout.EAST);
@@ -681,8 +726,8 @@ public class SplitTextTabPanel extends JPanel {
         am.put("toggleComment", new ToggleCommentWrapper(area));
 
         // LINE WRAPPING FOR LONG LINES
-        area.setLineWrap(true);
-        area.setWrapStyleWord(true); // optional, wraps at word boundaries
+        // area.setLineWrap(true);
+        // area.setWrapStyleWord(true); // optional, wraps at word boundaries
         return area;
     }
 
@@ -737,6 +782,23 @@ public class SplitTextTabPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Delete failed.");
             }
         }
+    }
+
+    private void wordWrapToggle() {
+        wordWrapEnabled = !wordWrapEnabled; // toggle state
+        wordWrapToggleBtn.setSelectedState(wordWrapEnabled);
+
+        jt1.setLineWrap(wordWrapEnabled);
+        jt1.setWrapStyleWord(wordWrapEnabled);
+
+        jt2.setLineWrap(wordWrapEnabled);
+        jt2.setWrapStyleWord(wordWrapEnabled);
+
+        // Force UI refresh
+        jt1.revalidate();
+        jt1.repaint();
+        jt2.revalidate();
+        jt2.repaint();
     }
 
     private void previousDiff() {
@@ -814,6 +876,8 @@ public class SplitTextTabPanel extends JPanel {
                         }
                     }
                     break;
+                default:
+                    break;
             }
 
             diffGroups.add(group);
@@ -824,9 +888,8 @@ public class SplitTextTabPanel extends JPanel {
         if (group == null)
             return;
 
-        // Steal focus from text areas temporarily
-        Component oldFocusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
-        requestFocusInWindow(); // or some panel that is not jt1/jt2
+        // // Steal focus from text areas temporarily
+        requestFocusInWindow();
 
         if (group.left != null) {
             scrollToOffset(jt1, group.left.startOffset);
@@ -836,12 +899,6 @@ public class SplitTextTabPanel extends JPanel {
             scrollToOffset(jt2, group.right.startOffset);
         }
 
-        // Optionally restore focus to the previously focused component, or leave none
-        // focused
-        if (oldFocusOwner instanceof RSyntaxTextArea) {
-            // do not restore focus to jt1/jt2
-            // oldFocusOwner.requestFocusInWindow();
-        }
     }
 
     // helper method
@@ -853,9 +910,11 @@ public class SplitTextTabPanel extends JPanel {
             caret.setVisible(false);
 
             area.setCaretPosition(offset); // moves view
-            Rectangle viewRect = area.modelToView(offset);
-            if (viewRect != null)
+            Rectangle2D viewRect2D = area.modelToView2D(offset);
+            if (viewRect2D != null) {
+                Rectangle viewRect = viewRect2D.getBounds(); // convert to Rectangle for scrollRectToVisible
                 area.scrollRectToVisible(viewRect);
+            }
 
             caret.setVisible(wasVisible); // optional
         } catch (BadLocationException e) {
@@ -915,17 +974,25 @@ public class SplitTextTabPanel extends JPanel {
         @Override
         public void paint(Graphics g, int p0, int p1, Shape bounds, JTextComponent c) {
             try {
-                Rectangle rect = c.modelToView(p0).union(c.modelToView(p1));
+                Rectangle2D rect0 = c.modelToView2D(p0);
+                Rectangle2D rect1 = c.modelToView2D(p1);
+
+                if (rect0 == null || rect1 == null)
+                    return;
+
+                Rectangle2D unionRect = rect0.createUnion(rect1);
 
                 // Background
                 g.setColor(background);
-                g.fillRect(rect.x, rect.y, rect.width, rect.height);
+                g.fillRect((int) unionRect.getX(), (int) unionRect.getY(),
+                        (int) unionRect.getWidth(), (int) unionRect.getHeight());
 
                 // Text (draw manually in new color)
                 String text = c.getDocument().getText(p0, p1 - p0);
                 g.setColor(foreground);
                 g.setFont(c.getFont());
-                g.drawString(text, rect.x, rect.y + g.getFontMetrics().getAscent());
+                g.drawString(text, (int) unionRect.getX(),
+                        (int) unionRect.getY() + g.getFontMetrics().getAscent());
             } catch (Exception e) {
                 e.printStackTrace();
             }
