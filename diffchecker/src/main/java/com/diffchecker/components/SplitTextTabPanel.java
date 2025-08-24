@@ -182,9 +182,9 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        // CTRL + E HOTKEY FOR TOGGLING WORD WRAP
+        // CTRL + Q HOTKEY FOR TOGGLING WORD WRAP
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("control E"), "toggleWordWrap");
+                .put(KeyStroke.getKeyStroke("control Q"), "toggleWordWrap");
 
         getActionMap().put("toggleWordWrap", new AbstractAction() {
             @Override
@@ -193,9 +193,9 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        // CTRL + Q HOTKEY FOR TOGGLING WORD HIGHLIGHT
+        // CTRL + E HOTKEY FOR TOGGLING WORD HIGHLIGHT
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("control Q"), "toggleHighlightWord");
+                .put(KeyStroke.getKeyStroke("control E"), "toggleHighlightWord");
 
         getActionMap().put("toggleHighlightWord", new AbstractAction() {
             @Override
@@ -555,14 +555,14 @@ public class SplitTextTabPanel extends JPanel {
 
         // TOOLTIPS
         diffcheckBtn.setToolTipText("<html><strong>Find Difference</strong> <br> ( Ctrl + Shift + Enter )</html>");
-        findBtn.setToolTipText("<html><strong>Find/Replace</strong> <br> ( Ctrl + F )</html>");
-        highlightBtn.setToolTipText("<html><strong>Toggle Word Highlight</strong> <br> ( Ctrl + Q )</html>");
         previousBtn.setToolTipText("<html><strong>Previous Diff</strong> <br> ( Alt + Left Arrow )</html>");
         nextBtn.setToolTipText("<html><strong>Next Diff</strong> <br> ( Alt + Right Arrow )</html>");
         clearBtn.setToolTipText("<html><strong>Clear</strong> <br> ( Ctrl + R )</html>");
         deleteBtn.setToolTipText("<html><strong>Delete</strong> <br> ( Ctrl + Shift + X )</html>");
+        findBtn.setToolTipText("<html><strong>Find/Replace</strong> <br> ( Ctrl + F )</html>");
         saveBtn.setToolTipText("<html><strong>Save</strong> <br> ( Ctrl + S )</html>");
-        wordWrapToggleBtn.setToolTipText("<html><strong>Toggle Word Wrap</strong> <br> ( Ctrl + E )</html>");
+        highlightBtn.setToolTipText("<html><strong>Toggle Word Highlight</strong> <br> ( Ctrl + E )</html>");
+        wordWrapToggleBtn.setToolTipText("<html><strong>Toggle Word Wrap</strong> <br> ( Ctrl + Q )</html>");
 
         JPanel bottomPanel = new JPanel(new BorderLayout()); // CENTER = button centered
         bottomPanel.setBackground(BACKGROUND_DARK);

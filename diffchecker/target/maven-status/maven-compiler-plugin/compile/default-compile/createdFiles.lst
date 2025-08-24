@@ -8,6 +8,7 @@ com\diffchecker\components\FindReplaceSupport.class
 com\diffchecker\Main$1.class
 com\diffchecker\components\CustomTitleBar$2.class
 com\diffchecker\components\LineNumberingTextArea.class
+com\diffchecker\components\SplitTextTabPanel$15.class
 com\diffchecker\java_fundamentals\object_oriented_prog\youtube_tutorials\GettersSetters.class
 com\diffchecker\java_fundamentals\swing_and_awt\pos_system\CustomersPanel$4.class
 com\diffchecker\components\SplitTextTabPanel$TextHighlightPainter.class
