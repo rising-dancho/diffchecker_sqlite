@@ -213,6 +213,18 @@ public class SplitTextTabPanel extends JPanel {
         jt1.addFocusListener(trackFocus);
         jt2.addFocusListener(trackFocus);
 
+        // Disable mark occurrences (highlights and tooltips for matching tokens)
+        jt1.setMarkOccurrences(false);
+        jt2.setMarkOccurrences(false);
+
+        // Disable matched bracket popup tooltips
+        jt1.setBracketMatchingEnabled(false);
+        jt2.setBracketMatchingEnabled(false);
+
+        // Optional: disable code folding hints (sometimes triggers tooltips)
+        jt1.setCodeFoldingEnabled(false);
+        jt2.setCodeFoldingEnabled(false);
+
         scroll1 = new RTextScrollPane(jt1);
         scroll2 = new RTextScrollPane(jt2);
 
@@ -447,6 +459,16 @@ public class SplitTextTabPanel extends JPanel {
         saveBtn.setBorderThickness(2);
         saveBtn.setCornerRadius(10);
         saveBtn.addActionListener(e -> saveToDatabase());
+
+        // TOOLTIPS
+        diffcheckBtn.setToolTipText("<html><strong>Find Difference</strong> <br> ( Ctrl + Shift + Enter )</html>");
+        findBtn.setToolTipText("<html><strong>Find/Replace</strong> <br> ( Ctrl + F )</html>");
+        highlightBtn.setToolTipText("<html><strong>Toggle Word Highlight</strong> <br> ( Ctrl + Q )</html>");
+        previousBtn.setToolTipText("<html><strong>Previous Diff</strong> <br> ( Alt + Left Arrow )</html>");
+        nextBtn.setToolTipText("<html><strong>Next Diff</strong> <br> ( Alt + Right Arrow )</html>");
+        clearBtn.setToolTipText("<html><strong>Clear</strong> <br> ( Ctrl + R )</html>");
+        deleteBtn.setToolTipText("<html><strong>Delete</strong> <br> ( Ctrl + Shift + X )</html>");
+        saveBtn.setToolTipText("<html><strong>Save</strong> <br> ( Ctrl + S )</html>");
 
         JPanel bottomPanel = new JPanel(new BorderLayout()); // CENTER = button centered
         bottomPanel.setBackground(BACKGROUND_DARK);

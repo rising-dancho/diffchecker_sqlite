@@ -230,7 +230,7 @@ public class Main extends JFrame {
         addButton.addActionListener(e -> addNewTab(tabbedPane));
         addButton.setForeground(FONT_COLOR);
         addButton.setFont(addButton.getFont().deriveFont(13.8f));
-
+        addButton.setToolTipText("<html><strong>New Tab</strong> <br> ( Ctrl + T )</html>");
         // ---- Restore last session (load all diffs from DB) ----
         DB db = new DB();
         DiffRepository repo = new DiffRepository(db);

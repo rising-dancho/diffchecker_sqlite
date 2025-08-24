@@ -143,6 +143,8 @@ public class ClosableTabTitleComponent extends JPanel {
                         repaint();
                     }
                 });
+
+                setToolTipText("<html><strong>Close Tab</strong> <br> ( Ctrl + W )</html>");
             }
 
             @Override
