@@ -2,6 +2,7 @@ package com.diffchecker.components;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Caret;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
@@ -190,9 +191,9 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        // CTRL + H HOTKEY FOR TOGGLING WORD HIGHLIGHT
+        // CTRL + Q HOTKEY FOR TOGGLING WORD HIGHLIGHT
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("control H"), "toggleHighlightWord");
+                .put(KeyStroke.getKeyStroke("control Q"), "toggleHighlightWord");
 
         getActionMap().put("toggleHighlightWord", new AbstractAction() {
             @Override
@@ -204,6 +205,11 @@ public class SplitTextTabPanel extends JPanel {
         jt1 = createRSyntaxArea();
         jt2 = createRSyntaxArea();
 
+        // DISABLE CURRENT LINE HIGHLIGHTING SINCE IT CLASHES WITH DIFF HIGHLIGHT
+        jt1.setHighlightCurrentLine(false);
+        jt2.setHighlightCurrentLine(false);
+
+        // TRACK FOCUS
         jt1.addFocusListener(trackFocus);
         jt2.addFocusListener(trackFocus);
 
@@ -622,24 +628,6 @@ public class SplitTextTabPanel extends JPanel {
         }
     }
 
-    private void previousDiff() {
-        if (diffGroups.isEmpty())
-            return;
-        currentGroupIndex--;
-        if (currentGroupIndex < 0)
-            currentGroupIndex = diffGroups.size() - 1;
-        focusDiffGroup(diffGroups.get(currentGroupIndex));
-    }
-
-    private void nextDiff() {
-        if (diffGroups.isEmpty())
-            return;
-        currentGroupIndex++;
-        if (currentGroupIndex >= diffGroups.size())
-            currentGroupIndex = 0;
-        focusDiffGroup(diffGroups.get(currentGroupIndex));
-    }
-
     private void deleteDiff() {
         if (currentDiff == null || currentDiff.id == -1) {
             JOptionPane.showMessageDialog(this, "No saved record to delete.");
@@ -676,6 +664,24 @@ public class SplitTextTabPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Delete failed.");
             }
         }
+    }
+
+    private void previousDiff() {
+        if (diffGroups.isEmpty())
+            return;
+        currentGroupIndex--;
+        if (currentGroupIndex < 0)
+            currentGroupIndex = diffGroups.size() - 1;
+        focusDiffGroup(diffGroups.get(currentGroupIndex));
+    }
+
+    private void nextDiff() {
+        if (diffGroups.isEmpty())
+            return;
+        currentGroupIndex++;
+        if (currentGroupIndex >= diffGroups.size())
+            currentGroupIndex = 0;
+        focusDiffGroup(diffGroups.get(currentGroupIndex));
     }
 
     private void highlightDiffs() throws BadLocationException {
@@ -742,10 +748,46 @@ public class SplitTextTabPanel extends JPanel {
     }
 
     private void focusDiffGroup(DiffGroup group) {
-        // prefer left side if it exists, otherwise right
-        HighlightInfo info = group.left != null ? group.left : group.right;
-        info.area.setCaretPosition(info.startOffset);
-        info.area.requestFocusInWindow();
+        if (group == null)
+            return;
+
+        // Steal focus from text areas temporarily
+        Component oldFocusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+        requestFocusInWindow(); // or some panel that is not jt1/jt2
+
+        if (group.left != null) {
+            scrollToOffset(jt1, group.left.startOffset);
+        }
+
+        if (group.right != null) {
+            scrollToOffset(jt2, group.right.startOffset);
+        }
+
+        // Optionally restore focus to the previously focused component, or leave none
+        // focused
+        if (oldFocusOwner instanceof RSyntaxTextArea) {
+            // do not restore focus to jt1/jt2
+            // oldFocusOwner.requestFocusInWindow();
+        }
+    }
+
+    // helper method
+    private void scrollToOffset(JTextComponent area, int offset) {
+        try {
+            // hide caret so theme doesn't trigger
+            Caret caret = area.getCaret();
+            boolean wasVisible = caret.isVisible();
+            caret.setVisible(false);
+
+            area.setCaretPosition(offset); // moves view
+            Rectangle viewRect = area.modelToView(offset);
+            if (viewRect != null)
+                area.scrollRectToVisible(viewRect);
+
+            caret.setVisible(wasVisible); // optional
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
     }
 
     private void highlightWordDiffs(RSyntaxTextArea area, int lineIndex, String oldLine, String newLine, Color color,
