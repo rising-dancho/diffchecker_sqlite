@@ -95,6 +95,35 @@ public class SplitTextTabPanel extends JPanel {
         return isDirty;
     }
 
+    // DOCUMENT LISTENERS TO TRACK CHANGES
+    private final DocumentListener dirtyListener1 = new DocumentListener() {
+        public void insertUpdate(DocumentEvent e) {
+            markDirty();
+        }
+
+        public void removeUpdate(DocumentEvent e) {
+            markDirty();
+        }
+
+        public void changedUpdate(DocumentEvent e) {
+            markDirty();
+        }
+    };
+
+    private final DocumentListener dirtyListener2 = new DocumentListener() {
+        public void insertUpdate(DocumentEvent e) {
+            markDirty();
+        }
+
+        public void removeUpdate(DocumentEvent e) {
+            markDirty();
+        }
+
+        public void changedUpdate(DocumentEvent e) {
+            markDirty();
+        }
+    };
+
     // TOGGLE WORD HIGHLIGHT
     private boolean wordHighlightEnabled = false;
 
@@ -242,39 +271,8 @@ public class SplitTextTabPanel extends JPanel {
         jt1 = createRSyntaxArea();
         jt2 = createRSyntaxArea();
 
-        jt1.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                markDirty();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                markDirty();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                markDirty();
-            }
-        });
-
-        jt2.getDocument().addDocumentListener(new DocumentListener() {
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                markDirty();
-            }
-
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                markDirty();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                markDirty();
-            }
-        });
+        jt1.getDocument().addDocumentListener(dirtyListener1);
+        jt2.getDocument().addDocumentListener(dirtyListener2);
 
         // DISABLE CURRENT LINE HIGHLIGHTING SINCE IT CLASHES WITH DIFF HIGHLIGHT
         jt1.setHighlightCurrentLine(false);
@@ -579,7 +577,8 @@ public class SplitTextTabPanel extends JPanel {
         // CENTER: diffcheckBtn, previousBtn, nextBtn
         JPanel centerButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerButtonPanel.setBackground(BACKGROUND_DARK);
-        centerButtonPanel.add(findBtn);
+        centerButtonPanel.add(wordWrapToggleBtn);
+        centerButtonPanel.add(highlightBtn);
         centerButtonPanel.add(diffcheckBtn);
         centerButtonPanel.add(previousBtn);
         centerButtonPanel.add(nextBtn);
@@ -587,8 +586,7 @@ public class SplitTextTabPanel extends JPanel {
 
         JPanel rightButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightButtonPanel.setBackground(BACKGROUND_DARK);
-        rightButtonPanel.add(wordWrapToggleBtn);
-        rightButtonPanel.add(highlightBtn);
+        rightButtonPanel.add(findBtn);
         rightButtonPanel.add(saveBtn);
         bottomPanel.add(rightButtonPanel, BorderLayout.EAST);
 
@@ -1015,11 +1013,22 @@ public class SplitTextTabPanel extends JPanel {
         }
     }
 
-    // DATABASE
+    // LOAD/STORE FROM DATABASE
     public void loadFromDatabase(DiffData data) {
         currentDiff = data;
+
+        // temporarily detach listeners
+        jt1.getDocument().removeDocumentListener(dirtyListener1);
+        jt2.getDocument().removeDocumentListener(dirtyListener2);
+
         jt1.setText(data.leftText);
         jt2.setText(data.rightText);
+
+        // reattach listeners
+        jt1.getDocument().addDocumentListener(dirtyListener1);
+        jt2.getDocument().addDocumentListener(dirtyListener2);
+
+        markSaved(); // reset dirty flag
     }
 
     private String capitalizeTitle(String input) {
@@ -1079,6 +1088,9 @@ public class SplitTextTabPanel extends JPanel {
             currentDiff = newData; // track this record now
         }
 
+        currentDiff.leftText = jt1.getText();
+        currentDiff.rightText = jt2.getText();
+
         JOptionPane.showMessageDialog(this, success ? "Saved successfully!" : "Save failed.");
 
         if (success) {
@@ -1100,8 +1112,7 @@ public class SplitTextTabPanel extends JPanel {
                     }
                 }
             }
+            markSaved();
         }
-        markSaved();
     }
-
 }
