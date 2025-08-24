@@ -11,58 +11,59 @@ import org.fife.rsta.ui.search.SearchListener;
 import javax.swing.*;
 
 public class FindReplaceSupport {
+    private final RSyntaxTextArea textArea;
+    private final ReplaceDialog replaceDialog;
+    private final SearchContext searchContext;
 
-  private final RSyntaxTextArea textArea;
-  private final ReplaceDialog replaceDialog;
-  private final SearchContext searchContext;
+    public FindReplaceSupport(JFrame parentFrame, RSyntaxTextArea textArea) {
+        this.textArea = textArea;
+        this.searchContext = new SearchContext();
+        this.searchContext.setSearchWrap(true);
 
-  public FindReplaceSupport(JFrame parentFrame, RSyntaxTextArea textArea) {
-    this.textArea = textArea;
-    this.searchContext = new SearchContext();
+        SearchListener listener = new SearchListener() {
+            @Override
+            public void searchEvent(SearchEvent e) {
+                SearchResult result = switch (e.getType()) {
+                    case FIND -> SearchEngine.find(textArea, e.getSearchContext());
+                    case REPLACE -> SearchEngine.replace(textArea, e.getSearchContext());
+                    case REPLACE_ALL -> SearchEngine.replaceAll(textArea, e.getSearchContext());
+                    case MARK_ALL -> SearchEngine.markAll(textArea, e.getSearchContext());
+                };
+                if (result != null && !result.wasFound()) {
+                    UIManager.getLookAndFeel().provideErrorFeedback(textArea);
+                }
+            }
 
-    // ✅ enable wrap-around by default
-    this.searchContext.setSearchWrap(true);
-
-    // Listener handles actual searching/replacing
-    SearchListener listener = new SearchListener() {
-      @Override
-      public void searchEvent(SearchEvent e) {
-        SearchResult result = switch (e.getType()) {
-          case FIND -> SearchEngine.find(textArea, e.getSearchContext());
-          case REPLACE -> SearchEngine.replace(textArea, e.getSearchContext());
-          case REPLACE_ALL -> SearchEngine.replaceAll(textArea, e.getSearchContext());
-          case MARK_ALL -> SearchEngine.markAll(textArea, e.getSearchContext());
+            @Override
+            public String getSelectedText() {
+                return textArea.getSelectedText();
+            }
         };
-        if (result != null && !result.wasFound()) {
-          UIManager.getLookAndFeel().provideErrorFeedback(textArea);
-        }
-      }
 
-      @Override
-      public String getSelectedText() {
-        return textArea.getSelectedText();
-      }
-    };
+        this.replaceDialog = new ReplaceDialog(parentFrame, listener);
+        this.replaceDialog.setSearchContext(searchContext);
 
-    this.replaceDialog = new ReplaceDialog(parentFrame, listener);
-    this.replaceDialog.setSearchContext(searchContext);
+        // Register shortcuts
+        InputMap im = textArea.getInputMap();
+        ActionMap am = textArea.getActionMap();
 
-    // Register keyboard shortcuts so both Ctrl+F and Ctrl+H open Replace dialog
-    InputMap im = textArea.getInputMap();
-    ActionMap am = textArea.getActionMap();
+        im.put(KeyStroke.getKeyStroke("control F"), "Replace");
+        im.put(KeyStroke.getKeyStroke("control H"), "Replace");
 
-    im.put(KeyStroke.getKeyStroke("control F"), "Replace");
-    im.put(KeyStroke.getKeyStroke("control H"), "Replace");
+        am.put("Replace", getReplaceAction());
+    }
 
-    am.put("Replace", new AbstractAction() {
-      @Override
-      public void actionPerformed(java.awt.event.ActionEvent e) {
-        showReplaceDialog();
-      }
-    });
-  }
+    public void showReplaceDialog() {
+        replaceDialog.setVisible(true);
+    }
 
-  public void showReplaceDialog() {
-    replaceDialog.setVisible(true);
-  }
+    /** ✅ Extracted Action so both keyboard and button can use the same behavior */
+    public Action getReplaceAction() {
+        return new AbstractAction() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                showReplaceDialog();
+            }
+        };
+    }
 }

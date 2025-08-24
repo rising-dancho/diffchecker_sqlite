@@ -67,6 +67,9 @@ public class SplitTextTabPanel extends JPanel {
     private final JPanel leftLabelPanel;
     private final JPanel rightLabelPanel;
 
+    private FindReplaceSupport findReplace1;
+    private FindReplaceSupport findReplace2;
+
     // TOGGLE WORD HIGHLIGHT
     private boolean wordHighlightEnabled = false;
 
@@ -83,6 +86,17 @@ public class SplitTextTabPanel extends JPanel {
             this.endOffset = end;
         }
     }
+
+    private RSyntaxTextArea lastFocusedEditor; // <-- add this
+
+    private final FocusAdapter trackFocus = new FocusAdapter() {
+        @Override
+        public void focusGained(FocusEvent e) {
+            if (e.getComponent() instanceof RSyntaxTextArea) {
+                lastFocusedEditor = (RSyntaxTextArea) e.getComponent();
+            }
+        }
+    };
 
     private static class DiffGroup {
         HighlightInfo left;
@@ -149,7 +163,7 @@ public class SplitTextTabPanel extends JPanel {
                 previousDiff();
             }
         });
-        
+
         // ALT + RIGHT = Next diff
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.ALT_DOWN_MASK), "nextDiff");
@@ -178,12 +192,8 @@ public class SplitTextTabPanel extends JPanel {
         jt1 = createRSyntaxArea();
         jt2 = createRSyntaxArea();
 
-        // FIND AND REPLACE SUPPORT
-        JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-
-        // Add find/replace support to both editors
-        FindReplaceSupport findReplace1 = new FindReplaceSupport(parentFrame, jt1);
-        FindReplaceSupport findReplace2 = new FindReplaceSupport(parentFrame, jt2);
+        jt1.addFocusListener(trackFocus);
+        jt2.addFocusListener(trackFocus);
 
         scroll1 = new RTextScrollPane(jt1);
         scroll2 = new RTextScrollPane(jt2);
@@ -325,11 +335,15 @@ public class SplitTextTabPanel extends JPanel {
         findBtn.setMargin(new Insets(5, 10, 5, 10));
         // Hook the 🔍 button
         findBtn.addActionListener(e -> {
-            RSyntaxTextArea target = jt1IsActive ? jt1 : jt2;
-            if (target == jt1) {
-                findReplace1.showReplaceDialog();
+            RSyntaxTextArea target = lastFocusedEditor;
+            if (target == jt1 && findReplace1 != null) {
+                findReplace1.getReplaceAction().actionPerformed(
+                        new java.awt.event.ActionEvent(jt1, ActionEvent.ACTION_PERFORMED, "Replace"));
+            } else if (target == jt2 && findReplace2 != null) {
+                findReplace2.getReplaceAction().actionPerformed(
+                        new java.awt.event.ActionEvent(jt2, ActionEvent.ACTION_PERFORMED, "Replace"));
             } else {
-                findReplace2.showReplaceDialog();
+                UIManager.getLookAndFeel().provideErrorFeedback(findBtn);
             }
         });
 
@@ -541,6 +555,18 @@ public class SplitTextTabPanel extends JPanel {
 
         // TEST BORDER
         // setBorder(BorderFactory.createLineBorder(REMOVAL_LABEL_COLOR_DARK));
+    }
+
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        if (findReplace1 == null || findReplace2 == null) {
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            if (frame != null) {
+                findReplace1 = new FindReplaceSupport(frame, jt1);
+                findReplace2 = new FindReplaceSupport(frame, jt2);
+            }
+        }
     }
 
     private RSyntaxTextArea createRSyntaxArea() {
