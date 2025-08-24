@@ -442,7 +442,8 @@ public class SplitTextTabPanel extends JPanel {
                 findReplace2.getReplaceAction().actionPerformed(
                         new java.awt.event.ActionEvent(jt2, ActionEvent.ACTION_PERFORMED, "Replace"));
             } else {
-                UIManager.getLookAndFeel().provideErrorFeedback(findBtn);
+                showToast(findBtn,
+                        "<html>Click inside one of the <strong>text editors</strong> first, <br> then press the &nbsp\" &nbsp 🔍 &nbsp \"&nbsp button to use <strong>Find/Replace</strong></html>");
             }
         });
 
@@ -897,6 +898,38 @@ public class SplitTextTabPanel extends JPanel {
             scrollToOffset(jt2, group.right.startOffset);
         }
 
+    }
+
+    // simple toast popup
+    private void showToast(JButton button, String message) {
+        // Create a lightweight popup
+        JWindow toast = new JWindow();
+        toast.setBackground(new Color(0, 0, 0, 0));
+
+        // Style the label
+        JLabel label = new JLabel(message);
+        label.setOpaque(true);
+        label.setBackground(new Color(50, 50, 50, 220)); // semi-transparent dark bg
+        label.setForeground(Color.WHITE);
+        label.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+        label.setFont(label.getFont().deriveFont(Font.PLAIN, 14f));
+
+        toast.add(label);
+        toast.pack();
+
+        // Get button location on screen
+        Point btnLoc = button.getLocationOnScreen();
+
+        // Position toast directly above the button, centered horizontally
+        int x = btnLoc.x + (button.getWidth() - toast.getWidth()) / 2;
+        int y = btnLoc.y - toast.getHeight() - 8; // 8px gap above button
+
+        toast.setLocation(x, y);
+
+        // Show and auto-hide
+        toast.setVisible(true);
+
+        new Timer(3000, e -> toast.dispose()).start(); // disappear after 3s
     }
 
     // helper method
