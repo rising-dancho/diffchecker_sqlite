@@ -162,34 +162,30 @@ public class Main extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int index = tabbedPane.getSelectedIndex();
                 if (index != -1) {
-                    Component comp = tabbedPane.getTabComponentAt(index);
+                    Component comp = tabbedPane.getComponentAt(index);
 
-                    // 🔒 don’t close the ➕ button tab
-                    if (comp instanceof JButton) {
-                        return;
+                    if (comp instanceof SplitTextTabPanel) {
+                        SplitTextTabPanel panel = (SplitTextTabPanel) comp;
+
+                        if (panel.hasUnsavedChanges()) {
+                            int result = JOptionPane.showConfirmDialog(
+                                    Main.this,
+                                    "This tab has unsaved changes. Do you want to close it without saving?",
+                                    "Unsaved Changes",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.WARNING_MESSAGE);
+
+                            if (result != JOptionPane.YES_OPTION) {
+                                return; // cancel close
+                            }
+                        }
                     }
 
                     tabbedPane.remove(index);
 
-                    // if only "+" tab is left, run fallback
                     if (tabbedPane.getTabCount() == 1) {
                         onTabEmptyFallback.run();
-                        return;
                     }
-
-                    // ── Ensure selection is valid (skip "+" tab) ──
-                    int newIndex = index;
-                    if (newIndex >= tabbedPane.getTabCount()) {
-                        newIndex = tabbedPane.getTabCount() - 1; // clamp to last tab
-                    }
-
-                    Component newComp = tabbedPane.getTabComponentAt(newIndex);
-                    if (newComp instanceof JButton) {
-                        // If "+" is here, move left
-                        newIndex = Math.max(0, newIndex - 1);
-                    }
-
-                    tabbedPane.setSelectedIndex(newIndex);
                 }
             }
         });

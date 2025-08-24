@@ -11,12 +11,10 @@ import org.fife.rsta.ui.search.SearchListener;
 import javax.swing.*;
 
 public class FindReplaceSupport {
-    private final RSyntaxTextArea textArea;
     private final ReplaceDialog replaceDialog;
     private final SearchContext searchContext;
 
     public FindReplaceSupport(JFrame parentFrame, RSyntaxTextArea textArea) {
-        this.textArea = textArea;
         this.searchContext = new SearchContext();
         this.searchContext.setSearchWrap(true);
 

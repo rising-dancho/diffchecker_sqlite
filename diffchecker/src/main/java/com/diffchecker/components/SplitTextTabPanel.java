@@ -1,6 +1,8 @@
 package com.diffchecker.components;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Caret;
 import javax.swing.text.DefaultHighlighter;
@@ -72,6 +74,21 @@ public class SplitTextTabPanel extends JPanel {
     private FindReplaceSupport findReplace2;
     RoundedButton highlightBtn;
 
+    // TRACKING UNSAVED CHANGES
+    private boolean isDirty = false;
+
+    private void markDirty() {
+        isDirty = true;
+    }
+
+    private void markSaved() {
+        isDirty = false;
+    }
+
+    public boolean hasUnsavedChanges() {
+        return isDirty;
+    }
+
     // TOGGLE WORD HIGHLIGHT
     private boolean wordHighlightEnabled = false;
 
@@ -79,13 +96,10 @@ public class SplitTextTabPanel extends JPanel {
 
     private static class HighlightInfo {
         int startOffset;
-        int endOffset;
-        RSyntaxTextArea area;
 
         HighlightInfo(RSyntaxTextArea area, int start, int end) {
-            this.area = area;
             this.startOffset = start;
-            this.endOffset = end;
+
         }
     }
 
@@ -204,6 +218,40 @@ public class SplitTextTabPanel extends JPanel {
 
         jt1 = createRSyntaxArea();
         jt2 = createRSyntaxArea();
+
+        jt1.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                markDirty();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                markDirty();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                markDirty();
+            }
+        });
+
+        jt2.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                markDirty();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                markDirty();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                markDirty();
+            }
+        });
 
         // DISABLE CURRENT LINE HIGHLIGHTING SINCE IT CLASHES WITH DIFF HIGHLIGHT
         jt1.setHighlightCurrentLine(false);
@@ -952,6 +1000,7 @@ public class SplitTextTabPanel extends JPanel {
                 }
             }
         }
+        markSaved();
     }
 
 }
