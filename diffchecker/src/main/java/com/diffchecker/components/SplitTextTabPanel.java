@@ -197,7 +197,7 @@ public class SplitTextTabPanel extends JPanel {
         getActionMap().put("toggleHighlightWord", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-              highlightWordToggle();
+                highlightWordToggle();
             }
         });
 
