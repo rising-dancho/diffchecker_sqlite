@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.IntConsumer;
 
 public class ClosableTabTitleComponent extends JPanel {
     private final Color ACTIVE_COLOR = new Color(0xF9FAFA); // Active tab color
@@ -44,7 +45,15 @@ public class ClosableTabTitleComponent extends JPanel {
         }
     }
 
-    public ClosableTabTitleComponent(JTabbedPane tabbedPane, String title, Runnable onTabEmptyFallback) {
+    /**
+     * @param tabbedPane         The JTabbedPane this title belongs to
+     * @param title              The text to display
+     * @param onTabEmptyFallback Runnable to add a new tab if all tabs are closed
+     * @param onCloseTabAtIndex  IntConsumer to handle closing the tab at a specific
+     *                           index
+     */
+    public ClosableTabTitleComponent(JTabbedPane tabbedPane, String title, Runnable onTabEmptyFallback,
+            IntConsumer onCloseTabAtIndex) {
 
         super(new BorderLayout(10, 0)); // add horizontal gap between label and button
         this.tabbedPane = tabbedPane;
@@ -79,47 +88,10 @@ public class ClosableTabTitleComponent extends JPanel {
         Font base = new Font("SansSerif", Font.BOLD, titleLabel.getFont().getSize());
         titleLabel.setFont(base.deriveFont(14f));
 
-        // ImageIcon iconDefault = new
-        // ImageIcon(getClass().getResource("/diffchecker/images/close_def.png"));
-        // ImageIcon iconHover = new
-        // ImageIcon(getClass().getResource("/diffchecker/images/close_hover.png"));
+        SwingUtilities.invokeLater(this::updateColor);
+        tabbedPane.addChangeListener(e -> updateColor());
 
-        // ImageIcon defaultIcon = new
-        // ImageIcon(iconDefault.getImage().getScaledInstance(14, 14,
-        // Image.SCALE_SMOOTH));
-        // ImageIcon hoverIcon = new
-        // ImageIcon(iconHover.getImage().getScaledInstance(14, 14,
-        // Image.SCALE_SMOOTH));
-
-        // JButton closeButton = new JButton(defaultIcon);
-        // closeButton.setBorder(BorderFactory.createEmptyBorder());
-        // closeButton.setFocusPainted(false);
-        // closeButton.setContentAreaFilled(false);
-        // closeButton.setMargin(new Insets(0, 5, 0, 5));
-
-        // closeButton.addMouseListener(new MouseAdapter() {
-        // @Override
-        // public void mouseEntered(MouseEvent e) {
-        // closeButton.setIcon(hoverIcon);
-        // }
-
-        // @Override
-        // public void mouseExited(MouseEvent e) {
-        // closeButton.setIcon(defaultIcon);
-        // }
-        // });
-
-        // closeButton.addActionListener(e -> {
-        // int index = tabbedPane.indexOfTabComponent(this);
-        // if (index != -1) {
-        // tabbedPane.remove(index);
-        // if (tabbedPane.getTabCount() == 1 && onTabEmptyFallback != null) {
-        // onTabEmptyFallback.run();
-        // }
-        // }
-        // });
-
-        // NO IMAGE CLOSE BUTTON HOVER EFFECT
+        // CLOSE BUTTON ACTION
         JButton closeButton = new JButton("✕") {
             private boolean hover = false;
 
@@ -162,36 +134,9 @@ public class ClosableTabTitleComponent extends JPanel {
         closeButton.setFont(closeButton.getFont().deriveFont(14f));
 
         closeButton.addActionListener(e -> {
-            int index = tabbedPane.getSelectedIndex();
+            int index = tabbedPane.indexOfTabComponent(this);
             if (index != -1) {
-                Component comp = tabbedPane.getTabComponentAt(index);
-
-                // 🔒 don’t close the ➕ button tab
-                if (comp instanceof JButton) {
-                    return;
-                }
-
-                tabbedPane.remove(index);
-
-                // if only "+" tab is left, run fallback
-                if (tabbedPane.getTabCount() == 1) {
-                    onTabEmptyFallback.run();
-                    return;
-                }
-
-                // ── Ensure selection is valid (skip "+" tab) ──
-                int newIndex = index;
-                if (newIndex >= tabbedPane.getTabCount()) {
-                    newIndex = tabbedPane.getTabCount() - 1; // clamp to last tab
-                }
-
-                Component newComp = tabbedPane.getTabComponentAt(newIndex);
-                if (newComp instanceof JButton) {
-                    // If "+" is here, move left
-                    newIndex = Math.max(0, newIndex - 1);
-                }
-
-                tabbedPane.setSelectedIndex(newIndex);
+                onCloseTabAtIndex.accept(index); // close the correct tab
             }
         });
 

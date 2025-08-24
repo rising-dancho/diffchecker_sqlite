@@ -156,37 +156,11 @@ public class Main extends JFrame {
 
         // HOTKEY FOR CLOSING TABS (CTRL + W)
         // Ctrl+W → Close tab
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK), "closeSelectedTab");
-        actionMap.put("closeSelectedTab", new AbstractAction() {
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_W, InputEvent.CTRL_DOWN_MASK), "closeTab");
+        actionMap.put("closeTab", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int index = tabbedPane.getSelectedIndex();
-                if (index != -1) {
-                    Component comp = tabbedPane.getComponentAt(index);
-
-                    if (comp instanceof SplitTextTabPanel) {
-                        SplitTextTabPanel panel = (SplitTextTabPanel) comp;
-
-                        if (panel.hasUnsavedChanges()) {
-                            int result = JOptionPane.showConfirmDialog(
-                                    Main.this,
-                                    "This tab has unsaved changes. Do you want to close it without saving?",
-                                    "Unsaved Changes",
-                                    JOptionPane.YES_NO_OPTION,
-                                    JOptionPane.WARNING_MESSAGE);
-
-                            if (result != JOptionPane.YES_OPTION) {
-                                return; // cancel close
-                            }
-                        }
-                    }
-
-                    tabbedPane.remove(index);
-
-                    if (tabbedPane.getTabCount() == 1) {
-                        onTabEmptyFallback.run();
-                    }
-                }
+                closeTabAt();
             }
         });
 
@@ -238,7 +212,8 @@ public class Main extends JFrame {
             int index = tabbedPane.getTabCount();
             tabbedPane.insertTab(data.title, null, panel, null, index);
             tabbedPane.setTabComponentAt(index,
-                    new ClosableTabTitleComponent(tabbedPane, data.title, onTabEmptyFallback));
+                    new ClosableTabTitleComponent(
+                            tabbedPane, data.title, onTabEmptyFallback, tabIndex -> closeTabAt(tabIndex)));
         }
 
         // Only add an empty "Untitled" tab if nothing was loaded from DB
@@ -253,6 +228,51 @@ public class Main extends JFrame {
         container.add(tabbedPane, BorderLayout.CENTER);
 
         return container;
+    }
+
+    public void closeTabAt() {
+        int index = tabbedPane.getSelectedIndex();
+        closeTabAt(index);
+    }
+
+    public void closeTabAt(int index) {
+        if (index == -1)
+            return;
+
+        Component comp = tabbedPane.getComponentAt(index);
+
+        // don’t close the "+" tab
+        if (comp instanceof JButton)
+            return;
+
+        // Ask to save unsaved changes
+        if (comp instanceof SplitTextTabPanel panel && panel.hasUnsavedChanges()) {
+            int option = JOptionPane.showConfirmDialog(
+                    this,
+                    "You have unsaved changes. Save before closing?",
+                    "Unsaved Changes",
+                    JOptionPane.YES_NO_CANCEL_OPTION);
+            if (option == JOptionPane.CANCEL_OPTION)
+                return;
+            if (option == JOptionPane.YES_OPTION)
+                panel.saveToDatabase();
+        }
+
+        tabbedPane.remove(index);
+
+        // if only "+" tab is left, run fallback
+        if (tabbedPane.getTabCount() == 1) {
+            onTabEmptyFallback.run();
+            return;
+        }
+
+        // Move selection to previous real tab, skipping "+"
+        int newIndex = Math.max(0, index - 1);
+        Component newComp = tabbedPane.getTabComponentAt(newIndex);
+        if (newComp instanceof JButton) {
+            newIndex = Math.max(0, newIndex - 1);
+        }
+        tabbedPane.setSelectedIndex(newIndex);
     }
 
     private int untitledCounter = 1;
@@ -275,7 +295,7 @@ public class Main extends JFrame {
         tabbedPane.insertTab(title, null, splitArea, null, insertIndex);
         tabbedPane.setTabComponentAt(
                 insertIndex,
-                new ClosableTabTitleComponent(tabbedPane, title, () -> addNewTab(tabbedPane)));
+                new ClosableTabTitleComponent(tabbedPane, title, onTabEmptyFallback, tabIndex -> closeTabAt(tabIndex)));
         tabbedPane.setSelectedIndex(insertIndex);
     }
 

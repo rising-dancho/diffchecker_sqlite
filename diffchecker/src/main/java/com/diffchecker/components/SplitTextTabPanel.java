@@ -96,10 +96,13 @@ public class SplitTextTabPanel extends JPanel {
 
     private static class HighlightInfo {
         int startOffset;
+        int endOffset;
+        RSyntaxTextArea area;
 
         HighlightInfo(RSyntaxTextArea area, int start, int end) {
+            this.area = area;
             this.startOffset = start;
-
+            this.endOffset = end;
         }
     }
 
@@ -952,7 +955,7 @@ public class SplitTextTabPanel extends JPanel {
         jt2.setText(data.rightText);
     }
 
-    private void saveToDatabase() {
+    public void saveToDatabase() {
         String title = JOptionPane.showInputDialog(this, "Whats the title of this diff?",
                 currentDiff != null ? currentDiff.title : "");
         if (title == null || title.trim().isEmpty())
@@ -978,7 +981,7 @@ public class SplitTextTabPanel extends JPanel {
             currentDiff = newData; // track this record now
         }
 
-        JOptionPane.showMessageDialog(this, success ? "Saved successfully!" : "Save failed.");
+        // JOptionPane.showMessageDialog(this, success ? "Saved successfully!" : "Save failed.");
 
         if (success) {
             // 🔹 Update the tab title in the JTabbedPane
