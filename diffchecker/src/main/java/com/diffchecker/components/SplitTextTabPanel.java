@@ -127,6 +127,40 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
+        // CTRL + SHIFT + X hotkey for Deleting from database
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+                        "deleteDiff");
+
+        getActionMap().put("deleteDiff", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteDiff();
+            }
+        });
+
+        // ALT + LEFT = Previous diff
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.ALT_DOWN_MASK), "previousDiff");
+
+        getActionMap().put("previousDiff", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                previousDiff();
+            }
+        });
+        
+        // ALT + RIGHT = Next diff
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.ALT_DOWN_MASK), "nextDiff");
+
+        getActionMap().put("nextDiff", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nextDiff();
+            }
+        });
+
         // CTRL + R HOTKEY FOR CLEARING
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(KeyStroke.getKeyStroke("control R"), "clearTextAreas");
@@ -331,12 +365,7 @@ public class SplitTextTabPanel extends JPanel {
         previousBtn.setCornerRadius(10);
         previousBtn.setMargin(new Insets(5, 10, 5, 0));
         previousBtn.addActionListener(e -> {
-            if (diffGroups.isEmpty())
-                return;
-            currentGroupIndex--;
-            if (currentGroupIndex < 0)
-                currentGroupIndex = diffGroups.size() - 1;
-            focusDiffGroup(diffGroups.get(currentGroupIndex));
+            previousDiff();
         });
 
         RoundedButton nextBtn = new RoundedButton("▶️");
@@ -348,12 +377,7 @@ public class SplitTextTabPanel extends JPanel {
         nextBtn.setCornerRadius(10);
         nextBtn.setMargin(new Insets(5, 10, 5, 0));
         nextBtn.addActionListener(e -> {
-            if (diffGroups.isEmpty())
-                return;
-            currentGroupIndex++;
-            if (currentGroupIndex >= diffGroups.size())
-                currentGroupIndex = 0;
-            focusDiffGroup(diffGroups.get(currentGroupIndex));
+            nextDiff();
         });
 
         // LEFT: Clear Button
@@ -379,41 +403,7 @@ public class SplitTextTabPanel extends JPanel {
         deleteBtn.setBorderThickness(2);
         deleteBtn.setCornerRadius(10);
         deleteBtn.addActionListener(e -> {
-            if (currentDiff == null || currentDiff.id == -1) {
-                JOptionPane.showMessageDialog(this, "No saved record to delete.");
-                return;
-            }
-
-            int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    "Are you sure you want to delete \"" + currentDiff.title + "\"?",
-                    "Confirm Delete",
-                    JOptionPane.YES_NO_OPTION);
-
-            if (confirm == JOptionPane.YES_OPTION) {
-                DB db = new DB();
-                DiffRepository repo = new DiffRepository(db);
-                boolean success = repo.deleteDiff(currentDiff.id);
-
-                if (success) {
-                    JOptionPane.showMessageDialog(this, "Deleted successfully!");
-
-                    // Remove this tab from the JTabbedPane
-                    Container parent = getParent();
-                    while (parent != null && !(parent instanceof JTabbedPane)) {
-                        parent = parent.getParent();
-                    }
-                    if (parent instanceof JTabbedPane) {
-                        JTabbedPane tabbedPane = (JTabbedPane) parent;
-                        int index = tabbedPane.indexOfComponent(this);
-                        if (index != -1) {
-                            tabbedPane.remove(index);
-                        }
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Delete failed.");
-                }
-            }
+            deleteDiff();
         });
 
         // RIGHT: Save Button
@@ -579,6 +569,62 @@ public class SplitTextTabPanel extends JPanel {
         return area;
     }
 
+    private void previousDiff() {
+        if (diffGroups.isEmpty())
+            return;
+        currentGroupIndex--;
+        if (currentGroupIndex < 0)
+            currentGroupIndex = diffGroups.size() - 1;
+        focusDiffGroup(diffGroups.get(currentGroupIndex));
+    }
+
+    private void nextDiff() {
+        if (diffGroups.isEmpty())
+            return;
+        currentGroupIndex++;
+        if (currentGroupIndex >= diffGroups.size())
+            currentGroupIndex = 0;
+        focusDiffGroup(diffGroups.get(currentGroupIndex));
+    }
+
+    private void deleteDiff() {
+        if (currentDiff == null || currentDiff.id == -1) {
+            JOptionPane.showMessageDialog(this, "No saved record to delete.");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to delete \"" + currentDiff.title + "\"?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            DB db = new DB();
+            DiffRepository repo = new DiffRepository(db);
+            boolean success = repo.deleteDiff(currentDiff.id);
+
+            if (success) {
+                JOptionPane.showMessageDialog(this, "Deleted successfully!");
+
+                // Remove this tab from the JTabbedPane
+                Container parent = getParent();
+                while (parent != null && !(parent instanceof JTabbedPane)) {
+                    parent = parent.getParent();
+                }
+                if (parent instanceof JTabbedPane) {
+                    JTabbedPane tabbedPane = (JTabbedPane) parent;
+                    int index = tabbedPane.indexOfComponent(this);
+                    if (index != -1) {
+                        tabbedPane.remove(index);
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Delete failed.");
+            }
+        }
+    }
+
     private void highlightDiffs() throws BadLocationException {
         diffGroups.clear();
         currentGroupIndex = -1;
@@ -742,7 +788,7 @@ public class SplitTextTabPanel extends JPanel {
     }
 
     private void saveToDatabase() {
-        String title = JOptionPane.showInputDialog(this, "Enter a title:",
+        String title = JOptionPane.showInputDialog(this, "Whats the title of this diff?",
                 currentDiff != null ? currentDiff.title : "");
         if (title == null || title.trim().isEmpty())
             return;
