@@ -69,6 +69,7 @@ public class SplitTextTabPanel extends JPanel {
 
     private FindReplaceSupport findReplace1;
     private FindReplaceSupport findReplace2;
+    RoundedButton highlightBtn;
 
     // TOGGLE WORD HIGHLIGHT
     private boolean wordHighlightEnabled = false;
@@ -186,6 +187,17 @@ public class SplitTextTabPanel extends JPanel {
                 jt2.setText("");
                 leftLabelPanel.setVisible(false);
                 rightLabelPanel.setVisible(false);
+            }
+        });
+
+        // CTRL + H HOTKEY FOR TOGGLING WORD HIGHLIGHT
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("control H"), "toggleHighlightWord");
+
+        getActionMap().put("toggleHighlightWord", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+              highlightWordToggle();
             }
         });
 
@@ -347,7 +359,7 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        RoundedButton highlightBtn = new RoundedButton("🔦");
+        highlightBtn = new RoundedButton("🔦");
         highlightBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
         highlightBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
         highlightBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
@@ -593,6 +605,21 @@ public class SplitTextTabPanel extends JPanel {
         area.setLineWrap(true);
         area.setWrapStyleWord(true); // optional, wraps at word boundaries
         return area;
+    }
+
+    private void highlightWordToggle() {
+        wordHighlightEnabled = !wordHighlightEnabled; // toggle state
+        highlightBtn.setSelectedState(wordHighlightEnabled);
+
+        try {
+            // clear old highlights
+            jt1.getHighlighter().removeAllHighlights();
+            jt2.getHighlighter().removeAllHighlights();
+            highlightPositions.clear();
+            highlightDiffs();
+        } catch (BadLocationException ex) {
+            ex.printStackTrace();
+        }
     }
 
     private void previousDiff() {
