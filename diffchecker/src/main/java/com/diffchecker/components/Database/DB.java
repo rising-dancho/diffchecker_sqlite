@@ -1,5 +1,6 @@
 package com.diffchecker.components.Database;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,7 +8,26 @@ import java.sql.Statement;
 
 public class DB {
 
-  private static final String URL = "jdbc:sqlite:diffchecker.db";
+  private static final String URL;
+
+  static {
+    // Get %APPDATA% (Roaming) → e.g. C:\Users\YourUser\AppData\Roaming
+    String appData = System.getenv("APPDATA");
+    if (appData == null) {
+      // Fallback if not found
+      appData = System.getProperty("user.home");
+    }
+
+    // Create a subfolder for your app
+    File dbDir = new File(appData, "DiffcheckerAdfinem");
+    if (!dbDir.exists()) {
+      dbDir.mkdirs();
+    }
+
+    // Final DB file path
+    File dbFile = new File(dbDir, "diffchecker.db");
+    URL = "jdbc:sqlite:" + dbFile.getAbsolutePath();
+  }
 
   public DB() {
     // Auto-create schema if database is new
@@ -26,12 +46,6 @@ public class DB {
     }
   }
 
-  /**
-   * Gets a new database connection.
-   *
-   * @return a Connection to the SQLite database
-   * @throws SQLException if a database access error occurs
-   */
   public Connection getConnection() throws SQLException {
     return DriverManager.getConnection(URL);
   }
