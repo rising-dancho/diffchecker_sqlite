@@ -7,6 +7,7 @@ import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Map;
+import java.util.Set;
 
 public class CustomTitleBar extends JPanel {
 
@@ -25,19 +26,26 @@ public class CustomTitleBar extends JPanel {
   private static final Map<String, String> SYNTAX_STYLES = Map.ofEntries(
       Map.entry("None", SyntaxConstants.SYNTAX_STYLE_NONE),
       Map.entry("Java", SyntaxConstants.SYNTAX_STYLE_JAVA),
-      Map.entry("Python", SyntaxConstants.SYNTAX_STYLE_PYTHON),
       Map.entry("JavaScript", SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT),
+      Map.entry("Dart", SyntaxConstants.SYNTAX_STYLE_DART),
+      Map.entry("TypeScript", SyntaxConstants.SYNTAX_STYLE_TYPESCRIPT),
+      Map.entry("CSS", SyntaxConstants.SYNTAX_STYLE_CSS),
+      Map.entry("SQL", SyntaxConstants.SYNTAX_STYLE_SQL),
+      Map.entry("Python", SyntaxConstants.SYNTAX_STYLE_PYTHON),
       Map.entry("C", SyntaxConstants.SYNTAX_STYLE_C),
       Map.entry("C++", SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS),
       Map.entry("C#", SyntaxConstants.SYNTAX_STYLE_CSHARP),
       Map.entry("HTML", SyntaxConstants.SYNTAX_STYLE_HTML),
       Map.entry("XML", SyntaxConstants.SYNTAX_STYLE_XML),
-      Map.entry("SQL", SyntaxConstants.SYNTAX_STYLE_SQL),
       Map.entry("JSON", SyntaxConstants.SYNTAX_STYLE_JSON),
       Map.entry("YAML", SyntaxConstants.SYNTAX_STYLE_YAML),
       Map.entry("PHP", SyntaxConstants.SYNTAX_STYLE_PHP),
       Map.entry("Ruby", SyntaxConstants.SYNTAX_STYLE_RUBY),
-      Map.entry("Kotlin", SyntaxConstants.SYNTAX_STYLE_KOTLIN));
+      Map.entry("Kotlin", SyntaxConstants.SYNTAX_STYLE_KOTLIN),
+      Map.entry("Dockerfile", SyntaxConstants.SYNTAX_STYLE_DOCKERFILE),
+      Map.entry("Go", SyntaxConstants.SYNTAX_STYLE_GO),
+      Map.entry("JSON (w/ comments)", SyntaxConstants.SYNTAX_STYLE_JSON_WITH_COMMENTS),
+      Map.entry("Markdown", SyntaxConstants.SYNTAX_STYLE_MARKDOWN));
 
   // BUTTON COLOR AND HOVER COLOR
   private static final Color BTN_COLOR_DARKER = new Color(0x00744d);
@@ -201,13 +209,37 @@ public class CustomTitleBar extends JPanel {
 
     String javaScriptStyle = SYNTAX_STYLES.get("JavaScript");
     JMenuItem javaScriptItem = new JMenuItem("JavaScript");
-    javaScriptItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(javaScriptStyle));
+    javaScriptItem.addActionListener(e ->
+    splitPanel.setSyntaxStyleBoth(javaScriptStyle));
     syntaxHighlighting.add(javaScriptItem);
+
+    String dartStyle = SYNTAX_STYLES.get("Dart");
+    JMenuItem dartItem = new JMenuItem("Dart");
+    dartItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(dartStyle));
+    syntaxHighlighting.add(dartItem);
+
+    String typeScriptStyle = SYNTAX_STYLES.get("TypeScript");
+    JMenuItem typeScriptItem = new JMenuItem("TypeScript");
+    typeScriptItem.addActionListener(e ->
+    splitPanel.setSyntaxStyleBoth(typeScriptStyle));
+    syntaxHighlighting.add(typeScriptItem);
+
+    String cssStyle = SYNTAX_STYLES.get("CSS");
+    JMenuItem cssItem = new JMenuItem("CSS");
+    cssItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(cssStyle));
+    syntaxHighlighting.add(cssItem);
+
+    String sqlStyle = SYNTAX_STYLES.get("SQL");
+    JMenuItem sqlItem = new JMenuItem("SQL");
+    sqlItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(sqlStyle));
+    syntaxHighlighting.add(sqlItem);
+
+    Set<String> favorites = Set.of("None", "Java", "JavaScript", "Dart", "TypeScript", "CSS", "SQL");
 
     // 2. Add the rest (skip "None")
     for (Map.Entry<String, String> entry : SYNTAX_STYLES.entrySet()) {
-      if ("None".equals(entry.getKey()))
-        continue; // skip
+      if (favorites.contains(entry.getKey()))
+        continue;
       String displayName = entry.getKey();
       String styleConstant = entry.getValue();
 
