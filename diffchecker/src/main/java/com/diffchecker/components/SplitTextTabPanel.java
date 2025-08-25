@@ -4,10 +4,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Caret;
 import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.Highlighter;
-import javax.swing.text.JTextComponent;
 
 import com.diffchecker.components.Database.DB;
 import com.diffchecker.components.Database.DiffData;
@@ -23,7 +20,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -38,8 +34,6 @@ import org.fife.ui.rtextarea.*;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class SplitTextTabPanel extends JPanel {
-    // FOR PASSING TO CUSTOM FIND/REPLACE
-    private RSyntaxTextArea area;
 
     // DEFAULT DECLARATIONS
     private static final String PACKAGE_NAME = "diffchecker";
@@ -96,6 +90,16 @@ public class SplitTextTabPanel extends JPanel {
 
     public boolean hasUnsavedChanges() {
         return isDirty;
+    }
+
+    // FOR NAVIGATING DIFFS
+    private final List<DiffGroup> diffGroups = new ArrayList<>();
+    private int currentGroupIndex = -1;
+    private DiffData currentDiff; // keep reference
+
+    private static class DiffGroup {
+        HighlightInfo left;
+        HighlightInfo right;
     }
 
     // DOCUMENT LISTENERS TO TRACK CHANGES
@@ -158,21 +162,12 @@ public class SplitTextTabPanel extends JPanel {
         }
     };
 
-    private static class DiffGroup {
-        HighlightInfo left;
-        HighlightInfo right;
-    }
-
-    private final List<DiffGroup> diffGroups = new ArrayList<>();
-    private int currentGroupIndex = -1;
-    private DiffData currentDiff; // keep reference
-
     // CHECKING IF GREEN BORDER IS ACTIVE OR NOT
     private boolean jt1IsActive = false;
     private boolean jt2IsActive = false;
 
     public SplitTextTabPanel() {
-        area = createRSyntaxArea();
+
         setLayout(new BorderLayout());
 
         // CTRL + S HOTKEY FOR SAVING
@@ -272,8 +267,8 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        jt1 = createRSyntaxArea();
-        jt2 = createRSyntaxArea();
+        jt1 = EditorUtils.createRSyntaxArea();
+        jt2 = EditorUtils.createRSyntaxArea();
 
         jt1.getDocument().addDocumentListener(dirtyListener1);
         jt2.getDocument().addDocumentListener(dirtyListener2);
@@ -446,7 +441,7 @@ public class SplitTextTabPanel extends JPanel {
                 findReplace2.getReplaceAction().actionPerformed(
                         new java.awt.event.ActionEvent(jt2, ActionEvent.ACTION_PERFORMED, "Replace"));
             } else {
-                showToast(findBtn,
+                EditorUtils.showToast(findBtn,
                         "<html>Click inside one of the <strong>text editors</strong> first, <br> then press the &nbsp\" &nbsp 🔍 &nbsp \"&nbsp button to use <strong>Find/Replace</strong></html>");
             }
         });
@@ -708,36 +703,6 @@ public class SplitTextTabPanel extends JPanel {
         }
     }
 
-    private RSyntaxTextArea createRSyntaxArea() {
-        RSyntaxTextArea localArea = new RSyntaxTextArea();
-        localArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
-        localArea.setAntiAliasingEnabled(true);
-        localArea.setEditable(true); // Allow editing if you still want to diff edited text
-        localArea.setBackground(EDITOR_BACKGROUND);
-        localArea.setForeground(EDITOR_FONT_COLOR);
-        localArea.setCaretColor(EDITOR_FONT_COLOR);
-        localArea.setBorder(BorderFactory.createEmptyBorder());
-        // localArea.setCodeFoldingEnabled(true);
-
-        // COMMENT AND UNCOMMENT HOTKEY (Ctrl+/ on Win/Linux, Cmd+/ on macOS)
-        int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
-        InputMap im = localArea.getInputMap();
-        ActionMap am = localArea.getActionMap();
-
-        im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, menuMask), "toggleComment");
-        am.put("toggleComment", new ToggleCommentWrapper(localArea));
-
-        // LINE WRAPPING FOR LONG LINES
-        // localArea.setLineWrap(true);
-        // localArea.setWrapStyleWord(true); // optional, wraps at word boundaries
-        return localArea;
-    }
-
-    // FOR CUSTOM TITLE BAR TO ACCESS THE TEXTAREAS
-    public RSyntaxTextArea getTextArea() {
-        return area;
-    }
-
     // OR: apply style to both editors at once
     public void setSyntaxStyleBoth(String style) {
         if (jt1 != null)
@@ -759,6 +724,58 @@ public class SplitTextTabPanel extends JPanel {
         } catch (BadLocationException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private void focusDiffGroup(DiffGroup group) {
+        if (group == null)
+            return;
+
+        // // Steal focus from text areas temporarily
+        requestFocusInWindow();
+
+        if (group.left != null) {
+            EditorUtils.scrollToOffset(jt1, group.left.startOffset);
+        }
+
+        if (group.right != null) {
+            EditorUtils.scrollToOffset(jt2, group.right.startOffset);
+        }
+
+    }
+
+    private void wordWrapToggle() {
+        wordWrapEnabled = !wordWrapEnabled; // toggle state
+        wordWrapToggleBtn.setSelectedState(wordWrapEnabled);
+
+        jt1.setLineWrap(wordWrapEnabled);
+        jt1.setWrapStyleWord(wordWrapEnabled);
+
+        jt2.setLineWrap(wordWrapEnabled);
+        jt2.setWrapStyleWord(wordWrapEnabled);
+
+        // Force UI refresh
+        jt1.revalidate();
+        jt1.repaint();
+        jt2.revalidate();
+        jt2.repaint();
+    }
+
+    private void previousDiff() {
+        if (diffGroups.isEmpty())
+            return;
+        currentGroupIndex--;
+        if (currentGroupIndex < 0)
+            currentGroupIndex = diffGroups.size() - 1;
+        focusDiffGroup(diffGroups.get(currentGroupIndex));
+    }
+
+    private void nextDiff() {
+        if (diffGroups.isEmpty())
+            return;
+        currentGroupIndex++;
+        if (currentGroupIndex >= diffGroups.size())
+            currentGroupIndex = 0;
+        focusDiffGroup(diffGroups.get(currentGroupIndex));
     }
 
     private void deleteDiff() {
@@ -799,41 +816,6 @@ public class SplitTextTabPanel extends JPanel {
         }
     }
 
-    private void wordWrapToggle() {
-        wordWrapEnabled = !wordWrapEnabled; // toggle state
-        wordWrapToggleBtn.setSelectedState(wordWrapEnabled);
-
-        jt1.setLineWrap(wordWrapEnabled);
-        jt1.setWrapStyleWord(wordWrapEnabled);
-
-        jt2.setLineWrap(wordWrapEnabled);
-        jt2.setWrapStyleWord(wordWrapEnabled);
-
-        // Force UI refresh
-        jt1.revalidate();
-        jt1.repaint();
-        jt2.revalidate();
-        jt2.repaint();
-    }
-
-    private void previousDiff() {
-        if (diffGroups.isEmpty())
-            return;
-        currentGroupIndex--;
-        if (currentGroupIndex < 0)
-            currentGroupIndex = diffGroups.size() - 1;
-        focusDiffGroup(diffGroups.get(currentGroupIndex));
-    }
-
-    private void nextDiff() {
-        if (diffGroups.isEmpty())
-            return;
-        currentGroupIndex++;
-        if (currentGroupIndex >= diffGroups.size())
-            currentGroupIndex = 0;
-        focusDiffGroup(diffGroups.get(currentGroupIndex));
-    }
-
     private void highlightDiffs() throws BadLocationException {
         diffGroups.clear();
         currentGroupIndex = -1;
@@ -855,20 +837,20 @@ public class SplitTextTabPanel extends JPanel {
 
             switch (delta.getType()) {
                 case DELETE:
-                    highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED);
+                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED);
                     int startOffsetLeft = jt1.getLineStartOffset(origPos);
                     group.left = new HighlightInfo(jt1, startOffsetLeft, startOffsetLeft);
                     break;
 
                 case INSERT:
-                    highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED);
+                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED);
                     int startOffsetRight = jt2.getLineStartOffset(revPos);
                     group.right = new HighlightInfo(jt2, startOffsetRight, startOffsetRight);
                     break;
 
                 case CHANGE:
-                    highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED);
-                    highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED);
+                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED);
+                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED);
 
                     int lOff = jt1.getLineStartOffset(origPos);
                     int rOff = jt2.getLineStartOffset(revPos);
@@ -896,76 +878,6 @@ public class SplitTextTabPanel extends JPanel {
             }
 
             diffGroups.add(group);
-        }
-    }
-
-    private void focusDiffGroup(DiffGroup group) {
-        if (group == null)
-            return;
-
-        // // Steal focus from text areas temporarily
-        requestFocusInWindow();
-
-        if (group.left != null) {
-            scrollToOffset(jt1, group.left.startOffset);
-        }
-
-        if (group.right != null) {
-            scrollToOffset(jt2, group.right.startOffset);
-        }
-
-    }
-
-    // simple toast popup
-    private void showToast(JButton button, String message) {
-        // Create a lightweight popup
-        JWindow toast = new JWindow();
-        toast.setBackground(new Color(0, 0, 0, 0));
-
-        // Style the label
-        JLabel label = new JLabel(message);
-        label.setOpaque(true);
-        label.setBackground(new Color(50, 50, 50, 220)); // semi-transparent dark bg
-        label.setForeground(Color.WHITE);
-        label.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
-        label.setFont(label.getFont().deriveFont(Font.PLAIN, 14f));
-
-        toast.add(label);
-        toast.pack();
-
-        // Get button location on screen
-        Point btnLoc = button.getLocationOnScreen();
-
-        // Position toast directly above the button, centered horizontally
-        int x = btnLoc.x + (button.getWidth() - toast.getWidth()) / 2;
-        int y = btnLoc.y - toast.getHeight() - 8; // 8px gap above button
-
-        toast.setLocation(x, y);
-
-        // Show and auto-hide
-        toast.setVisible(true);
-
-        new Timer(3000, e -> toast.dispose()).start(); // disappear after 3s
-    }
-
-    // helper method
-    private void scrollToOffset(JTextComponent area, int offset) {
-        try {
-            // hide caret so theme doesn't trigger
-            Caret caret = area.getCaret();
-            boolean wasVisible = caret.isVisible();
-            caret.setVisible(false);
-
-            area.setCaretPosition(offset); // moves view
-            Rectangle2D viewRect2D = area.modelToView2D(offset);
-            if (viewRect2D != null) {
-                Rectangle viewRect = viewRect2D.getBounds(); // convert to Rectangle for scrollRectToVisible
-                area.scrollRectToVisible(viewRect);
-            }
-
-            caret.setVisible(wasVisible); // optional
-        } catch (BadLocationException e) {
-            e.printStackTrace();
         }
     }
 
@@ -999,69 +911,6 @@ public class SplitTextTabPanel extends JPanel {
         }
     }
 
-    private void highlightFullLines(RSyntaxTextArea area, int startLine, int count, Color color) {
-        for (int i = 0; i < count; i++) {
-            try {
-                area.addLineHighlight(startLine + i, color);
-            } catch (BadLocationException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    class TextHighlightPainter implements Highlighter.HighlightPainter {
-        private final Color background;
-        private final Color foreground;
-
-        public TextHighlightPainter(Color background, Color foreground) {
-            this.background = background;
-            this.foreground = foreground;
-        }
-
-        @Override
-        public void paint(Graphics g, int p0, int p1, Shape bounds, JTextComponent c) {
-            try {
-                Rectangle2D rect0 = c.modelToView2D(p0);
-                Rectangle2D rect1 = c.modelToView2D(p1);
-
-                if (rect0 == null || rect1 == null)
-                    return;
-
-                Rectangle2D unionRect = rect0.createUnion(rect1);
-
-                // Background
-                g.setColor(background);
-                g.fillRect((int) unionRect.getX(), (int) unionRect.getY(),
-                        (int) unionRect.getWidth(), (int) unionRect.getHeight());
-
-                // Text (draw manually in new color)
-                String text = c.getDocument().getText(p0, p1 - p0);
-                g.setColor(foreground);
-                g.setFont(c.getFont());
-                g.drawString(text, (int) unionRect.getX(),
-                        (int) unionRect.getY() + g.getFontMetrics().getAscent());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    class ToggleCommentWrapper extends AbstractAction {
-        private final RSyntaxTextArea area;
-
-        public ToggleCommentWrapper(RSyntaxTextArea area) {
-            this.area = area;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            Action toggleComment = area.getActionMap().get(RSyntaxTextAreaEditorKit.rstaToggleCommentAction);
-            if (toggleComment != null) {
-                toggleComment.actionPerformed(e);
-            }
-        }
-    }
-
     // LOAD/STORE FROM DATABASE
     public void loadFromDatabase(DiffData data) {
         currentDiff = data;
@@ -1078,19 +927,6 @@ public class SplitTextTabPanel extends JPanel {
         jt2.getDocument().addDocumentListener(dirtyListener2);
 
         markSaved(); // reset dirty flag
-    }
-
-    private String capitalizeTitle(String input) {
-        String[] words = input.trim().toLowerCase().split("\\s+");
-        StringBuilder result = new StringBuilder();
-        for (String word : words) {
-            if (word.isEmpty())
-                continue;
-            result.append(Character.toUpperCase(word.charAt(0)))
-                    .append(word.substring(1))
-                    .append(" ");
-        }
-        return result.toString().trim();
     }
 
     public void saveToDatabase() {
@@ -1115,7 +951,7 @@ public class SplitTextTabPanel extends JPanel {
         }
 
         // Capitalize the title
-        title = capitalizeTitle(title);
+        title = EditorUtils.capitalizeTitle(title);
 
         String leftText = jt1.getText();
         String rightText = jt2.getText();
