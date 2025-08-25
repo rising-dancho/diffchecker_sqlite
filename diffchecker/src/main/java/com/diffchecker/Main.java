@@ -7,7 +7,6 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.*;
 
-import com.diffchecker.components.ClosableTabContextMenu;
 import com.diffchecker.components.ClosableTabTitleComponent;
 import com.diffchecker.components.ComponentResizer;
 import com.diffchecker.components.CustomTitleBar;
@@ -179,7 +178,6 @@ public class Main extends JFrame {
 
         tabbedPane.setFont(new Font("SansSerif", Font.BOLD, 13));
         tabbedPane.setFocusable(false);
-        tabbedPane.addMouseListener(new ClosableTabContextMenu(tabbedPane));
 
         // Hover behavior
         ui.setHoverListener(index -> {
