@@ -117,23 +117,7 @@ public class Main extends JFrame {
         return titleWrapper;
     }
 
-    // ─── 4. Menu Bar Panel ─────────────────────────────────────────────────────
-    // private JPanel buildMenuPanel() {
-    // JMenuBar menuBar = MenuBuilder.buildMenuBar();
-    // menuBar.setPreferredSize(new Dimension(0, 30));
-
-    // JPanel panel = new JPanel(new BorderLayout());
-    // panel.setBackground(new Color(0x242526));
-    // panel.setPreferredSize(new Dimension(0, 30));
-    // panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-    // panel.setMinimumSize(new Dimension(0, 30));
-    // panel.setAlignmentX(Component.CENTER_ALIGNMENT);
-    // panel.add(menuBar, BorderLayout.CENTER);
-
-    // return panel;
-    // }
-
-    // ─── 5. Main Content Panel with Tabs ───────────────────────────────────────
+    // ─── 4. Main Content Panel with Tabs ───────────────────────────────────────
     private JPanel buildMainContent() {
         container.setBackground(new Color(0x242526));
         container.setLayout(new BorderLayout());
@@ -302,13 +286,13 @@ public class Main extends JFrame {
         tabbedPane.setSelectedIndex(insertIndex);
     }
 
-    // ─── 6. Window Positioning ─────────────────────────────────────────────────
+    // ─── 5. Window Positioning ─────────────────────────────────────────────────
     private void centerWindow() {
         Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation((screen.width - getWidth()) / 2, (screen.height - getHeight()) / 2);
     }
 
-    // ─── 7. Enable Edge Resizing ───────────────────────────────────────────────
+    // ─── 6. Enable Edge Resizing ───────────────────────────────────────────────
     private void enableResizing() {
         new ComponentResizer(
                 new Insets(8, 8, 8, 8),
