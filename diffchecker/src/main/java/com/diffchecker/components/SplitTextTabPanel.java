@@ -77,12 +77,36 @@ public class SplitTextTabPanel extends JPanel {
     RoundedButton highlightToggleBtn;
     RoundedButton wordWrapToggleBtn;
 
+    // THEME MANAGEMENT
+    private boolean darkThemeEnabled = true; // default
+
     // TRACKING UNSAVED CHANGES
     private boolean isDirty = false;
 
     private void markDirty() {
         isDirty = true;
     }
+
+    // public void markDirty() {
+    // if (!isDirty) {
+    // isDirty = true;
+    // // Append * to tab title
+    // Container parent = getParent();
+    // while (parent != null && !(parent instanceof JTabbedPane)) {
+    // parent = parent.getParent();
+    // }
+    // if (parent instanceof JTabbedPane) {
+    // JTabbedPane tabbedPane = (JTabbedPane) parent;
+    // int index = tabbedPane.indexOfComponent(this);
+    // if (index != -1) {
+    // String title = tabbedPane.getTitleAt(index);
+    // if (!title.endsWith("*")) {
+    // tabbedPane.setTitleAt(index, title + "*");
+    // }
+    // }
+    // }
+    // }
+    // }
 
     private void markSaved() {
         isDirty = false;
@@ -253,6 +277,18 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
+        // CTRL + T HOTKEY FOR TOGGLING THEME
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("control G"), "toggleTheme");
+
+        getActionMap().put("toggleTheme", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                darkThemeEnabled = !darkThemeEnabled;
+                applyTheme(darkThemeEnabled);
+            }
+        });
+
         jt1 = EditorUtils.createRSyntaxArea();
         jt2 = EditorUtils.createRSyntaxArea();
 
@@ -281,15 +317,6 @@ public class SplitTextTabPanel extends JPanel {
 
         scroll1 = new RTextScrollPane(jt1);
         scroll2 = new RTextScrollPane(jt2);
-
-        // Apply your theme from XML:
-        try (InputStream in = getClass().getResourceAsStream("/diffchecker/themes/mytheme.xml")) {
-            Theme theme = Theme.load(in);
-            theme.apply(jt1);
-            theme.apply(jt2);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         // CUSTOM SCROLLBARS
         scroll1.getVerticalScrollBar().setUI(new CustomScrollBarUI());
@@ -675,6 +702,9 @@ public class SplitTextTabPanel extends JPanel {
 
         // TEST BORDER
         // setBorder(BorderFactory.createLineBorder(REMOVAL_LABEL_COLOR_DARK));
+
+        // APPLY SYNTAX HIGHLIGHT THEME
+        applySyntaxHighlightTheme();
     }
 
     @Override
@@ -864,6 +894,55 @@ public class SplitTextTabPanel extends JPanel {
             }
 
             diffGroups.add(group);
+        }
+    }
+
+    private void applyTheme(boolean dark) {
+        Color bg, fg, border, caret;
+
+        if (dark) {
+            bg = new Color(0x17181C); // Dark gray
+            fg = new Color(0xD4D4D4); // Light text
+            border = new Color(0x242526);
+            caret = fg;
+        } else {
+            bg = Color.WHITE;
+            fg = Color.BLACK;
+            border = Color.LIGHT_GRAY;
+            caret = Color.BLACK;
+        }
+
+        // Apply to both editors
+        jt1.setBackground(bg);
+        jt1.setForeground(fg);
+        jt1.setCaretColor(caret);
+
+        jt2.setBackground(bg);
+        jt2.setForeground(fg);
+        jt2.setCaretColor(caret);
+
+        // Apply to scroll panes
+        scroll1.getViewport().setBackground(bg);
+        scroll2.getViewport().setBackground(bg);
+        scroll1.setBorder(BorderFactory.createLineBorder(border));
+        scroll2.setBorder(BorderFactory.createLineBorder(border));
+
+        leftLabelPanel.setBackground(bg);
+        rightLabelPanel.setBackground(bg);
+
+        revalidate();
+        repaint();
+    }
+
+    // APPLY THEME
+    public void applySyntaxHighlightTheme() {
+        // Apply your theme from XML:
+        try (InputStream in = getClass().getResourceAsStream("/diffchecker/themes/mytheme.xml")) {
+            Theme theme = Theme.load(in);
+            theme.apply(jt1);
+            theme.apply(jt2);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

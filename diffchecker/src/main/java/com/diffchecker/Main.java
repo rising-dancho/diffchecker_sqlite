@@ -276,7 +276,7 @@ public class Main extends JFrame {
         tabbedPane.setSelectedIndex(newIndex);
     }
 
-    private int untitledCounter = 1;
+    private int untitledCounter = 2;
 
     private void addNewTab(JTabbedPane tabbedPane) {
         // Decide where to insert:
