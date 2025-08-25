@@ -147,7 +147,7 @@ public class Main extends JFrame {
                         onTabEmptyFallback,
                         tabIndex -> closeTabAt(tabIndex)));
         tabbedPane.setSelectedIndex(0);
-        
+
         InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = getRootPane().getActionMap();
 

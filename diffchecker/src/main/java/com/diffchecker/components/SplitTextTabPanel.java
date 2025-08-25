@@ -4,11 +4,11 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultHighlighter;
 
 import com.diffchecker.components.Database.DB;
 import com.diffchecker.components.Database.DiffData;
 import com.diffchecker.components.Database.DiffRepository;
+import com.diffchecker.components.Helper.EditorUtils;
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.AbstractDelta;
 import com.github.difflib.patch.Patch;
@@ -98,8 +98,8 @@ public class SplitTextTabPanel extends JPanel {
     private DiffData currentDiff; // keep reference
 
     private static class DiffGroup {
-        HighlightInfo left;
-        HighlightInfo right;
+        EditorUtils.HighlightInfo left;
+        EditorUtils.HighlightInfo right;
     }
 
     // DOCUMENT LISTENERS TO TRACK CHANGES
@@ -136,20 +136,6 @@ public class SplitTextTabPanel extends JPanel {
 
     // TOGGLE WORD WRAP
     private boolean wordWrapEnabled = false;
-
-    private final java.util.List<HighlightInfo> highlightPositions = new ArrayList<>();
-
-    private static class HighlightInfo {
-        int startOffset;
-        int endOffset;
-        RSyntaxTextArea area;
-
-        HighlightInfo(RSyntaxTextArea area, int start, int end) {
-            this.area = area;
-            this.startOffset = start;
-            this.endOffset = end;
-        }
-    }
 
     private RSyntaxTextArea lastFocusedEditor; // <-- add this
 
@@ -468,7 +454,7 @@ public class SplitTextTabPanel extends JPanel {
                 // clear old highlights
                 jt1.getHighlighter().removeAllHighlights();
                 jt2.getHighlighter().removeAllHighlights();
-                highlightPositions.clear();
+                EditorUtils.highlightPositions.clear();
                 highlightDiffs();
             } catch (BadLocationException ex) {
                 ex.printStackTrace();
@@ -719,7 +705,7 @@ public class SplitTextTabPanel extends JPanel {
             // clear old highlights
             jt1.getHighlighter().removeAllHighlights();
             jt2.getHighlighter().removeAllHighlights();
-            highlightPositions.clear();
+            EditorUtils.highlightPositions.clear();
             highlightDiffs();
         } catch (BadLocationException ex) {
             ex.printStackTrace();
@@ -839,13 +825,13 @@ public class SplitTextTabPanel extends JPanel {
                 case DELETE:
                     EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED);
                     int startOffsetLeft = jt1.getLineStartOffset(origPos);
-                    group.left = new HighlightInfo(jt1, startOffsetLeft, startOffsetLeft);
+                    group.left = new EditorUtils.HighlightInfo(jt1, startOffsetLeft, startOffsetLeft);
                     break;
 
                 case INSERT:
                     EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED);
                     int startOffsetRight = jt2.getLineStartOffset(revPos);
-                    group.right = new HighlightInfo(jt2, startOffsetRight, startOffsetRight);
+                    group.right = new EditorUtils.HighlightInfo(jt2, startOffsetRight, startOffsetRight);
                     break;
 
                 case CHANGE:
@@ -854,18 +840,18 @@ public class SplitTextTabPanel extends JPanel {
 
                     int lOff = jt1.getLineStartOffset(origPos);
                     int rOff = jt2.getLineStartOffset(revPos);
-                    group.left = new HighlightInfo(jt1, lOff, lOff);
-                    group.right = new HighlightInfo(jt2, rOff, rOff);
+                    group.left = new EditorUtils.HighlightInfo(jt1, lOff, lOff);
+                    group.right = new EditorUtils.HighlightInfo(jt2, rOff, rOff);
 
                     // Word-level highlighting (only if toggle ON)
                     if (wordHighlightEnabled) {
                         for (int i = 0; i < Math.min(delta.getSource().size(), delta.getTarget().size()); i++) {
-                            highlightWordDiffs(
+                            EditorUtils.highlightWordDiffs(
                                     jt1, origPos + i,
                                     delta.getSource().getLines().get(i),
                                     delta.getTarget().getLines().get(i),
                                     WORD_REMOVED, true);
-                            highlightWordDiffs(
+                            EditorUtils.highlightWordDiffs(
                                     jt2, revPos + i,
                                     delta.getSource().getLines().get(i),
                                     delta.getTarget().getLines().get(i),
@@ -878,36 +864,6 @@ public class SplitTextTabPanel extends JPanel {
             }
 
             diffGroups.add(group);
-        }
-    }
-
-    private void highlightWordDiffs(RSyntaxTextArea area, int lineIndex, String oldLine, String newLine, Color color,
-            boolean isLeft) {
-        List<String> tokens1 = Arrays.asList(oldLine.split("\\b"));
-        List<String> tokens2 = Arrays.asList(newLine.split("\\b"));
-
-        Patch<String> wordPatch = DiffUtils.diff(tokens1, tokens2);
-
-        try {
-            int pos = area.getLineStartOffset(lineIndex);
-            List<String> tokens = isLeft ? tokens1 : tokens2;
-
-            for (String token : tokens) {
-                boolean changed = wordPatch.getDeltas().stream()
-                        .anyMatch(delta -> (isLeft ? delta.getSource().getLines() : delta.getTarget().getLines())
-                                .contains(token));
-
-                if (changed && !token.isBlank()) {
-                    int tokenStart = pos;
-                    int tokenEnd = pos + token.length();
-                    area.getHighlighter().addHighlight(tokenStart, tokenEnd,
-                            new DefaultHighlighter.DefaultHighlightPainter(color));
-                    highlightPositions.add(new HighlightInfo(area, tokenStart, tokenEnd));
-                }
-                pos += token.length();
-            }
-        } catch (BadLocationException e) {
-            e.printStackTrace();
         }
     }
 
