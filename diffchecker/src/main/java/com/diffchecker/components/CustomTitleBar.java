@@ -188,11 +188,21 @@ public class CustomTitleBar extends JPanel {
   private JMenu createSyntaxMenu(SplitTextTabPanel splitPanel) {
     JMenu syntaxHighlighting = new JMenu("Syntax Highlighting");
 
-    // 1. Always add "None" first
+    // 1. Always add "None" and favorite Languages first
     String noneStyle = SYNTAX_STYLES.get("None");
     JMenuItem noneItem = new JMenuItem("None");
     noneItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(noneStyle));
     syntaxHighlighting.add(noneItem);
+
+    String javaStyle = SYNTAX_STYLES.get("Java");
+    JMenuItem javaItem = new JMenuItem("Java");
+    javaItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(javaStyle));
+    syntaxHighlighting.add(javaItem);
+
+    String javaScriptStyle = SYNTAX_STYLES.get("JavaScript");
+    JMenuItem javaScriptItem = new JMenuItem("JavaScript");
+    javaScriptItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(javaScriptStyle));
+    syntaxHighlighting.add(javaScriptItem);
 
     // 2. Add the rest (skip "None")
     for (Map.Entry<String, String> entry : SYNTAX_STYLES.entrySet()) {
