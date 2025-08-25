@@ -11,6 +11,9 @@
 # changing the RSyntaxTextArea theme
 - https://github.com/bobbylight/RSyntaxTextArea/wiki/Example:-Setting-the-theme
 
+# sample
+<img width="1085" height="724" alt="image" src="https://github.com/user-attachments/assets/d2ee4907-91be-480a-ab01-0f47991f1c00" />
+
 # demo
 - https://www.youtube.com/watch?v=WwnECY3Gx3o&t=969s
 
