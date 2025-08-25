@@ -100,7 +100,7 @@ public class Main extends JFrame {
     private JPanel buildTitleBar() {
         CustomTitleBar titleBar = new CustomTitleBar(
                 this,
-                "Diffchecker",
+                "",
                 PACKAGE_NAME,
                 "/" + PACKAGE_NAME + "/images/logo/logo_24x24.png",
                 new Color(0x242526),

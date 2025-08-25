@@ -1,4 +1,4 @@
-package com.diffchecker.components;
+package com.diffchecker.backup;
 
 import java.awt.Color;
 

@@ -18,6 +18,11 @@ public class CustomTitleBar extends JPanel {
 
   private Dimension previousSize;
 
+  // BUTTON COLOR AND HOVER COLOR
+  private static final Color BTN_COLOR = new Color(0x00af74);
+  private static final Color BTN_COLOR_DARKER = new Color(0x00744d);
+  private static final Color BTN_COLOR_BLACK = new Color(0x242526);
+
   // package‑level config
   private static String PACKAGE_NAME;
 
@@ -74,16 +79,55 @@ public class CustomTitleBar extends JPanel {
     closeButton = createButton("close_def.png", "close_hover.png",
         e -> System.exit(0));
 
+    // --- Hamburger menu button ---
+    // JButton menuButton = new JButton("☰");
+    // menuButton.setFocusPainted(false);
+    // menuButton.setBorder(null);
+    // menuButton.setContentAreaFilled(false);
+    // menuButton.setFont(menuButton.getFont().deriveFont(16f));
+    // menuButton.setForeground(FONT_COLOR);
+    // menuButton.setToolTipText("Menu");
+
+    RoundedButton menuButton = new RoundedButton("☰");
+    menuButton.setBackgroundColor(BTN_COLOR_BLACK);
+    menuButton.setHoverBackgroundColor(BTN_COLOR_DARKER);
+    menuButton.setBorderColor(BTN_COLOR_BLACK);
+    menuButton.setHoverBorderColor(BTN_COLOR_DARKER);
+    menuButton.setBorderThickness(2);
+    menuButton.setCornerRadius(10);
+    menuButton.setMargin(new Insets(0, 0, 0, 0));
+
+    // Example popup menu
+    JPopupMenu popup = new JPopupMenu();
+    JMenu appearance = new JMenu("Themes");
+    appearance.add(new JMenuItem("Dark mode"));
+    appearance.add(new JMenuItem("Light mode"));
+    JMenu syntaxHighlighting = new JMenu("Syntax Highlighting");
+    syntaxHighlighting.add(new JMenuItem("None"));
+    syntaxHighlighting.add(new JMenuItem("Java"));
+    popup.add(appearance);
+    popup.add(syntaxHighlighting);
+
+    menuButton.addActionListener(e -> popup.show(menuButton, 0, menuButton.getHeight()));
+
     controlPanel.add(minimizeButton);
     controlPanel.add(maximizeButton);
     controlPanel.add(closeButton);
 
-    JPanel centerPanel = new JPanel(new BorderLayout());
+    JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+    rightPanel.setOpaque(false);
+    rightPanel.add(controlPanel); // then add minimize/maximize/close
+
+    JPanel centerPanel = new JPanel();
     centerPanel.setOpaque(false);
-    centerPanel.add(titleLabel, BorderLayout.WEST);
+    centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
+
+    centerPanel.add(titleLabel);
+    centerPanel.add(Box.createRigidArea(new Dimension(10, 0))); // optional gap
+    centerPanel.add(menuButton); // now appears after the title
 
     add(centerPanel, BorderLayout.CENTER);
-    add(controlPanel, BorderLayout.EAST);
+    add(rightPanel, BorderLayout.EAST);
 
     // ── Enable dragging ---------------------------------------------------------
     new TitlebarMover(
