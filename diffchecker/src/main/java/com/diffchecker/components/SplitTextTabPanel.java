@@ -80,7 +80,7 @@ public class SplitTextTabPanel extends JPanel {
     private FindReplaceSupport findReplace2;
 
     // TOGGLE BUTTONS
-    RoundedButton highlightBtn;
+    RoundedButton highlightToggleBtn;
     RoundedButton wordWrapToggleBtn;
 
     // TRACKING UNSAVED CHANGES
@@ -188,7 +188,7 @@ public class SplitTextTabPanel extends JPanel {
 
         // CTRL + Q HOTKEY FOR TOGGLING WORD WRAP
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("control Q"), "toggleWordWrap");
+                .put(KeyStroke.getKeyStroke("alt Q"), "toggleWordWrap");
 
         getActionMap().put("toggleWordWrap", new AbstractAction() {
             @Override
@@ -199,7 +199,7 @@ public class SplitTextTabPanel extends JPanel {
 
         // CTRL + E HOTKEY FOR TOGGLING WORD HIGHLIGHT
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("control E"), "toggleHighlightWord");
+                .put(KeyStroke.getKeyStroke("alt E"), "toggleHighlightWord");
 
         getActionMap().put("toggleHighlightWord", new AbstractAction() {
             @Override
@@ -210,7 +210,7 @@ public class SplitTextTabPanel extends JPanel {
 
         // CTRL + SHIFT + ENTER hotkey for diff checking
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
                         "highlightDiffs");
 
         getActionMap().put("highlightDiffs", new AbstractAction() {
@@ -451,23 +451,23 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        highlightBtn = new RoundedButton();
-        highlightBtn.setText(null);
+        highlightToggleBtn = new RoundedButton();
+        highlightToggleBtn.setText(null);
         // Load local SVG (supports recoloring and scaling)
         FlatSVGIcon highlightIcon = new FlatSVGIcon("diffchecker/images/icons/highlight.svg", 20, 20);
         // turn the icon monochrome white
         highlightIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
-        highlightBtn.setIcon(highlightIcon);
-        highlightBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
-        highlightBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
-        highlightBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
-        highlightBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
-        highlightBtn.setBorderThickness(2);
-        highlightBtn.setCornerRadius(10);
-        highlightBtn.setMargin(new Insets(5, 5, 5, 5));
-        highlightBtn.addActionListener(e -> {
+        highlightToggleBtn.setIcon(highlightIcon);
+        highlightToggleBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
+        highlightToggleBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
+        highlightToggleBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
+        highlightToggleBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
+        highlightToggleBtn.setBorderThickness(2);
+        highlightToggleBtn.setCornerRadius(10);
+        highlightToggleBtn.setMargin(new Insets(5, 5, 5, 5));
+        highlightToggleBtn.addActionListener(e -> {
             wordHighlightEnabled = !wordHighlightEnabled; // toggle state
-            highlightBtn.setSelectedState(wordHighlightEnabled);
+            highlightToggleBtn.setSelectedState(wordHighlightEnabled);
 
             try {
                 // clear old highlights
@@ -481,7 +481,7 @@ public class SplitTextTabPanel extends JPanel {
         });
 
         wordWrapToggleBtn = new RoundedButton();
-        highlightBtn.setText(null);
+        highlightToggleBtn.setText(null);
         // Load local SVG (supports recoloring and scaling)
         FlatSVGIcon wordWrapIcon = new FlatSVGIcon("diffchecker/images/icons/wrap_text.svg", 20, 20);
         // turn the icon monochrome white
@@ -558,15 +558,15 @@ public class SplitTextTabPanel extends JPanel {
         saveBtn.addActionListener(e -> saveToDatabase());
 
         // TOOLTIPS
-        diffcheckBtn.setToolTipText("<html><strong>Find Difference</strong> <br> ( Ctrl + Shift + Enter )</html>");
+        diffcheckBtn.setToolTipText("<html><strong>Find Difference</strong> <br> ( Alt + Shift + Enter )</html>");
         previousBtn.setToolTipText("<html><strong>Previous Diff</strong> <br> ( Alt + Left Arrow )</html>");
         nextBtn.setToolTipText("<html><strong>Next Diff</strong> <br> ( Alt + Right Arrow )</html>");
         clearBtn.setToolTipText("<html><strong>Clear</strong> <br> ( Ctrl + R )</html>");
         deleteBtn.setToolTipText("<html><strong>Delete</strong> <br> ( Ctrl + Shift + X )</html>");
         findBtn.setToolTipText("<html><strong>Find/Replace</strong> <br> ( Ctrl + F )</html>");
         saveBtn.setToolTipText("<html><strong>Save</strong> <br> ( Ctrl + S )</html>");
-        highlightBtn.setToolTipText("<html><strong>Toggle Word Highlight</strong> <br> ( Ctrl + E )</html>");
-        wordWrapToggleBtn.setToolTipText("<html><strong>Toggle Word Wrap</strong> <br> ( Ctrl + Q )</html>");
+        highlightToggleBtn.setToolTipText("<html><strong>Toggle Word Highlight</strong> <br> ( Alt + E )</html>");
+        wordWrapToggleBtn.setToolTipText("<html><strong>Toggle Word Wrap</strong> <br> ( Alt + Q )</html>");
 
         JPanel bottomPanel = new JPanel(new BorderLayout()); // CENTER = button centered
         bottomPanel.setBackground(BACKGROUND_DARK);
@@ -583,7 +583,7 @@ public class SplitTextTabPanel extends JPanel {
         JPanel centerButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerButtonPanel.setBackground(BACKGROUND_DARK);
         centerButtonPanel.add(wordWrapToggleBtn);
-        centerButtonPanel.add(highlightBtn);
+        centerButtonPanel.add(highlightToggleBtn);
         centerButtonPanel.add(diffcheckBtn);
         centerButtonPanel.add(previousBtn);
         centerButtonPanel.add(nextBtn);
@@ -748,7 +748,7 @@ public class SplitTextTabPanel extends JPanel {
 
     private void highlightWordToggle() {
         wordHighlightEnabled = !wordHighlightEnabled; // toggle state
-        highlightBtn.setSelectedState(wordHighlightEnabled);
+        highlightToggleBtn.setSelectedState(wordHighlightEnabled);
 
         try {
             // clear old highlights
