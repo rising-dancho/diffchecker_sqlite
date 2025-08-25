@@ -79,15 +79,6 @@ public class CustomTitleBar extends JPanel {
     closeButton = createButton("close_def.png", "close_hover.png",
         e -> System.exit(0));
 
-    // --- Hamburger menu button ---
-    // JButton menuButton = new JButton("☰");
-    // menuButton.setFocusPainted(false);
-    // menuButton.setBorder(null);
-    // menuButton.setContentAreaFilled(false);
-    // menuButton.setFont(menuButton.getFont().deriveFont(16f));
-    // menuButton.setForeground(FONT_COLOR);
-    // menuButton.setToolTipText("Menu");
-
     RoundedButton menuButton = new RoundedButton("☰");
     menuButton.setBackgroundColor(BTN_COLOR_BLACK);
     menuButton.setHoverBackgroundColor(BTN_COLOR_DARKER);
@@ -96,6 +87,7 @@ public class CustomTitleBar extends JPanel {
     menuButton.setBorderThickness(2);
     menuButton.setCornerRadius(10);
     menuButton.setMargin(new Insets(0, 0, 0, 0));
+    menuButton.setFont(menuButton.getFont().deriveFont(14f));
 
     // Example popup menu
     JPopupMenu popup = new JPopupMenu();
