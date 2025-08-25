@@ -2,8 +2,11 @@ package com.diffchecker.components;
 
 import javax.swing.*;
 
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Map;
 
 public class CustomTitleBar extends JPanel {
 
@@ -18,8 +21,25 @@ public class CustomTitleBar extends JPanel {
 
   private Dimension previousSize;
 
+  // SYNTAX STYLES
+  private static final Map<String, String> SYNTAX_STYLES = Map.ofEntries(
+      Map.entry("None", SyntaxConstants.SYNTAX_STYLE_NONE),
+      Map.entry("Java", SyntaxConstants.SYNTAX_STYLE_JAVA),
+      Map.entry("Python", SyntaxConstants.SYNTAX_STYLE_PYTHON),
+      Map.entry("JavaScript", SyntaxConstants.SYNTAX_STYLE_JAVASCRIPT),
+      Map.entry("C", SyntaxConstants.SYNTAX_STYLE_C),
+      Map.entry("C++", SyntaxConstants.SYNTAX_STYLE_CPLUSPLUS),
+      Map.entry("C#", SyntaxConstants.SYNTAX_STYLE_CSHARP),
+      Map.entry("HTML", SyntaxConstants.SYNTAX_STYLE_HTML),
+      Map.entry("XML", SyntaxConstants.SYNTAX_STYLE_XML),
+      Map.entry("SQL", SyntaxConstants.SYNTAX_STYLE_SQL),
+      Map.entry("JSON", SyntaxConstants.SYNTAX_STYLE_JSON),
+      Map.entry("YAML", SyntaxConstants.SYNTAX_STYLE_YAML),
+      Map.entry("PHP", SyntaxConstants.SYNTAX_STYLE_PHP),
+      Map.entry("Ruby", SyntaxConstants.SYNTAX_STYLE_RUBY),
+      Map.entry("Kotlin", SyntaxConstants.SYNTAX_STYLE_KOTLIN));
+
   // BUTTON COLOR AND HOVER COLOR
-  private static final Color BTN_COLOR = new Color(0x00af74);
   private static final Color BTN_COLOR_DARKER = new Color(0x00744d);
   private static final Color BTN_COLOR_BLACK = new Color(0x242526);
 
@@ -27,6 +47,7 @@ public class CustomTitleBar extends JPanel {
   private static String PACKAGE_NAME;
 
   public CustomTitleBar(JFrame frame,
+      SplitTextTabPanel splitPanel,
       String title,
       String packageName,
       String iconPath,
@@ -91,14 +112,13 @@ public class CustomTitleBar extends JPanel {
 
     // Example popup menu
     JPopupMenu popup = new JPopupMenu();
-    JMenu appearance = new JMenu("Themes");
-    appearance.add(new JMenuItem("Dark mode"));
-    appearance.add(new JMenuItem("Light mode"));
-    JMenu syntaxHighlighting = new JMenu("Syntax Highlighting");
-    syntaxHighlighting.add(new JMenuItem("None"));
-    syntaxHighlighting.add(new JMenuItem("Java"));
+    JMenu appearance = new JMenu("Appearance");
+    appearance.add(new JMenuItem("Dark theme"));
+    appearance.add(new JMenuItem("Light theme"));
+
     popup.add(appearance);
-    popup.add(syntaxHighlighting);
+    // SYNTAX HIGHLIGHTING MENU
+    popup.add(createSyntaxMenu(splitPanel));
 
     menuButton.addActionListener(e -> popup.show(menuButton, 0, menuButton.getHeight()));
 
@@ -137,30 +157,63 @@ public class CustomTitleBar extends JPanel {
       String hoverIcon,
       ActionListener action) {
 
-    JButton b = new JButton(new ImageIcon(
+    JButton templateButton = new JButton(new ImageIcon(
         getClass().getResource("/" + PACKAGE_NAME + "/images/" + defIcon)));
     int size = 32; // or 32 depending on your icons
-    b.setPreferredSize(new Dimension(size, size));
-    b.setBorderPainted(false);
-    b.setFocusPainted(false);
-    b.setContentAreaFilled(false);
-    b.setToolTipText(defIcon.split("_")[0]); // quick tooltip
+    templateButton.setPreferredSize(new Dimension(size, size));
+    templateButton.setBorderPainted(false);
+    templateButton.setFocusPainted(false);
+    templateButton.setContentAreaFilled(false);
+    templateButton.setToolTipText(defIcon.split("_")[0]); // quick tooltip
 
-    b.addActionListener(action);
-    b.addMouseListener(new MouseAdapter() {
+    templateButton.addActionListener(action);
+    templateButton.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseEntered(MouseEvent e) {
-        b.setIcon(new ImageIcon(getClass().getResource(
+        templateButton.setIcon(new ImageIcon(getClass().getResource(
             "/" + PACKAGE_NAME + "/images/" + hoverIcon)));
       }
 
       @Override
       public void mouseExited(MouseEvent e) {
-        b.setIcon(new ImageIcon(getClass().getResource(
+        templateButton.setIcon(new ImageIcon(getClass().getResource(
             "/" + PACKAGE_NAME + "/images/" + defIcon)));
       }
     });
-    return b;
+    return templateButton;
+  }
+
+  // ───────────────────────────── SYNTAX MENU ────────────────────────────────
+  // Dynamically create menu items from SYNTAX_STYLES map
+  private JMenu createSyntaxMenu(SplitTextTabPanel splitPanel) {
+    JMenu syntaxHighlighting = new JMenu("Syntax Highlighting");
+
+    // 1. Always add "None" first
+    String noneStyle = SYNTAX_STYLES.get("None");
+    JMenuItem noneItem = new JMenuItem("None");
+    noneItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(noneStyle));
+    syntaxHighlighting.add(noneItem);
+
+    // 2. Add the rest (skip "None")
+    for (Map.Entry<String, String> entry : SYNTAX_STYLES.entrySet()) {
+      if ("None".equals(entry.getKey()))
+        continue; // skip
+      String displayName = entry.getKey();
+      String styleConstant = entry.getValue();
+
+      JMenuItem item = new JMenuItem(displayName);
+      item.addActionListener(e -> {
+        // Example: apply to both editors
+        splitPanel.setSyntaxStyleBoth(styleConstant);
+
+        // OR, if you want left/right separately:
+        // splitPanel.setSyntaxStyleLeft(styleConstant);
+        // splitPanel.setSyntaxStyleRight(styleConstant);
+      });
+      syntaxHighlighting.add(item);
+    }
+
+    return syntaxHighlighting;
   }
 
   // ---------------------------------------------------------------- maximize

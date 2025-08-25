@@ -38,6 +38,9 @@ import org.fife.ui.rtextarea.*;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class SplitTextTabPanel extends JPanel {
+    // FOR PASSING TO CUSTOM FIND/REPLACE
+    private RSyntaxTextArea area;
+
     // DEFAULT DECLARATIONS
     private static final String PACKAGE_NAME = "diffchecker";
     private RSyntaxTextArea jt1;
@@ -169,6 +172,7 @@ public class SplitTextTabPanel extends JPanel {
     private boolean jt2IsActive = false;
 
     public SplitTextTabPanel() {
+        area = createRSyntaxArea();
         setLayout(new BorderLayout());
 
         // CTRL + S HOTKEY FOR SAVING
@@ -705,29 +709,41 @@ public class SplitTextTabPanel extends JPanel {
     }
 
     private RSyntaxTextArea createRSyntaxArea() {
-        RSyntaxTextArea area = new RSyntaxTextArea();
-        // area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
-        area.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
-        area.setAntiAliasingEnabled(true);
-        area.setEditable(true); // Allow editing if you still want to diff edited text
-        area.setBackground(EDITOR_BACKGROUND);
-        area.setForeground(EDITOR_FONT_COLOR);
-        area.setCaretColor(EDITOR_FONT_COLOR);
-        area.setBorder(BorderFactory.createEmptyBorder());
-        // area.setCodeFoldingEnabled(true);
+        RSyntaxTextArea localArea = new RSyntaxTextArea();
+        localArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
+        localArea.setAntiAliasingEnabled(true);
+        localArea.setEditable(true); // Allow editing if you still want to diff edited text
+        localArea.setBackground(EDITOR_BACKGROUND);
+        localArea.setForeground(EDITOR_FONT_COLOR);
+        localArea.setCaretColor(EDITOR_FONT_COLOR);
+        localArea.setBorder(BorderFactory.createEmptyBorder());
+        // localArea.setCodeFoldingEnabled(true);
 
         // COMMENT AND UNCOMMENT HOTKEY (Ctrl+/ on Win/Linux, Cmd+/ on macOS)
         int menuMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMaskEx();
-        InputMap im = area.getInputMap();
-        ActionMap am = area.getActionMap();
+        InputMap im = localArea.getInputMap();
+        ActionMap am = localArea.getActionMap();
 
         im.put(KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, menuMask), "toggleComment");
-        am.put("toggleComment", new ToggleCommentWrapper(area));
+        am.put("toggleComment", new ToggleCommentWrapper(localArea));
 
         // LINE WRAPPING FOR LONG LINES
-        // area.setLineWrap(true);
-        // area.setWrapStyleWord(true); // optional, wraps at word boundaries
+        // localArea.setLineWrap(true);
+        // localArea.setWrapStyleWord(true); // optional, wraps at word boundaries
+        return localArea;
+    }
+
+    // FOR CUSTOM TITLE BAR TO ACCESS THE TEXTAREAS
+    public RSyntaxTextArea getTextArea() {
         return area;
+    }
+
+    // OR: apply style to both editors at once
+    public void setSyntaxStyleBoth(String style) {
+        if (jt1 != null)
+            jt1.setSyntaxEditingStyle(style);
+        if (jt2 != null)
+            jt2.setSyntaxEditingStyle(style);
     }
 
     private void highlightWordToggle() {

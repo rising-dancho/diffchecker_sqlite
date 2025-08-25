@@ -29,6 +29,7 @@ public class Main extends JFrame {
     // ─── Instance Fields ───────────────────────────────────────────────────────
     private final JPanel container = new JPanel();
     private final Color FONT_COLOR = new Color(0xd6d6d6);
+    public SplitTextTabPanel splitArea;
 
     // FOR CLOSING TABS WITH CTRL+W
     JTabbedPane tabbedPane;
@@ -40,8 +41,10 @@ public class Main extends JFrame {
 
     public Main() {
         initFrame(); // 1. Frame setup
+        // Initialize first tab panel
+        splitArea = new SplitTextTabPanel();
         JPanel wrapper = initWrapper(); // 2. Background wrapper
-        JPanel titleBar = buildTitleBar(); // 3. Custom title bar
+        JPanel titleBar = buildTitleBar(splitArea); // 3. Custom title bar
         // JPanel menuPanel = buildMenuPanel(); // 4. Menu bar
         JPanel content = buildMainContent(); // 5. Main tabbed pane area
 
@@ -97,9 +100,11 @@ public class Main extends JFrame {
     }
 
     // ─── 3. Title Bar Panel ────────────────────────────────────────────────────
-    private JPanel buildTitleBar() {
+    private JPanel buildTitleBar(SplitTextTabPanel splitPanel) {
+
         CustomTitleBar titleBar = new CustomTitleBar(
                 this,
+                splitPanel,
                 "",
                 PACKAGE_NAME,
                 "/" + PACKAGE_NAME + "/images/logo/logo_24x24.png",
@@ -134,6 +139,15 @@ public class Main extends JFrame {
         // container.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 
         tabbedPane = new JTabbedPane();
+
+        // Add the first tab
+        tabbedPane.addTab("Untitled-1", splitArea);
+        tabbedPane.setTabComponentAt(0,
+                new ClosableTabTitleComponent(tabbedPane, "Untitled-1",
+                        onTabEmptyFallback,
+                        tabIndex -> closeTabAt(tabIndex)));
+        tabbedPane.setSelectedIndex(0);
+        
         InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = getRootPane().getActionMap();
 
@@ -235,7 +249,7 @@ public class Main extends JFrame {
                     "Unsaved Changes",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.WARNING_MESSAGE);
-            
+
             if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION) {
                 // Do nothing if cancelled or dialog closed
                 return;
@@ -277,7 +291,7 @@ public class Main extends JFrame {
         }
 
         String title = "Untitled-" + untitledCounter++;
-        SplitTextTabPanel splitArea = new SplitTextTabPanel();
+        splitArea = new SplitTextTabPanel();
 
         tabbedPane.insertTab(title, null, splitArea, null, insertIndex);
         tabbedPane.setTabComponentAt(
