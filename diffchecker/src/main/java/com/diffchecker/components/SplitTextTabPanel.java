@@ -45,7 +45,7 @@ public class SplitTextTabPanel extends JPanel {
     // private static final Color WORD_REMOVED_DARK = new Color(0x8B1E1D);
     // private static final Color WORD_ADDED_DARK = new Color(0x137B5A);
 
-    // EDITOR COLORS
+    // BORDER COLORS
     private static final Color EDITOR_BORDER_COLOR = new Color(0x242526);
     private static final Color ACTIVE_BORDER_COLOR = new Color(0x00744d);
 
@@ -72,6 +72,11 @@ public class SplitTextTabPanel extends JPanel {
 
     private RoundedButton highlightToggleBtn;
     private RoundedButton wordWrapToggleBtn;
+
+    JPanel scroll1CornerLeft;
+    JPanel scroll2CornerLeft;
+    JPanel scroll1CornerRight;
+    JPanel scroll2CornerRight;
 
     // CHECKING IF GREEN BORDER IS ACTIVE OR NOT
     private boolean jt1IsActive = false;
@@ -214,6 +219,18 @@ public class SplitTextTabPanel extends JPanel {
         scroll1 = new RTextScrollPane(jt1);
         scroll2 = new RTextScrollPane(jt2);
 
+        // REMOVING THE WHITE SQUARES AT THE INTERSCTION OF THE SCROLLBARS
+        scroll1CornerLeft = new JPanel();
+        scroll2CornerLeft = new JPanel();
+        scroll1CornerRight = new JPanel();
+        scroll2CornerRight = new JPanel();
+        // Set corners for scroll1
+        scroll1.setCorner(JScrollPane.LOWER_LEFT_CORNER, scroll1CornerLeft);
+        scroll1.setCorner(JScrollPane.LOWER_RIGHT_CORNER, scroll1CornerRight);
+        // Set corners for scroll2
+        scroll2.setCorner(JScrollPane.LOWER_LEFT_CORNER, scroll2CornerLeft);
+        scroll2.setCorner(JScrollPane.LOWER_RIGHT_CORNER, scroll2CornerRight);
+
         // CUSTOM SCROLLBARS
         scroll1.getVerticalScrollBar().setUI(new CustomScrollBarUI());
         scroll2.getVerticalScrollBar().setUI(new CustomScrollBarUI());
@@ -221,15 +238,9 @@ public class SplitTextTabPanel extends JPanel {
         scroll2.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
 
         scroll1.getHorizontalScrollBar().setOpaque(true);
-        scroll1.getHorizontalScrollBar().setBackground(BACKGROUND_DARK);
-
         scroll2.getHorizontalScrollBar().setOpaque(true);
-        scroll2.getHorizontalScrollBar().setBackground(BACKGROUND_DARK);
         scroll1.getVerticalScrollBar().setOpaque(true);
-        scroll1.getVerticalScrollBar().setBackground(BACKGROUND_DARK);
-
         scroll2.getVerticalScrollBar().setOpaque(true);
-        scroll2.getVerticalScrollBar().setBackground(BACKGROUND_DARK);
 
         scroll1.setOpaque(false);
         scroll1.getViewport().setOpaque(false);
@@ -586,29 +597,6 @@ public class SplitTextTabPanel extends JPanel {
         });
     }
 
-    public void removingWhiteSquaresAtCornersOfScrollBars() {
-        // REMOVING THE WHITE SQUARES AT THE INTERSCTION OF THE SCROLLBARS
-        // Unique corners for scroll1
-        JPanel scroll1CornerLeft = new JPanel();
-        scroll1CornerLeft.setBackground(BACKGROUND_DARK);
-        JPanel scroll1CornerRight = new JPanel();
-        scroll1CornerRight.setBackground(BACKGROUND_DARK);
-
-        // Unique corners for scroll2
-        JPanel scroll2CornerLeft = new JPanel();
-        scroll2CornerLeft.setBackground(BACKGROUND_DARK);
-        JPanel scroll2CornerRight = new JPanel();
-        scroll2CornerRight.setBackground(BACKGROUND_DARK);
-
-        // Set corners for scroll1
-        scroll1.setCorner(JScrollPane.LOWER_LEFT_CORNER, scroll1CornerLeft);
-        scroll1.setCorner(JScrollPane.LOWER_RIGHT_CORNER, scroll1CornerRight);
-
-        // Set corners for scroll2
-        scroll2.setCorner(JScrollPane.LOWER_LEFT_CORNER, scroll2CornerLeft);
-        scroll2.setCorner(JScrollPane.LOWER_RIGHT_CORNER, scroll2CornerRight);
-    }
-
     public void activatedEditorBorderStyle() {
         // ADD BORDER UPON ACTIVATING TEXAREAS
         jt1.addFocusListener(new FocusAdapter() {
@@ -656,8 +644,23 @@ public class SplitTextTabPanel extends JPanel {
         });
     }
 
+    public void removingWhiteSquaresAtCornersOfScrollBars() {
+
+    }
+
     private void applyTheme(boolean dark) {
         // Color bg, fg, border, caret;
+
+        scroll1.getHorizontalScrollBar().setBackground(BACKGROUND_DARK);
+        scroll2.getHorizontalScrollBar().setBackground(BACKGROUND_DARK);
+        scroll1.getVerticalScrollBar().setBackground(BACKGROUND_DARK);
+        scroll2.getVerticalScrollBar().setBackground(BACKGROUND_DARK);
+
+        // REMOVING THE WHITE SQUARES AT THE INTERSCTION OF THE SCROLLBARS
+        scroll1CornerLeft.setBackground(BACKGROUND_DARK);
+        scroll1CornerRight.setBackground(BACKGROUND_DARK);
+        scroll2CornerLeft.setBackground(BACKGROUND_DARK);
+        scroll2CornerRight.setBackground(BACKGROUND_DARK);
 
         // if (dark) {
         // // DARK THEME
