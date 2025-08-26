@@ -27,20 +27,20 @@
    </secondaryLanguages>
 
    <!-- Gutter styling. -->
-   <gutterBorder color="E6E7ED" />
+   <gutterBorder color="dddddd" />
    <lineNumbers fg="787878" currentFG="343434" />
-   <foldIndicator fg="808080" armedFg="585858" iconBg="E6E7ED" />
+   <foldIndicator fg="808080" armedFg="9b9b9b" iconBg="E6E7ED" />
    <iconRowHeader activeLineRange="3399ff" />
 
    <!-- Syntax tokens. -->
    <tokenStyles>
-      <style token="IDENTIFIER" fg="030303" />
+      <style token="IDENTIFIER" fg="4A3964" />
       <style token="RESERVED_WORD" fg="06568f" bold="true" />
       <style token="RESERVED_WORD_2" fg="06568f" bold="true" />
       <style token="ANNOTATION" fg="808080" />
-      <style token="COMMENT_DOCUMENTATION" fg="008000" />
-      <style token="COMMENT_EOL" fg="008000" />
-      <style token="COMMENT_MULTILINE" fg="008000" />
+      <style token="COMMENT_DOCUMENTATION" fg="9b9b9b" />
+      <style token="COMMENT_EOL" fg="9b9b9b" />
+      <style token="COMMENT_MULTILINE" fg="9b9b9b" />
       <style token="COMMENT_KEYWORD" fg="06568f" bold="true" />
       <style token="COMMENT_MARKUP" fg="06568f" />
       <style token="DATA_TYPE" fg="06568f" bold="true" />

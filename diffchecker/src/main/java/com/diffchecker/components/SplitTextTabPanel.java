@@ -439,6 +439,16 @@ public class SplitTextTabPanel extends JPanel {
         clearBtn.addActionListener(e -> {
             jt1.setText("");
             jt2.setText("");
+
+            // Clear old highlights and reapply with new theme colors
+            jt1.getHighlighter().removeAllHighlights();
+            jt2.getHighlighter().removeAllHighlights();
+            jt1.removeAllLineHighlights();
+            jt2.removeAllLineHighlights();
+            EditorUtils.highlightPositions.clear();
+
+            revalidate();
+            repaint();
         });
 
         RoundedButton deleteBtn = new RoundedButton("✖");
@@ -598,6 +608,16 @@ public class SplitTextTabPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 jt1.setText("");
                 jt2.setText("");
+
+                // Clear old highlights and reapply with new theme colors
+                jt1.getHighlighter().removeAllHighlights();
+                jt2.getHighlighter().removeAllHighlights();
+                jt1.removeAllLineHighlights();
+                jt2.removeAllLineHighlights();
+                EditorUtils.highlightPositions.clear();
+
+                revalidate();
+                repaint();
             }
         });
 
