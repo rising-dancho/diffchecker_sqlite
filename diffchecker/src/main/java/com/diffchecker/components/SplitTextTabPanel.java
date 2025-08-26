@@ -358,6 +358,19 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
+        // RoundedButton themeBtn = new RoundedButton("🌙");
+        // themeBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
+        // themeBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
+        // themeBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
+        // themeBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
+        // themeBtn.setBorderThickness(2);
+        // themeBtn.setCornerRadius(10);
+        // themeBtn.setMargin(new Insets(5, 10, 5, 10));
+        // themeBtn.addActionListener(e -> {
+        // darkThemeEnabled = !darkThemeEnabled;
+        // applyTheme(darkThemeEnabled);
+        // });
+
         highlightToggleBtn = new RoundedButton();
         highlightToggleBtn.setText(null);
         // Load local SVG (supports recoloring and scaling)
@@ -628,10 +641,14 @@ public class SplitTextTabPanel extends JPanel {
         getActionMap().put("toggleTheme", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                darkThemeEnabled = !darkThemeEnabled;
-                applyTheme(darkThemeEnabled);
+                toggleTheme();
             }
         });
+    }
+
+    public void toggleTheme() {
+        darkThemeEnabled = !darkThemeEnabled;
+        applyTheme(darkThemeEnabled);
     }
 
     public void activatedEditorBorderStyle() {

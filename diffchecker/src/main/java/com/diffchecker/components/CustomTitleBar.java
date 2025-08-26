@@ -62,6 +62,8 @@ public class CustomTitleBar extends JPanel {
       Color background,
       int height) {
 
+    initUI();
+
     // ── store static config so createButton() can access it
     PACKAGE_NAME = packageName;
 
@@ -122,25 +124,18 @@ public class CustomTitleBar extends JPanel {
     // Example popup menu
     JPopupMenu popup = new JPopupMenu();
     JMenu appearance = new JMenu("Appearance");
-    appearance.add(new JMenuItem("Dark theme"));
-    appearance.add(new JMenuItem("Light theme"));
-
+    JMenuItem toggleThemeItem = new JMenuItem("Light/Dark Theme");
+    toggleThemeItem.setToolTipText("<html><strong>Toggle Light/Dark Theme</strong> <br> ( Ctrl + G )</html>");
+    toggleThemeItem.addActionListener(e -> {
+      // flip theme state in SplitTextTabPane
+      splitPanel.toggleTheme();
+    });
+    appearance.add(toggleThemeItem);
     popup.add(appearance);
     // SYNTAX HIGHLIGHTING MENU
     popup.add(createSyntaxMenu(splitPanel));
 
     menuButton.addActionListener(e -> popup.show(menuButton, 0, menuButton.getHeight()));
-
-    // RoundedButton themeToggleButton = new RoundedButton("🌙");
-    // themeToggleButton.setBackgroundColor(BTN_COLOR_BLACK);
-    // themeToggleButton.setHoverBackgroundColor(BTN_COLOR_DARKER);
-    // themeToggleButton.setBorderColor(BTN_COLOR_BLACK);
-    // themeToggleButton.setHoverBorderColor(BTN_COLOR_DARKER);
-    // themeToggleButton.setBorderThickness(2);
-    // themeToggleButton.setCornerRadius(10);
-    // themeToggleButton.setMargin(new Insets(0, 0, 0, 0));
-    // themeToggleButton.setFont(themeToggleButton.getFont().deriveFont(14f));
-    // themeToggleButton.setForeground(ICON_COLOR);
 
     controlPanel.add(minimizeButton);
     controlPanel.add(maximizeButton);
@@ -171,6 +166,10 @@ public class CustomTitleBar extends JPanel {
           updateMaximizeIcon();
           previousSize = frame.getSize(); // <-- capture restored size again
         });
+  }
+
+  private void initUI() {
+    // your existing menu button setup...
   }
 
   // ------------------------------------------------------------------ utilities
