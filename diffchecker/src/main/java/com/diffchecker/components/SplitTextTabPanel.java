@@ -54,12 +54,16 @@ public class SplitTextTabPanel extends JPanel {
 
     // DARK AND LIGHT MODE BACKGROUND COLORS
     private final Color BACKGROUND_DARK = new Color(0x17181C);
-    private final Color BACKGROUND_LIGHT = new Color(0xF9FAFA);
-    private final Color BACKGROUND_TEST = new Color(0x04395E);
+    private final Color BACKGROUND_LIGHT = new Color(0xD6D8DF);
+    // private final Color BACKGROUND_TEST = new Color(0x04395E);
+
+    // SCROLLBAR CORNER COLORS
+    private final Color SCROLLBAR_CORNER_DARK = new Color(0x17181C);
+    private final Color SCROLLBAR_CORNER_LIGHT = new Color(0xE6E7ED);
 
     // EDITOR LIGHT THEME SCROLLBAR TRACK COLOR
-    private final Color SCROLL_TRACK_DARK = new Color(0x17181C);
-    private final Color SCROLL_TRACK_LIGHT = new Color(0xFFFFFF);
+    private final Color SCROLLBAR_TRACK_DARK = new Color(0x17181C);
+    private final Color SCROLLBAR_TRACK_LIGHT = new Color(0xE6E7ED);
 
     // BUTTON COLOR AND HOVER COLOR
     private static final Color BTN_COLOR = new Color(0x00af74);
@@ -625,19 +629,19 @@ public class SplitTextTabPanel extends JPanel {
         if (dark) {
             // DARK THEME
             scrollColor = BACKGROUND_DARK;
-            scrollCornerColor = BACKGROUND_DARK;
+            scrollCornerColor = SCROLLBAR_CORNER_DARK;
             panelColor = BACKGROUND_DARK;
             editorMarginBackgroundColor = BACKGROUND_DARK;
-            trackColor = SCROLL_TRACK_DARK;
+            trackColor = SCROLLBAR_TRACK_DARK;
             defaultBorderColor = EDITOR_BORDER_COLOR_DARK;
-            activeBorderColor = ACTIVE_BORDER_COLOR_LIGHT;
+            activeBorderColor = ACTIVE_BORDER_COLOR_DARK;
         } else {
             // LIGHT THEME
             scrollColor = BACKGROUND_LIGHT;
-            scrollCornerColor = BACKGROUND_LIGHT;
+            scrollCornerColor = SCROLLBAR_CORNER_LIGHT;
             panelColor = BACKGROUND_LIGHT;
             editorMarginBackgroundColor = BACKGROUND_LIGHT;
-            trackColor = SCROLL_TRACK_LIGHT;
+            trackColor = SCROLLBAR_TRACK_LIGHT;
             defaultBorderColor = EDITOR_BORDER_COLOR_LIGHT;
             activeBorderColor = ACTIVE_BORDER_COLOR_LIGHT;
         }
