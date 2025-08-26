@@ -473,6 +473,7 @@ public class SplitTextTabPanel extends JPanel {
         // APPLY ACTIVATED BORDER STYLE
         activatedEditorBorderStyle();
 
+        // PRE APPLY THEME TO RUN DEFAULT
         applyTheme(darkThemeEnabled);
     }
 
