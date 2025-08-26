@@ -43,15 +43,15 @@
       <style token="COMMENT_MULTILINE" fg="797f86" />
       <style token="COMMENT_KEYWORD" fg="7F9FBF" bold="true" />
       <style token="COMMENT_MARKUP" fg="7f7f9f" />
-      <style token="DATA_TYPE" fg="06568f" bold="true" />
+      <style token="DATA_TYPE" fg="eb6606" bold="true" />
       <style token="FUNCTION" fg="080808" />
       <style token="LITERAL_BOOLEAN" fg="06568f" bold="true" />
       <style token="LITERAL_NUMBER_DECIMAL_INT" fg="D83A49" />
       <style token="LITERAL_NUMBER_FLOAT" fg="D83A49" />
       <style token="LITERAL_NUMBER_HEXADECIMAL" fg="D83A49" />
-      <style token="LITERAL_STRING_DOUBLE_QUOTE" fg="208e4e" />
-      <style token="LITERAL_CHAR" fg="208e4e" />
-      <style token="LITERAL_BACKQUOTE" fg="208e4e" />
+      <style token="LITERAL_STRING_DOUBLE_QUOTE" fg="1e874a" />
+      <style token="LITERAL_CHAR" fg="1e874a" />
+      <style token="LITERAL_BACKQUOTE" fg="1e874a" />
       <style token="MARKUP_TAG_DELIMITER" fg="008080" />
       <style token="MARKUP_TAG_NAME" fg="3f7f7f" />
       <style token="MARKUP_TAG_ATTRIBUTE" fg="8D12BA" />
