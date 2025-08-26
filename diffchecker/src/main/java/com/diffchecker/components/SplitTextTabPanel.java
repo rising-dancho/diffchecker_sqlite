@@ -46,11 +46,10 @@ public class SplitTextTabPanel extends JPanel {
     // private static final Color WORD_ADDED_DARK = new Color(0x137B5A);
 
     // EDITOR COLORS
-    private static final Color EDITOR_BACKGROUND = new Color(0x17181C); // Dark gray
-    private static final Color EDITOR_BORDER_COLOR = new Color(0x242526); // Light text
+    private static final Color EDITOR_BORDER_COLOR = new Color(0x242526);
     private static final Color ACTIVE_BORDER_COLOR = new Color(0x00744d);
 
-    // BACKGROUND COLOR
+    // DARK MODE BACKGROUND COLOR
     private final Color BACKGROUND_DARK = new Color(0xffffff);
 
     // BUTTON COLOR AND HOVER COLOR
