@@ -62,8 +62,10 @@ public class SplitTextTabPanel extends JPanel {
     private RSyntaxTextArea jt1;
     private RSyntaxTextArea jt2;
 
-    private final JScrollPane scroll1;
-    private final JScrollPane scroll2;
+    // private final JScrollPane scroll1;
+    // private final JScrollPane scroll2;
+    private final CustomLineNumbers scroll1;
+    private final CustomLineNumbers scroll2;
 
     private FindReplaceSupport findReplace1;
     private FindReplaceSupport findReplace2;
@@ -206,15 +208,10 @@ public class SplitTextTabPanel extends JPanel {
         jt1.setBracketMatchingEnabled(false);
         jt2.setBracketMatchingEnabled(false);
 
-        // Optional: disable code folding hints (sometimes triggers tooltips)
-        jt1.setCodeFoldingEnabled(false);
-        jt2.setCodeFoldingEnabled(false);
-
-        scroll1 = new RTextScrollPane(jt1);
-        scroll2 = new RTextScrollPane(jt2);
-
-        // SET FONT FAMILY AND SIZE
-        fontFamilyAndSize();
+        // scroll1 = new RTextScrollPane(jt1);
+        // scroll2 = new RTextScrollPane(jt2);
+        scroll1 = new CustomLineNumbers(jt1);
+        scroll2 = new CustomLineNumbers(jt2);
 
         // CUSTOM SCROLLBARS
         scroll1.getVerticalScrollBar().setUI(new CustomScrollBarUI());
@@ -257,9 +254,6 @@ public class SplitTextTabPanel extends JPanel {
                 vBar1.setValue(vBar2.getValue());
             }
         });
-
-        scroll1.setRowHeaderView(new LineNumberingTextArea(jt1));
-        scroll2.setRowHeaderView(new LineNumberingTextArea(jt2));
 
         scroll1.setBorder(null);
         scroll2.setBorder(null);
@@ -479,23 +473,6 @@ public class SplitTextTabPanel extends JPanel {
 
         // APPLY SYNTAX HIGHLIGHT THEME
         applySyntaxHighlightTheme();
-    }
-
-    private void fontFamilyAndSize() {
-        // FONT FAMILY OF THE TEXTAREAS
-        try {
-            InputStream is = getClass().getResourceAsStream(
-                    "/" + PACKAGE_NAME + "/fonts/FiraCode-Regular.ttf");
-            Font firaCode = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.PLAIN, 16f);
-
-            jt1.setFont(firaCode);
-            jt2.setFont(firaCode);
-        } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
-            // Fallback if font fails to load
-            jt1.setFont(new Font("Monospaced", Font.PLAIN, 14));
-            jt2.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        }
     }
 
     // KEYBOARD SHORTCUTS
@@ -721,12 +698,25 @@ public class SplitTextTabPanel extends JPanel {
 
     // APPLY THEME
     public void applySyntaxHighlightTheme() {
-        // Apply your theme from XML:
-        try (InputStream in = getClass().getResourceAsStream("/diffchecker/themes/mytheme.xml")) {
+        try {
+            // Load theme
+            InputStream in = getClass().getResourceAsStream("/diffchecker/themes/mytheme.xml");
             Theme theme = Theme.load(in);
             theme.apply(jt1);
             theme.apply(jt2);
-        } catch (IOException e) {
+
+            // Load embedded Fira Code
+            InputStream fontStream = getClass().getResourceAsStream("/diffchecker/fonts/FiraCode-Regular.ttf");
+            Font firaCode = Font.createFont(Font.TRUETYPE_FONT, fontStream);
+
+            // Keep the XML's size
+            int sizeFromXML = 16; // match your <baseFont size="20"/>
+            firaCode = firaCode.deriveFont(Font.PLAIN, sizeFromXML);
+
+            jt1.setFont(firaCode);
+            jt2.setFont(firaCode);
+
+        } catch (IOException | FontFormatException e) {
             e.printStackTrace();
         }
     }

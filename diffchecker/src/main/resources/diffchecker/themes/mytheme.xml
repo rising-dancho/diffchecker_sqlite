@@ -8,11 +8,11 @@
 <RSyntaxTheme version="1.0">
 
 	<!-- Omitting baseFont will use a system-appropriate monospaced. -->
-	<!--<baseFont family="..." size="13"/>-->
+	<baseFont family="Fira Code" size="16"/>
 
 	<!--  General editor colors. -->
 	<background color="17181C" />
-	<caret color="c1cbc2" />
+	<caret color="5f5e65" />
 	<selection useFG="false" bg="404E51" roundedEdges="false" />
 	<currentLineHighlight color="17181C" fade="false" />
 	<marginLine fg="394448" />
@@ -28,9 +28,9 @@
 	</secondaryLanguages>
 
 	<!-- Gutter styling. -->
-	<gutterBorder color="81969A" />
-	<lineNumbers fg="81969A" currentFG="a9b7c6"/>
-	<foldIndicator fg="6A8088" armedFg="a9b7c6" iconBg="2f383c" iconArmedBg="3f484c" />
+	<gutterBorder color="17181C" />
+	<lineNumbers fg="5f5e65" currentFG="c4c4c8"/>
+	<foldIndicator fg="6A8088" armedFg="c4c4c8" iconBg="2f383c" iconArmedBg="3f484c" />
 	<iconRowHeader activeLineRange="3399ff" />
 
 	<!-- Syntax tokens. -->

@@ -44,7 +44,6 @@ public class CustomTitleBar extends JPanel {
       Map.entry("Kotlin", SyntaxConstants.SYNTAX_STYLE_KOTLIN),
       Map.entry("Dockerfile", SyntaxConstants.SYNTAX_STYLE_DOCKERFILE),
       Map.entry("Go", SyntaxConstants.SYNTAX_STYLE_GO),
-      Map.entry("JSON (w/ comments)", SyntaxConstants.SYNTAX_STYLE_JSON_WITH_COMMENTS),
       Map.entry("Markdown", SyntaxConstants.SYNTAX_STYLE_MARKDOWN));
 
   // BUTTON COLOR AND HOVER COLOR

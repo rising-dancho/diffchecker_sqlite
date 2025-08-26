@@ -1,4 +1,4 @@
-package com.diffchecker.components;
+package com.diffchecker.backup;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -8,7 +8,7 @@ import java.awt.*;
 public class LineNumberingTextArea extends JTextArea implements DocumentListener {
     private final JTextArea textArea;
     private static final Color BACKGROUND_COLOR = new Color(0x17181C); // Dark gray
-    private static final Color NUMBER_COLOR = new Color(0x888690); // Light text
+    private static final Color NUMBER_COLOR = new Color(0x5f5e65); // Light text
 
     public LineNumberingTextArea(JTextArea textArea) {
         this.textArea = textArea;
