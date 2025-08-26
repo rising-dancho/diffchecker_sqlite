@@ -46,12 +46,15 @@ public class SplitTextTabPanel extends JPanel {
     // private static final Color WORD_ADDED_DARK = new Color(0x137B5A);
 
     // BORDER COLORS
-    private static final Color EDITOR_BORDER_COLOR = new Color(0x242526);
-    private static final Color ACTIVE_BORDER_COLOR = new Color(0x00744d);
+    private static final Color EDITOR_BORDER_COLOR_DARK = new Color(0x242526);
+    private static final Color ACTIVE_BORDER_COLOR_DARK = new Color(0x00744d);
+
+    private static final Color EDITOR_BORDER_COLOR_LIGHT = new Color(0xdddddd);
+    private static final Color ACTIVE_BORDER_COLOR_LIGHT = new Color(0x00af74);
 
     // DARK AND LIGHT MODE BACKGROUND COLORS
     private final Color BACKGROUND_DARK = new Color(0x17181C);
-    private final Color BACKGROUND_LIGHT = new Color(0xffffff);
+    private final Color BACKGROUND_LIGHT = new Color(0xF9FAFA);
     private final Color BACKGROUND_TEST = new Color(0x04395E);
 
     // BUTTON COLOR AND HOVER COLOR
@@ -283,9 +286,6 @@ public class SplitTextTabPanel extends JPanel {
         scroll1.setBorder(null);
         scroll2.setBorder(null);
 
-        scroll1.setBorder(BorderFactory.createLineBorder(EDITOR_BORDER_COLOR));
-        scroll2.setBorder(BorderFactory.createLineBorder(EDITOR_BORDER_COLOR));
-
         JPanel p1 = new JPanel(new BorderLayout());
         p1.add(scroll1, BorderLayout.CENTER);
 
@@ -483,9 +483,6 @@ public class SplitTextTabPanel extends JPanel {
 
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // REMOVE WHITE SQUARES AT THE CORNERS OF THE SCROLLBARS
-        removingWhiteSquaresAtCornersOfScrollBars();
-
         // APPLY ACTIVATED BORDER STYLE
         activatedEditorBorderStyle();
 
@@ -604,39 +601,6 @@ public class SplitTextTabPanel extends JPanel {
     }
 
     public void activatedEditorBorderStyle() {
-        // ADD BORDER UPON ACTIVATING TEXAREAS
-        jt1.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                jt1IsActive = true;
-                jt2IsActive = false;
-                scroll1.setBorder(BorderFactory.createLineBorder(ACTIVE_BORDER_COLOR));
-                scroll2.setBorder(BorderFactory.createLineBorder(EDITOR_BORDER_COLOR));
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                jt1IsActive = false;
-                scroll1.setBorder(BorderFactory.createLineBorder(EDITOR_BORDER_COLOR));
-            }
-        });
-
-        jt2.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                jt2IsActive = true;
-                jt1IsActive = false;
-                scroll2.setBorder(BorderFactory.createLineBorder(ACTIVE_BORDER_COLOR));
-                scroll1.setBorder(BorderFactory.createLineBorder(EDITOR_BORDER_COLOR));
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                jt2IsActive = false;
-                scroll2.setBorder(BorderFactory.createLineBorder(EDITOR_BORDER_COLOR));
-            }
-        });
-
         // STEAL FOCUS FROM TEXTAREAS WHEN CLICKING OUTSIDE
         addMouseListener(new MouseAdapter() {
 
@@ -650,12 +614,9 @@ public class SplitTextTabPanel extends JPanel {
         });
     }
 
-    public void removingWhiteSquaresAtCornersOfScrollBars() {
-
-    }
-
     private void applyTheme(boolean dark) {
-        Color scrollColor, scrollCornerColor, panelColor, editorMarginBackgroundColor, trackColor;
+        Color scrollColor, scrollCornerColor, panelColor, editorMarginBackgroundColor, trackColor, defaultBorderColor,
+                activeBorderColor;
 
         if (dark) {
             // DARK THEME
@@ -664,6 +625,8 @@ public class SplitTextTabPanel extends JPanel {
             panelColor = BACKGROUND_DARK;
             editorMarginBackgroundColor = BACKGROUND_DARK;
             trackColor = BACKGROUND_DARK;
+            defaultBorderColor = EDITOR_BORDER_COLOR_DARK;
+            activeBorderColor = ACTIVE_BORDER_COLOR_LIGHT;
         } else {
             // LIGHT THEME
             scrollColor = BACKGROUND_LIGHT;
@@ -671,6 +634,8 @@ public class SplitTextTabPanel extends JPanel {
             panelColor = BACKGROUND_LIGHT;
             editorMarginBackgroundColor = BACKGROUND_LIGHT;
             trackColor = BACKGROUND_LIGHT;
+            defaultBorderColor = EDITOR_BORDER_COLOR_LIGHT;
+            activeBorderColor = ACTIVE_BORDER_COLOR_LIGHT;
         }
 
         // FOR scroll1 TRACK BAR COLOR: value is passed down to each CustomScrollBarUI
@@ -688,11 +653,47 @@ public class SplitTextTabPanel extends JPanel {
         if (scroll2.getHorizontalScrollBar().getUI() instanceof CustomScrollBarUI ui4) {
             ui4.setTrackColor(trackColor);
         }
-
         scroll1.getHorizontalScrollBar().setBackground(scrollColor);
         scroll2.getHorizontalScrollBar().setBackground(scrollColor);
         scroll1.getVerticalScrollBar().setBackground(scrollColor);
         scroll2.getVerticalScrollBar().setBackground(scrollColor);
+
+        // CHANGE BORDER COLOR UPON ACTIVATING EDITORS
+        jt1.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                jt1IsActive = true;
+                jt2IsActive = false;
+                scroll1.setBorder(BorderFactory.createLineBorder(activeBorderColor));
+                scroll2.setBorder(BorderFactory.createLineBorder(defaultBorderColor));
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                jt1IsActive = false;
+                scroll1.setBorder(BorderFactory.createLineBorder(defaultBorderColor));
+            }
+        });
+
+        jt2.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                jt2IsActive = true;
+                jt1IsActive = false;
+                scroll2.setBorder(BorderFactory.createLineBorder(activeBorderColor));
+                scroll1.setBorder(BorderFactory.createLineBorder(defaultBorderColor));
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                jt2IsActive = false;
+                scroll2.setBorder(BorderFactory.createLineBorder(defaultBorderColor));
+            }
+        });
+
+        // DEFAULT BORDER COLOR FOR EDITORS
+        scroll1.setBorder(BorderFactory.createLineBorder(defaultBorderColor));
+        scroll2.setBorder(BorderFactory.createLineBorder(defaultBorderColor));
 
         // REMOVING THE WHITE SQUARES AT THE INTERSCTION OF THE SCROLLBARS
         scroll1CornerLeft.setBackground(scrollCornerColor);

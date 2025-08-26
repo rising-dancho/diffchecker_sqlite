@@ -19,6 +19,7 @@ public class CustomTitleBar extends JPanel {
   private final JPanel controlPanel;
 
   private final Color FONT_COLOR = new Color(0xd6d6d6);
+  // private final Color ICON_COLOR = new Color(0xc4c4c8);
 
   private Dimension previousSize;
 
@@ -116,6 +117,7 @@ public class CustomTitleBar extends JPanel {
     menuButton.setCornerRadius(10);
     menuButton.setMargin(new Insets(0, 0, 0, 0));
     menuButton.setFont(menuButton.getFont().deriveFont(14f));
+    // menuButton.setForeground(ICON_COLOR);
 
     // Example popup menu
     JPopupMenu popup = new JPopupMenu();
@@ -129,12 +131,24 @@ public class CustomTitleBar extends JPanel {
 
     menuButton.addActionListener(e -> popup.show(menuButton, 0, menuButton.getHeight()));
 
+    // RoundedButton themeToggleButton = new RoundedButton("🌙");
+    // themeToggleButton.setBackgroundColor(BTN_COLOR_BLACK);
+    // themeToggleButton.setHoverBackgroundColor(BTN_COLOR_DARKER);
+    // themeToggleButton.setBorderColor(BTN_COLOR_BLACK);
+    // themeToggleButton.setHoverBorderColor(BTN_COLOR_DARKER);
+    // themeToggleButton.setBorderThickness(2);
+    // themeToggleButton.setCornerRadius(10);
+    // themeToggleButton.setMargin(new Insets(0, 0, 0, 0));
+    // themeToggleButton.setFont(themeToggleButton.getFont().deriveFont(14f));
+    // themeToggleButton.setForeground(ICON_COLOR);
+
     controlPanel.add(minimizeButton);
     controlPanel.add(maximizeButton);
     controlPanel.add(closeButton);
 
     JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
     rightPanel.setOpaque(false);
+    // rightPanel.add(themeToggleButton); // add theme toggle first
     rightPanel.add(controlPanel); // then add minimize/maximize/close
 
     JPanel centerPanel = new JPanel();
@@ -208,8 +222,7 @@ public class CustomTitleBar extends JPanel {
 
     String javaScriptStyle = SYNTAX_STYLES.get("JavaScript");
     JMenuItem javaScriptItem = new JMenuItem("JavaScript");
-    javaScriptItem.addActionListener(e ->
-    splitPanel.setSyntaxStyleBoth(javaScriptStyle));
+    javaScriptItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(javaScriptStyle));
     syntaxHighlighting.add(javaScriptItem);
 
     String dartStyle = SYNTAX_STYLES.get("Dart");
@@ -219,8 +232,7 @@ public class CustomTitleBar extends JPanel {
 
     String typeScriptStyle = SYNTAX_STYLES.get("TypeScript");
     JMenuItem typeScriptItem = new JMenuItem("TypeScript");
-    typeScriptItem.addActionListener(e ->
-    splitPanel.setSyntaxStyleBoth(typeScriptStyle));
+    typeScriptItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(typeScriptStyle));
     syntaxHighlighting.add(typeScriptItem);
 
     String cssStyle = SYNTAX_STYLES.get("CSS");
