@@ -7,7 +7,7 @@ import java.awt.*;
 public class CustomScrollBarUI extends BasicScrollBarUI {
 
   private Color thumbColor = new Color(0x636363); // Light gray
-  private Color trackColor = new Color(0x17181C);
+  private Color BACKGROUND_DARK = new Color(0xffffff);
   private Color thumbHoverColor = new Color(0x8B8B8B); // Darker on hover
 
   // THINNER SCROLLBAR
@@ -54,7 +54,7 @@ public class CustomScrollBarUI extends BasicScrollBarUI {
     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
     // Paint the entire component background to avoid "white corners"
-    g2.setColor(trackColor);
+    g2.setColor(BACKGROUND_DARK);
     g2.fillRect(0, 0, c.getWidth(), c.getHeight());
 
     // Optionally: paint the visible track

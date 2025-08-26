@@ -45,13 +45,13 @@ public class SplitTextTabPanel extends JPanel {
     // private static final Color WORD_REMOVED_DARK = new Color(0x8B1E1D);
     // private static final Color WORD_ADDED_DARK = new Color(0x137B5A);
 
-    // FONT COLORS
+    // EDITOR COLORS
     private static final Color EDITOR_BACKGROUND = new Color(0x17181C); // Dark gray
     private static final Color EDITOR_BORDER_COLOR = new Color(0x242526); // Light text
     private static final Color ACTIVE_BORDER_COLOR = new Color(0x00744d);
 
     // BACKGROUND COLOR
-    private final Color BACKGROUND_DARK = new Color(0x17181C);
+    private final Color BACKGROUND_DARK = new Color(0xffffff);
 
     // BUTTON COLOR AND HOVER COLOR
     private static final Color BTN_COLOR = new Color(0x00af74);
@@ -222,15 +222,15 @@ public class SplitTextTabPanel extends JPanel {
         scroll2.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
 
         scroll1.getHorizontalScrollBar().setOpaque(true);
-        scroll1.getHorizontalScrollBar().setBackground(EDITOR_BACKGROUND);
+        scroll1.getHorizontalScrollBar().setBackground(BACKGROUND_DARK);
 
         scroll2.getHorizontalScrollBar().setOpaque(true);
-        scroll2.getHorizontalScrollBar().setBackground(EDITOR_BACKGROUND);
+        scroll2.getHorizontalScrollBar().setBackground(BACKGROUND_DARK);
         scroll1.getVerticalScrollBar().setOpaque(true);
-        scroll1.getVerticalScrollBar().setBackground(EDITOR_BACKGROUND);
+        scroll1.getVerticalScrollBar().setBackground(BACKGROUND_DARK);
 
         scroll2.getVerticalScrollBar().setOpaque(true);
-        scroll2.getVerticalScrollBar().setBackground(EDITOR_BACKGROUND);
+        scroll2.getVerticalScrollBar().setBackground(BACKGROUND_DARK);
 
         scroll1.setOpaque(false);
         scroll1.getViewport().setOpaque(false);
@@ -591,15 +591,15 @@ public class SplitTextTabPanel extends JPanel {
         // REMOVING THE WHITE SQUARES AT THE INTERSCTION OF THE SCROLLBARS
         // Unique corners for scroll1
         JPanel scroll1CornerLeft = new JPanel();
-        scroll1CornerLeft.setBackground(EDITOR_BACKGROUND);
+        scroll1CornerLeft.setBackground(BACKGROUND_DARK);
         JPanel scroll1CornerRight = new JPanel();
-        scroll1CornerRight.setBackground(EDITOR_BACKGROUND);
+        scroll1CornerRight.setBackground(BACKGROUND_DARK);
 
         // Unique corners for scroll2
         JPanel scroll2CornerLeft = new JPanel();
-        scroll2CornerLeft.setBackground(EDITOR_BACKGROUND);
+        scroll2CornerLeft.setBackground(BACKGROUND_DARK);
         JPanel scroll2CornerRight = new JPanel();
-        scroll2CornerRight.setBackground(EDITOR_BACKGROUND);
+        scroll2CornerRight.setBackground(BACKGROUND_DARK);
 
         // Set corners for scroll1
         scroll1.setCorner(JScrollPane.LOWER_LEFT_CORNER, scroll1CornerLeft);
