@@ -57,6 +57,10 @@ public class SplitTextTabPanel extends JPanel {
     private final Color BACKGROUND_LIGHT = new Color(0xF9FAFA);
     private final Color BACKGROUND_TEST = new Color(0x04395E);
 
+    // EDITOR LIGHT THEME SCROLLBAR TRACK COLOR
+    private final Color SCROLL_TRACK_DARK = new Color(0x17181C);
+    private final Color SCROLL_TRACK_LIGHT = new Color(0xFFFFFF);
+
     // BUTTON COLOR AND HOVER COLOR
     private static final Color BTN_COLOR = new Color(0x00af74);
     private static final Color BTN_COLOR_DARKER = new Color(0x00744d);
@@ -624,7 +628,7 @@ public class SplitTextTabPanel extends JPanel {
             scrollCornerColor = BACKGROUND_DARK;
             panelColor = BACKGROUND_DARK;
             editorMarginBackgroundColor = BACKGROUND_DARK;
-            trackColor = BACKGROUND_DARK;
+            trackColor = SCROLL_TRACK_DARK;
             defaultBorderColor = EDITOR_BORDER_COLOR_DARK;
             activeBorderColor = ACTIVE_BORDER_COLOR_LIGHT;
         } else {
@@ -633,7 +637,7 @@ public class SplitTextTabPanel extends JPanel {
             scrollCornerColor = BACKGROUND_LIGHT;
             panelColor = BACKGROUND_LIGHT;
             editorMarginBackgroundColor = BACKGROUND_LIGHT;
-            trackColor = BACKGROUND_LIGHT;
+            trackColor = SCROLL_TRACK_LIGHT;
             defaultBorderColor = EDITOR_BORDER_COLOR_LIGHT;
             activeBorderColor = ACTIVE_BORDER_COLOR_LIGHT;
         }
