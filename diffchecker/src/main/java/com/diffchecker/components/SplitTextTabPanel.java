@@ -78,9 +78,6 @@ public class SplitTextTabPanel extends JPanel {
     // THEME MANAGEMENT
     private boolean darkThemeEnabled = true;
 
-    // TRACKING UNSAVED CHANGES
-    private boolean isDirty = false;
-
     // FOR NAVIGATING DIFFS
     private final List<DiffGroup> diffGroups = new ArrayList<>();
     private int currentGroupIndex = -1;
@@ -108,6 +105,10 @@ public class SplitTextTabPanel extends JPanel {
         }
     };
 
+    // TRACKING UNSAVED CHANGES
+    private boolean isDirty = false;
+
+    // DOCUMENT LISTENERS TO TRACK CHANGES
     private void markDirty() {
         if (!isDirty) {
             isDirty = true;
@@ -137,7 +138,6 @@ public class SplitTextTabPanel extends JPanel {
         return isDirty;
     }
 
-    // DOCUMENT LISTENERS TO TRACK CHANGES
     private final DocumentListener dirtyListener1 = new DocumentListener() {
         public void insertUpdate(DocumentEvent e) {
             markDirty();
@@ -481,7 +481,7 @@ public class SplitTextTabPanel extends JPanel {
         activatedEditorBorderStyle();
 
         // APPLY SYNTAX HIGHLIGHT THEME
-        applySyntaxHighlightTheme();
+        // applySyntaxHighlightTheme();
     }
 
     // KEYBOARD SHORTCUTS
@@ -690,8 +690,8 @@ public class SplitTextTabPanel extends JPanel {
             // LIGHT THEME
             bg = Color.WHITE;
             fg = Color.BLACK;
-            border = Color.LIGHT_GRAY;
-            caret = Color.BLACK;
+            border = EDITOR_BORDER_COLOR;
+            caret =  EDITOR_CARRET_COLOR;
         }
 
         jt2.setBackground(bg);
