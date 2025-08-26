@@ -40,6 +40,35 @@ public class SplitTextTabPanel extends JPanel {
     private RSyntaxTextArea jt1;
     private RSyntaxTextArea jt2;
 
+    private final JScrollPane scroll1;
+    private final JScrollPane scroll2;
+
+    private FindReplaceSupport findReplace1;
+    private FindReplaceSupport findReplace2;
+
+    private RoundedButton highlightToggleBtn;
+    private RoundedButton wordWrapToggleBtn;
+
+    // CHECKING IF GREEN BORDER IS ACTIVE OR NOT
+    private boolean jt1IsActive = false;
+    private boolean jt2IsActive = false;
+
+    // THEME MANAGEMENT
+    private boolean darkThemeEnabled = true;
+
+    // TRACKING UNSAVED CHANGES
+    private boolean isDirty = false;
+
+    // FOR NAVIGATING DIFFS
+    private final List<DiffGroup> diffGroups = new ArrayList<>();
+    private int currentGroupIndex = -1;
+    private DiffData currentDiff; // to track the saved diff record
+
+    private static class DiffGroup {
+        EditorUtils.HighlightInfo left;
+        EditorUtils.HighlightInfo right;
+    }
+
     // WORD HIGHLIGHT
     private static final Color LINE_REMOVED = new Color(0x40191D);
     private static final Color LINE_ADDED = new Color(0x12342B);
@@ -52,61 +81,37 @@ public class SplitTextTabPanel extends JPanel {
     private static final Color EDITOR_BORDER_COLOR = new Color(0x242526); // Light text
     private static final Color ACTIVE_BORDER_COLOR = new Color(0x00744d);
 
+    // CARRET COLOR
+    private static final Color EDITOR_CARRET_COLOR = new Color(0xD4D4D4); // Light text
+
     // BACKGROUND COLOR
-    // private static final Color BACKGROUND_LIGHT = new Color(0xF9FAFA);
     private final Color BACKGROUND_DARK = new Color(0x17181C);
-    private final Color BACKGROUND_LABEL_DARK = new Color(0x17181C);
 
     // BUTTON COLOR AND HOVER COLOR
     private static final Color BTN_COLOR = new Color(0x00af74);
     private static final Color BTN_COLOR_DARKER = new Color(0x00744d);
     private static final Color BTN_COLOR_BLACK = new Color(0x242526);
 
-    // SCROLL BARS
-    private final JScrollPane scroll1;
-    private final JScrollPane scroll2;
-
-    // SUMMARY LABELS
-    private final JPanel leftLabelPanel;
-    private final JPanel rightLabelPanel;
-
-    private FindReplaceSupport findReplace1;
-    private FindReplaceSupport findReplace2;
-
-    // TOGGLE BUTTONS
-    RoundedButton highlightToggleBtn;
-    RoundedButton wordWrapToggleBtn;
-
-    // THEME MANAGEMENT
-    private boolean darkThemeEnabled = true; // default
-
-    // TRACKING UNSAVED CHANGES
-    private boolean isDirty = false;
-
     private void markDirty() {
-        isDirty = true;
+        if (!isDirty) {
+            isDirty = true;
+            // Append * to tab title
+            Container parent = getParent();
+            while (parent != null && !(parent instanceof JTabbedPane)) {
+                parent = parent.getParent();
+            }
+            if (parent instanceof JTabbedPane) {
+                JTabbedPane tabbedPane = (JTabbedPane) parent;
+                int index = tabbedPane.indexOfComponent(this);
+                if (index != -1) {
+                    String title = tabbedPane.getTitleAt(index);
+                    if (!title.endsWith("*")) {
+                        tabbedPane.setTitleAt(index, title + "*");
+                    }
+                }
+            }
+        }
     }
-
-    // public void markDirty() {
-    // if (!isDirty) {
-    // isDirty = true;
-    // // Append * to tab title
-    // Container parent = getParent();
-    // while (parent != null && !(parent instanceof JTabbedPane)) {
-    // parent = parent.getParent();
-    // }
-    // if (parent instanceof JTabbedPane) {
-    // JTabbedPane tabbedPane = (JTabbedPane) parent;
-    // int index = tabbedPane.indexOfComponent(this);
-    // if (index != -1) {
-    // String title = tabbedPane.getTitleAt(index);
-    // if (!title.endsWith("*")) {
-    // tabbedPane.setTitleAt(index, title + "*");
-    // }
-    // }
-    // }
-    // }
-    // }
 
     private void markSaved() {
         isDirty = false;
@@ -114,16 +119,6 @@ public class SplitTextTabPanel extends JPanel {
 
     public boolean hasUnsavedChanges() {
         return isDirty;
-    }
-
-    // FOR NAVIGATING DIFFS
-    private final List<DiffGroup> diffGroups = new ArrayList<>();
-    private int currentGroupIndex = -1;
-    private DiffData currentDiff; // keep reference
-
-    private static class DiffGroup {
-        EditorUtils.HighlightInfo left;
-        EditorUtils.HighlightInfo right;
     }
 
     // DOCUMENT LISTENERS TO TRACK CHANGES
@@ -172,136 +167,25 @@ public class SplitTextTabPanel extends JPanel {
         }
     };
 
-    // CHECKING IF GREEN BORDER IS ACTIVE OR NOT
-    private boolean jt1IsActive = false;
-    private boolean jt2IsActive = false;
-
     public SplitTextTabPanel() {
-
         setLayout(new BorderLayout());
+        setKeyboardShortcuts();
 
-        // CTRL + S HOTKEY FOR SAVING
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("control S"), "saveDiff");
-
-        getActionMap().put("saveDiff", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveToDatabase();
-            }
-        });
-
-        // CTRL + Q HOTKEY FOR TOGGLING WORD WRAP
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("alt Q"), "toggleWordWrap");
-
-        getActionMap().put("toggleWordWrap", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                wordWrapToggle();
-            }
-        });
-
-        // CTRL + E HOTKEY FOR TOGGLING WORD HIGHLIGHT
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("alt E"), "toggleHighlightWord");
-
-        getActionMap().put("toggleHighlightWord", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                highlightWordToggle();
-            }
-        });
-
-        // CTRL + SHIFT + ENTER hotkey for diff checking
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
-                        "highlightDiffs");
-
-        getActionMap().put("highlightDiffs", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    highlightDiffs();
-                } catch (BadLocationException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
-
-        // CTRL + SHIFT + X hotkey for Deleting from database
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
-                        "deleteDiff");
-
-        getActionMap().put("deleteDiff", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                deleteDiff();
-            }
-        });
-
-        // ALT + LEFT = Previous diff
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.ALT_DOWN_MASK), "previousDiff");
-
-        getActionMap().put("previousDiff", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                previousDiff();
-            }
-        });
-
-        // ALT + RIGHT = Next diff
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.ALT_DOWN_MASK), "nextDiff");
-
-        getActionMap().put("nextDiff", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                nextDiff();
-            }
-        });
-
-        // CTRL + R HOTKEY FOR CLEARING
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("control R"), "clearTextAreas");
-
-        getActionMap().put("clearTextAreas", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                jt1.setText("");
-                jt2.setText("");
-                leftLabelPanel.setVisible(false);
-                rightLabelPanel.setVisible(false);
-            }
-        });
-
-        // CTRL + T HOTKEY FOR TOGGLING THEME
-        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("control G"), "toggleTheme");
-
-        getActionMap().put("toggleTheme", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                darkThemeEnabled = !darkThemeEnabled;
-                applyTheme(darkThemeEnabled);
-            }
-        });
-
+        // DECLARE TEXT AREAS
         jt1 = EditorUtils.createRSyntaxArea();
         jt2 = EditorUtils.createRSyntaxArea();
 
+        // TRACK EDITOR CHANGES
         jt1.getDocument().addDocumentListener(dirtyListener1);
         jt2.getDocument().addDocumentListener(dirtyListener2);
-
-        // DISABLE CURRENT LINE HIGHLIGHTING SINCE IT CLASHES WITH DIFF HIGHLIGHT
-        jt1.setHighlightCurrentLine(false);
-        jt2.setHighlightCurrentLine(false);
 
         // TRACK FOCUS
         jt1.addFocusListener(trackFocus);
         jt2.addFocusListener(trackFocus);
+
+        // DISABLE CURRENT LINE HIGHLIGHTING SINCE IT CLASHES WITH DIFF HIGHLIGHT
+        jt1.setHighlightCurrentLine(false);
+        jt2.setHighlightCurrentLine(false);
 
         // Disable mark occurrences (highlights and tooltips for matching tokens)
         jt1.setMarkOccurrences(false);
@@ -325,7 +209,7 @@ public class SplitTextTabPanel extends JPanel {
         scroll2.getHorizontalScrollBar().setUI(new CustomScrollBarUI());
 
         scroll1.getHorizontalScrollBar().setOpaque(true);
-        scroll1.getHorizontalScrollBar().setBackground(EDITOR_BACKGROUND); // Match your dark theme
+        scroll1.getHorizontalScrollBar().setBackground(EDITOR_BACKGROUND);
 
         scroll2.getHorizontalScrollBar().setOpaque(true);
         scroll2.getHorizontalScrollBar().setBackground(EDITOR_BACKGROUND);
@@ -387,19 +271,10 @@ public class SplitTextTabPanel extends JPanel {
         scroll1.setBorder(BorderFactory.createLineBorder(EDITOR_BORDER_COLOR));
         scroll2.setBorder(BorderFactory.createLineBorder(EDITOR_BORDER_COLOR));
 
-        // Create label panel for each text area
-        leftLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        leftLabelPanel.setBackground(BACKGROUND_LABEL_DARK);
-
-        rightLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        rightLabelPanel.setBackground(BACKGROUND_LABEL_DARK);
-
         JPanel p1 = new JPanel(new BorderLayout());
-        p1.add(leftLabelPanel, BorderLayout.NORTH);
         p1.add(scroll1, BorderLayout.CENTER);
 
         JPanel p2 = new JPanel(new BorderLayout());
-        p2.add(rightLabelPanel, BorderLayout.NORTH);
         p2.add(scroll2, BorderLayout.CENTER);
 
         // SIDE BY SIDE TEXT AREAS
@@ -413,9 +288,6 @@ public class SplitTextTabPanel extends JPanel {
         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // top, left, bottom, right
         contentPanel.setBackground(BACKGROUND_DARK); // match your theme
         contentPanel.add(sideBySidePanel, BorderLayout.CENTER);
-
-        // TEST BORDER
-        // contentPanel.setBorder(BorderFactory.createLineBorder(REMOVAL_LABEL_COLOR_DARK));
 
         add(contentPanel, BorderLayout.CENTER);
 
@@ -540,8 +412,6 @@ public class SplitTextTabPanel extends JPanel {
         clearBtn.addActionListener(e -> {
             jt1.setText("");
             jt2.setText("");
-            leftLabelPanel.setVisible(false);
-            rightLabelPanel.setVisible(false);
         });
 
         RoundedButton deleteBtn = new RoundedButton("✖");
@@ -605,22 +475,127 @@ public class SplitTextTabPanel extends JPanel {
 
         add(bottomPanel, BorderLayout.SOUTH);
 
-        // Add labels above each scroll pane
-        p1.add(leftLabelPanel, BorderLayout.NORTH);
-        p2.add(rightLabelPanel, BorderLayout.NORTH);
+        // REMOVE WHITE SQUARES AT THE CORNERS OF THE SCROLLBARS
+        removingWhiteSquaresAtCornersOfScrollBars();
 
-        // INITIALLY HIDE SUMMARY LABELS
-        leftLabelPanel.setVisible(false);
-        rightLabelPanel.setVisible(false);
+        // APPLY ACTIVATED BORDER STYLE
+        activatedEditorBorderStyle();
 
-        jt1.setBackground(EDITOR_BACKGROUND);
-        jt1.setForeground(EDITOR_FONT_COLOR);
-        jt1.setCaretColor(EDITOR_FONT_COLOR); // make the cursor visible
+        // APPLY SYNTAX HIGHLIGHT THEME
+        applySyntaxHighlightTheme();
+    }
 
-        jt2.setBackground(EDITOR_BACKGROUND);
-        jt2.setForeground(EDITOR_FONT_COLOR);
-        jt2.setCaretColor(EDITOR_FONT_COLOR);
+    // KEYBOARD SHORTCUTS
+    public void setKeyboardShortcuts() {
+        // CTRL + S HOTKEY FOR SAVING
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("control S"), "saveDiff");
 
+        getActionMap().put("saveDiff", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveToDatabase();
+            }
+        });
+
+        // CTRL + Q HOTKEY FOR TOGGLING WORD WRAP
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("alt Q"), "toggleWordWrap");
+
+        getActionMap().put("toggleWordWrap", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                wordWrapToggle();
+            }
+        });
+
+        // CTRL + E HOTKEY FOR TOGGLING WORD HIGHLIGHT
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("alt E"), "toggleHighlightWord");
+
+        getActionMap().put("toggleHighlightWord", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                highlightWordToggle();
+            }
+        });
+
+        // CTRL + SHIFT + ENTER hotkey for diff checking
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+                        "highlightDiffs");
+
+        getActionMap().put("highlightDiffs", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    highlightDiffs();
+                } catch (BadLocationException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        // CTRL + SHIFT + X hotkey for Deleting from database
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
+                        "deleteDiff");
+
+        getActionMap().put("deleteDiff", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deleteDiff();
+            }
+        });
+
+        // ALT + LEFT = Previous diff
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, InputEvent.ALT_DOWN_MASK), "previousDiff");
+
+        getActionMap().put("previousDiff", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                previousDiff();
+            }
+        });
+
+        // ALT + RIGHT = Next diff
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, InputEvent.ALT_DOWN_MASK), "nextDiff");
+
+        getActionMap().put("nextDiff", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                nextDiff();
+            }
+        });
+
+        // CTRL + R HOTKEY FOR CLEARING
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("control R"), "clearTextAreas");
+
+        getActionMap().put("clearTextAreas", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jt1.setText("");
+                jt2.setText("");
+            }
+        });
+
+        // CTRL + T HOTKEY FOR TOGGLING THEME
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("control G"), "toggleTheme");
+
+        getActionMap().put("toggleTheme", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                darkThemeEnabled = !darkThemeEnabled;
+                applyTheme(darkThemeEnabled);
+            }
+        });
+    }
+
+    public void removingWhiteSquaresAtCornersOfScrollBars() {
         // REMOVING THE WHITE SQUARES AT THE INTERSCTION OF THE SCROLLBARS
         // Unique corners for scroll1
         JPanel scroll1CornerLeft = new JPanel();
@@ -641,20 +616,9 @@ public class SplitTextTabPanel extends JPanel {
         // Set corners for scroll2
         scroll2.setCorner(JScrollPane.LOWER_LEFT_CORNER, scroll2CornerLeft);
         scroll2.setCorner(JScrollPane.LOWER_RIGHT_CORNER, scroll2CornerRight);
+    }
 
-        // TEST BORDER
-        // scroll1.setBorder(BorderFactory.createLineBorder(REMOVAL_LABEL_COLOR_DARK));
-
-        // ------------- end
-
-        // Scroll panes (optional, matches textarea bg)
-        scroll1.getViewport().setBackground(EDITOR_BACKGROUND);
-        scroll2.getViewport().setBackground(EDITOR_BACKGROUND);
-
-        // Background of the left/right label panels
-        leftLabelPanel.setBackground(EDITOR_BACKGROUND);
-        rightLabelPanel.setBackground(EDITOR_BACKGROUND);
-
+    public void activatedEditorBorderStyle() {
         // ADD BORDER UPON ACTIVATING TEXAREAS
         jt1.addFocusListener(new FocusAdapter() {
             @Override
@@ -688,7 +652,7 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        // Background click handler
+        // STEAL FOCUS FROM TEXTAREAS WHEN CLICKING OUTSIDE
         addMouseListener(new MouseAdapter() {
 
             public void mousePressed(java.awt.event.MouseEvent e) {
@@ -699,12 +663,6 @@ public class SplitTextTabPanel extends JPanel {
                 }
             }
         });
-
-        // TEST BORDER
-        // setBorder(BorderFactory.createLineBorder(REMOVAL_LABEL_COLOR_DARK));
-
-        // APPLY SYNTAX HIGHLIGHT THEME
-        applySyntaxHighlightTheme();
     }
 
     @Override
@@ -719,7 +677,60 @@ public class SplitTextTabPanel extends JPanel {
         }
     }
 
-    // OR: apply style to both editors at once
+    // APPLY THEME
+    private void applyTheme(boolean dark) {
+        Color bg, fg, border, caret;
+
+        if (dark) {
+            // DARK THEME
+            bg = EDITOR_BACKGROUND;
+            fg = EDITOR_FONT_COLOR;
+            border = EDITOR_BORDER_COLOR;
+            caret = EDITOR_CARRET_COLOR;
+        } else {
+            // LIGHT THEME
+            bg = Color.WHITE;
+            fg = Color.BLACK;
+            border = Color.LIGHT_GRAY;
+            caret = Color.BLACK;
+        }
+
+        jt2.setBackground(bg);
+        jt2.setForeground(fg);
+        jt2.setCaretColor(caret);
+
+        // Apply to both editors
+        jt1.setBackground(bg);
+        jt1.setForeground(fg);
+        jt1.setCaretColor(caret);
+
+        jt2.setBackground(bg);
+        jt2.setForeground(fg);
+        jt2.setCaretColor(caret);
+
+        // Apply to scroll panes
+        scroll1.getViewport().setBackground(bg);
+        scroll2.getViewport().setBackground(bg);
+        scroll1.setBorder(BorderFactory.createLineBorder(border));
+        scroll2.setBorder(BorderFactory.createLineBorder(border));
+
+        revalidate();
+        repaint();
+    }
+
+    // APPLY THEME
+    public void applySyntaxHighlightTheme() {
+        // Apply your theme from XML:
+        try (InputStream in = getClass().getResourceAsStream("/diffchecker/themes/mytheme.xml")) {
+            Theme theme = Theme.load(in);
+            theme.apply(jt1);
+            theme.apply(jt2);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // APPLY SYNTAX HIGHLIGHTING : CONNECTED TO CUSTOM TITLE BAR
     public void setSyntaxStyleBoth(String style) {
         if (jt1 != null)
             jt1.setSyntaxEditingStyle(style);
@@ -742,23 +753,6 @@ public class SplitTextTabPanel extends JPanel {
         }
     }
 
-    private void focusDiffGroup(DiffGroup group) {
-        if (group == null)
-            return;
-
-        // // Steal focus from text areas temporarily
-        requestFocusInWindow();
-
-        if (group.left != null) {
-            EditorUtils.scrollToOffset(jt1, group.left.startOffset);
-        }
-
-        if (group.right != null) {
-            EditorUtils.scrollToOffset(jt2, group.right.startOffset);
-        }
-
-    }
-
     private void wordWrapToggle() {
         wordWrapEnabled = !wordWrapEnabled; // toggle state
         wordWrapToggleBtn.setSelectedState(wordWrapEnabled);
@@ -774,6 +768,23 @@ public class SplitTextTabPanel extends JPanel {
         jt1.repaint();
         jt2.revalidate();
         jt2.repaint();
+    }
+
+    private void focusDiffGroup(DiffGroup group) {
+        if (group == null)
+            return;
+
+        // // Steal focus from text areas temporarily
+        requestFocusInWindow();
+
+        if (group.left != null) {
+            EditorUtils.scrollToOffset(jt1, group.left.startOffset);
+        }
+
+        if (group.right != null) {
+            EditorUtils.scrollToOffset(jt2, group.right.startOffset);
+        }
+
     }
 
     private void previousDiff() {
@@ -897,55 +908,6 @@ public class SplitTextTabPanel extends JPanel {
         }
     }
 
-    private void applyTheme(boolean dark) {
-        Color bg, fg, border, caret;
-
-        if (dark) {
-            bg = new Color(0x17181C); // Dark gray
-            fg = new Color(0xD4D4D4); // Light text
-            border = new Color(0x242526);
-            caret = fg;
-        } else {
-            bg = Color.WHITE;
-            fg = Color.BLACK;
-            border = Color.LIGHT_GRAY;
-            caret = Color.BLACK;
-        }
-
-        // Apply to both editors
-        jt1.setBackground(bg);
-        jt1.setForeground(fg);
-        jt1.setCaretColor(caret);
-
-        jt2.setBackground(bg);
-        jt2.setForeground(fg);
-        jt2.setCaretColor(caret);
-
-        // Apply to scroll panes
-        scroll1.getViewport().setBackground(bg);
-        scroll2.getViewport().setBackground(bg);
-        scroll1.setBorder(BorderFactory.createLineBorder(border));
-        scroll2.setBorder(BorderFactory.createLineBorder(border));
-
-        leftLabelPanel.setBackground(bg);
-        rightLabelPanel.setBackground(bg);
-
-        revalidate();
-        repaint();
-    }
-
-    // APPLY THEME
-    public void applySyntaxHighlightTheme() {
-        // Apply your theme from XML:
-        try (InputStream in = getClass().getResourceAsStream("/diffchecker/themes/mytheme.xml")) {
-            Theme theme = Theme.load(in);
-            theme.apply(jt1);
-            theme.apply(jt2);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     // LOAD/STORE FROM DATABASE
     public void loadFromDatabase(DiffData data) {
         currentDiff = data;
@@ -1035,4 +997,9 @@ public class SplitTextTabPanel extends JPanel {
             markSaved();
         }
     }
+
+    // GHOST CODES FOR REFERENCE
+    public void ghostCodes() {
+    }
+
 }
