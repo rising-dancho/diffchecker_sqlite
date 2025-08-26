@@ -28,26 +28,27 @@ import java.util.List;
 
 // RSyntaxTextArea dependencies
 import org.fife.ui.rsyntaxtextarea.*;
-// RSyntaxTextArea search and replace dependencies
-import org.fife.ui.rtextarea.*;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
+// RSyntaxTextArea search and replace dependencies
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class SplitTextTabPanel extends JPanel {
     // WORD HIGHLIGHT
-    private static final Color LINE_REMOVED = new Color(0x40191D);
-    private static final Color LINE_ADDED = new Color(0x12342B);
-    private static final Color WORD_REMOVED = new Color(0x8B1E1D);
-    private static final Color WORD_ADDED = new Color(0x137B5A);
+    private static final Color LINE_REMOVED_DARK = new Color(0x40191D);
+    private static final Color LINE_ADDED_DARK = new Color(0x12342B);
+    private static final Color WORD_REMOVED_DARK = new Color(0x8B1E1D);
+    private static final Color WORD_ADDED_DARK = new Color(0x137B5A);
+
+    // private static final Color LINE_REMOVED_DARK = new Color(0x40191D);
+    // private static final Color LINE_ADDED_DARK = new Color(0x12342B);
+    // private static final Color WORD_REMOVED_DARK = new Color(0x8B1E1D);
+    // private static final Color WORD_ADDED_DARK = new Color(0x137B5A);
 
     // FONT COLORS
     private static final Color EDITOR_BACKGROUND = new Color(0x17181C); // Dark gray
-    private static final Color EDITOR_FONT_COLOR = new Color(0xD4D4D4); // Light text
     private static final Color EDITOR_BORDER_COLOR = new Color(0x242526); // Light text
     private static final Color ACTIVE_BORDER_COLOR = new Color(0x00744d);
-
-    // CARRET COLOR
-    private static final Color EDITOR_CARRET_COLOR = new Color(0xD4D4D4); // Light text
 
     // BACKGROUND COLOR
     private final Color BACKGROUND_DARK = new Color(0x17181C);
@@ -57,15 +58,15 @@ public class SplitTextTabPanel extends JPanel {
     private static final Color BTN_COLOR_DARKER = new Color(0x00744d);
     private static final Color BTN_COLOR_BLACK = new Color(0x242526);
 
+    // Keep the XML's size
+    private static final int sizeFromXML = 14; // match your <baseFont size="14"/>
+
     // DEFAULT DECLARATIONS
-    private static final String PACKAGE_NAME = "diffchecker";
     private RSyntaxTextArea jt1;
     private RSyntaxTextArea jt2;
 
-    // private final JScrollPane scroll1;
-    // private final JScrollPane scroll2;
-    private final CustomLineNumbers scroll1;
-    private final CustomLineNumbers scroll2;
+    private final RTextScrollPane scroll1;
+    private final RTextScrollPane scroll2;
 
     private FindReplaceSupport findReplace1;
     private FindReplaceSupport findReplace2;
@@ -188,6 +189,9 @@ public class SplitTextTabPanel extends JPanel {
         jt1 = EditorUtils.createRSyntaxArea();
         jt2 = EditorUtils.createRSyntaxArea();
 
+        jt1.setCodeFoldingEnabled(true);
+        jt2.setCodeFoldingEnabled(true);
+
         // TRACK EDITOR CHANGES
         jt1.getDocument().addDocumentListener(dirtyListener1);
         jt2.getDocument().addDocumentListener(dirtyListener2);
@@ -208,10 +212,8 @@ public class SplitTextTabPanel extends JPanel {
         jt1.setBracketMatchingEnabled(false);
         jt2.setBracketMatchingEnabled(false);
 
-        // scroll1 = new RTextScrollPane(jt1);
-        // scroll2 = new RTextScrollPane(jt2);
-        scroll1 = new CustomLineNumbers(jt1);
-        scroll2 = new CustomLineNumbers(jt2);
+        scroll1 = new RTextScrollPane(jt1);
+        scroll2 = new RTextScrollPane(jt2);
 
         // CUSTOM SCROLLBARS
         scroll1.getVerticalScrollBar().setUI(new CustomScrollBarUI());
@@ -470,6 +472,8 @@ public class SplitTextTabPanel extends JPanel {
 
         // APPLY ACTIVATED BORDER STYLE
         activatedEditorBorderStyle();
+
+        applyTheme(darkThemeEnabled);
     }
 
     // KEYBOARD SHORTCUTS
@@ -652,48 +656,39 @@ public class SplitTextTabPanel extends JPanel {
         });
     }
 
-    // // APPLY THEME
-    // private void applyTheme(boolean dark) {
-    // Color bg, fg, border, caret;
-
-    // if (dark) {
-    // // DARK THEME
-    // bg = EDITOR_BACKGROUND;
-    // fg = EDITOR_FONT_COLOR;
-    // border = EDITOR_BORDER_COLOR;
-    // caret = EDITOR_CARRET_COLOR;
-    // } else {
-    // // LIGHT THEME
-    // bg = Color.WHITE;
-    // fg = Color.BLACK;
-    // border = EDITOR_BORDER_COLOR;
-    // caret = EDITOR_CARRET_COLOR;
-    // }
-
-    // jt2.setBackground(bg);
-    // jt2.setForeground(fg);
-    // jt2.setCaretColor(caret);
-
-    // // Apply to both editors
-    // jt1.setBackground(bg);
-    // jt1.setForeground(fg);
-    // jt1.setCaretColor(caret);
-
-    // jt2.setBackground(bg);
-    // jt2.setForeground(fg);
-    // jt2.setCaretColor(caret);
-
-    // // Apply to scroll panes
-    // scroll1.getViewport().setBackground(bg);
-    // scroll2.getViewport().setBackground(bg);
-    // scroll1.setBorder(BorderFactory.createLineBorder(border));
-    // scroll2.setBorder(BorderFactory.createLineBorder(border));
-
-    // revalidate();
-    // repaint();
-    // }
-
     private void applyTheme(boolean dark) {
+        // Color bg, fg, border, caret;
+
+        // if (dark) {
+        // // DARK THEME
+        // bg = EDITOR_BACKGROUND;
+        // fg = EDITOR_FONT_COLOR;
+        // border = EDITOR_BORDER_COLOR;
+        // caret = EDITOR_CARRET_COLOR;
+        // } else {
+        // // LIGHT THEME
+        // bg = Color.WHITE;
+        // fg = Color.BLACK;
+        // border = EDITOR_BORDER_COLOR;
+        // caret = EDITOR_CARRET_COLOR;
+        // }
+
+        // jt2.setBackground(bg);
+        // jt2.setForeground(fg);
+        // jt2.setCaretColor(caret);
+
+        // // Apply to both editors
+        // jt1.setBackground(bg);
+        // jt1.setForeground(fg);
+        // jt1.setCaretColor(caret);
+
+        // jt2.setBackground(bg);
+        // jt2.setForeground(fg);
+        // jt2.setCaretColor(caret);
+
+        // revalidate();
+        // repaint();
+
         String themePath = dark ? "/diffchecker/themes/dark.xml"
                 : "/diffchecker/themes/light.xml";
 
@@ -712,8 +707,6 @@ public class SplitTextTabPanel extends JPanel {
                 InputStream fontStream = getClass().getResourceAsStream("/diffchecker/fonts/FiraCode-Regular.ttf");
                 Font firaCode = Font.createFont(Font.TRUETYPE_FONT, fontStream);
 
-                // Keep the XML's size
-                int sizeFromXML = 16; // match your <baseFont size="20"/>
                 firaCode = firaCode.deriveFont(Font.PLAIN, sizeFromXML);
 
                 jt1.setFont(firaCode);
@@ -858,20 +851,20 @@ public class SplitTextTabPanel extends JPanel {
 
             switch (delta.getType()) {
                 case DELETE:
-                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED);
+                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED_DARK);
                     int startOffsetLeft = jt1.getLineStartOffset(origPos);
                     group.left = new EditorUtils.HighlightInfo(jt1, startOffsetLeft, startOffsetLeft);
                     break;
 
                 case INSERT:
-                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED);
+                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED_DARK);
                     int startOffsetRight = jt2.getLineStartOffset(revPos);
                     group.right = new EditorUtils.HighlightInfo(jt2, startOffsetRight, startOffsetRight);
                     break;
 
                 case CHANGE:
-                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED);
-                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED);
+                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED_DARK);
+                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED_DARK);
 
                     int lOff = jt1.getLineStartOffset(origPos);
                     int rOff = jt2.getLineStartOffset(revPos);
@@ -885,12 +878,12 @@ public class SplitTextTabPanel extends JPanel {
                                     jt1, origPos + i,
                                     delta.getSource().getLines().get(i),
                                     delta.getTarget().getLines().get(i),
-                                    WORD_REMOVED, true);
+                                    WORD_REMOVED_DARK, true);
                             EditorUtils.highlightWordDiffs(
                                     jt2, revPos + i,
                                     delta.getSource().getLines().get(i),
                                     delta.getTarget().getLines().get(i),
-                                    WORD_ADDED, false);
+                                    WORD_ADDED_DARK, false);
                         }
                     }
                     break;
