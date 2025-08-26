@@ -8,11 +8,11 @@
 <RSyntaxTheme version="1.0">
 
    <!-- Omitting baseFont will use a system-appropriate monospaced. -->
-   <baseFont family="Fira Code" size="16" />
+   <baseFont family="Fira Code" size="15" />
 
    <!--  General editor colors. -->
    <background color="E6E7ED" />
-   <caret color="080808" />
+   <caret color="030303" />
    <selection bg="default" fg="default" />
    <currentLineHighlight color="e8f2fe" fade="false" />
    <marginLine fg="b0b4b9" />
@@ -34,7 +34,7 @@
 
    <!-- Syntax tokens. -->
    <tokenStyles>
-      <style token="IDENTIFIER" fg="080808" />
+      <style token="IDENTIFIER" fg="030303" />
       <style token="RESERVED_WORD" fg="06568f" bold="true" />
       <style token="RESERVED_WORD_2" fg="06568f" bold="true" />
       <style token="ANNOTATION" fg="808080" />

@@ -34,16 +34,25 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class SplitTextTabPanel extends JPanel {
+    // Keep the XML's size
+    private static final int sizeFromXML = 15; // match your <baseFont size="16"/>
+
+    // Active highlight colors (switch based on theme)
+    private Color lineRemovedColor;
+    private Color lineAddedColor;
+    private Color wordRemovedColor;
+    private Color wordAddedColor;
+
     // WORD HIGHLIGHT
     private static final Color LINE_REMOVED_DARK = new Color(0x40191D);
     private static final Color LINE_ADDED_DARK = new Color(0x12342B);
     private static final Color WORD_REMOVED_DARK = new Color(0x8B1E1D);
     private static final Color WORD_ADDED_DARK = new Color(0x137B5A);
 
-    // private static final Color LINE_REMOVED_DARK = new Color(0x40191D);
-    // private static final Color LINE_ADDED_DARK = new Color(0x12342B);
-    // private static final Color WORD_REMOVED_DARK = new Color(0x8B1E1D);
-    // private static final Color WORD_ADDED_DARK = new Color(0x137B5A);
+    private static final Color LINE_REMOVED_LIGHT = new Color(0xfcc2c2);
+    private static final Color LINE_ADDED_LIGHT = new Color(0xb5eeda);
+    private static final Color WORD_REMOVED_LIGHT = new Color(0xFBA5A5);
+    private static final Color WORD_ADDED_LIGHT = new Color(0x64dbab);
 
     // BORDER COLORS
     private static final Color EDITOR_BORDER_COLOR_DARK = new Color(0x242526);
@@ -69,9 +78,6 @@ public class SplitTextTabPanel extends JPanel {
     private static final Color BTN_COLOR = new Color(0x00af74);
     private static final Color BTN_COLOR_DARKER = new Color(0x00744d);
     private static final Color BTN_COLOR_BLACK = new Color(0x242526);
-
-    // Keep the XML's size
-    private static final int sizeFromXML = 14; // match your <baseFont size="14"/>
 
     // DEFAULT DECLARATIONS
     private RSyntaxTextArea jt1;
@@ -622,6 +628,71 @@ public class SplitTextTabPanel extends JPanel {
         });
     }
 
+    private void highlightDiffs() throws BadLocationException {
+        diffGroups.clear();
+        currentGroupIndex = -1;
+
+        String leftText = jt1.getText();
+        String rightText = jt2.getText();
+
+        List<String> leftLines = Arrays.asList(leftText.split("\n"));
+        List<String> rightLines = Arrays.asList(rightText.split("\n"));
+
+        Patch<String> patch = DiffUtils.diff(leftLines, rightLines);
+
+        for (AbstractDelta<String> delta : patch.getDeltas()) {
+            int origPos = delta.getSource().getPosition();
+            int revPos = delta.getTarget().getPosition();
+
+            // we'll keep the first line of each side as the "jump" point
+            DiffGroup group = new DiffGroup();
+
+            switch (delta.getType()) {
+                case DELETE:
+                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), lineRemovedColor);
+                    int startOffsetLeft = jt1.getLineStartOffset(origPos);
+                    group.left = new EditorUtils.HighlightInfo(jt1, startOffsetLeft, startOffsetLeft);
+                    break;
+
+                case INSERT:
+                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), lineAddedColor);
+                    int startOffsetRight = jt2.getLineStartOffset(revPos);
+                    group.right = new EditorUtils.HighlightInfo(jt2, startOffsetRight, startOffsetRight);
+                    break;
+
+                case CHANGE:
+                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), lineRemovedColor);
+                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), lineAddedColor);
+
+                    int lOff = jt1.getLineStartOffset(origPos);
+                    int rOff = jt2.getLineStartOffset(revPos);
+                    group.left = new EditorUtils.HighlightInfo(jt1, lOff, lOff);
+                    group.right = new EditorUtils.HighlightInfo(jt2, rOff, rOff);
+
+                    // Word-level highlighting (only if toggle ON)
+                    if (wordHighlightEnabled) {
+                        for (int i = 0; i < Math.min(delta.getSource().size(), delta.getTarget().size()); i++) {
+                            EditorUtils.highlightWordDiffs(
+                                    jt1, origPos + i,
+                                    delta.getSource().getLines().get(i),
+                                    delta.getTarget().getLines().get(i),
+                                    wordRemovedColor, true);
+                            EditorUtils.highlightWordDiffs(
+                                    jt2, revPos + i,
+                                    delta.getSource().getLines().get(i),
+                                    delta.getTarget().getLines().get(i),
+                                    wordAddedColor, false);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            diffGroups.add(group);
+        }
+    }
+
     private void applyTheme(boolean dark) {
         Color scrollColor, scrollCornerColor, panelColor, editorMarginBackgroundColor, trackColor, defaultBorderColor,
                 activeBorderColor;
@@ -635,6 +706,12 @@ public class SplitTextTabPanel extends JPanel {
             trackColor = SCROLLBAR_TRACK_DARK;
             defaultBorderColor = EDITOR_BORDER_COLOR_DARK;
             activeBorderColor = ACTIVE_BORDER_COLOR_DARK;
+
+            // Active highlight colors (switch based on theme)
+            lineRemovedColor = LINE_REMOVED_DARK;
+            lineAddedColor = LINE_ADDED_DARK;
+            wordRemovedColor = WORD_REMOVED_DARK;
+            wordAddedColor = WORD_ADDED_DARK;
         } else {
             // LIGHT THEME
             scrollColor = BACKGROUND_LIGHT;
@@ -644,6 +721,12 @@ public class SplitTextTabPanel extends JPanel {
             trackColor = SCROLLBAR_TRACK_LIGHT;
             defaultBorderColor = EDITOR_BORDER_COLOR_LIGHT;
             activeBorderColor = ACTIVE_BORDER_COLOR_LIGHT;
+
+            // Active highlight colors (switch based on theme)
+            lineRemovedColor = LINE_REMOVED_LIGHT;
+            lineAddedColor = LINE_ADDED_LIGHT;
+            wordRemovedColor = WORD_REMOVED_LIGHT;
+            wordAddedColor = WORD_ADDED_LIGHT;
         }
 
         // FOR scroll1 TRACK BAR COLOR: value is passed down to each CustomScrollBarUI
@@ -744,6 +827,19 @@ public class SplitTextTabPanel extends JPanel {
                 jt2.setFont(firaCode);
             }
         } catch (IOException | FontFormatException e) {
+            e.printStackTrace();
+        }
+
+        // Clear old highlights and reapply with new theme colors
+        jt1.getHighlighter().removeAllHighlights();
+        jt2.getHighlighter().removeAllHighlights();
+        jt1.removeAllLineHighlights();
+        jt2.removeAllLineHighlights();
+        EditorUtils.highlightPositions.clear();
+
+        try {
+            highlightDiffs();
+        } catch (BadLocationException e) {
             e.printStackTrace();
         }
     }
@@ -858,71 +954,6 @@ public class SplitTextTabPanel extends JPanel {
             } else {
                 JOptionPane.showMessageDialog(this, "Delete failed.");
             }
-        }
-    }
-
-    private void highlightDiffs() throws BadLocationException {
-        diffGroups.clear();
-        currentGroupIndex = -1;
-
-        String leftText = jt1.getText();
-        String rightText = jt2.getText();
-
-        List<String> leftLines = Arrays.asList(leftText.split("\n"));
-        List<String> rightLines = Arrays.asList(rightText.split("\n"));
-
-        Patch<String> patch = DiffUtils.diff(leftLines, rightLines);
-
-        for (AbstractDelta<String> delta : patch.getDeltas()) {
-            int origPos = delta.getSource().getPosition();
-            int revPos = delta.getTarget().getPosition();
-
-            // we'll keep the first line of each side as the "jump" point
-            DiffGroup group = new DiffGroup();
-
-            switch (delta.getType()) {
-                case DELETE:
-                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED_DARK);
-                    int startOffsetLeft = jt1.getLineStartOffset(origPos);
-                    group.left = new EditorUtils.HighlightInfo(jt1, startOffsetLeft, startOffsetLeft);
-                    break;
-
-                case INSERT:
-                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED_DARK);
-                    int startOffsetRight = jt2.getLineStartOffset(revPos);
-                    group.right = new EditorUtils.HighlightInfo(jt2, startOffsetRight, startOffsetRight);
-                    break;
-
-                case CHANGE:
-                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED_DARK);
-                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED_DARK);
-
-                    int lOff = jt1.getLineStartOffset(origPos);
-                    int rOff = jt2.getLineStartOffset(revPos);
-                    group.left = new EditorUtils.HighlightInfo(jt1, lOff, lOff);
-                    group.right = new EditorUtils.HighlightInfo(jt2, rOff, rOff);
-
-                    // Word-level highlighting (only if toggle ON)
-                    if (wordHighlightEnabled) {
-                        for (int i = 0; i < Math.min(delta.getSource().size(), delta.getTarget().size()); i++) {
-                            EditorUtils.highlightWordDiffs(
-                                    jt1, origPos + i,
-                                    delta.getSource().getLines().get(i),
-                                    delta.getTarget().getLines().get(i),
-                                    WORD_REMOVED_DARK, true);
-                            EditorUtils.highlightWordDiffs(
-                                    jt2, revPos + i,
-                                    delta.getSource().getLines().get(i),
-                                    delta.getTarget().getLines().get(i),
-                                    WORD_ADDED_DARK, false);
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            diffGroups.add(group);
         }
     }
 

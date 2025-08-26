@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RSyntaxTheme SYSTEM "theme.dtd">
 
 <!--
@@ -8,7 +8,7 @@
 <RSyntaxTheme version="1.0">
 
 	<!-- Omitting baseFont will use a system-appropriate monospaced. -->
-	<baseFont family="Fira Code" size="16"/>
+	<baseFont family="Fira Code" size="15" />
 
 	<!--  General editor colors. -->
 	<background color="17181C" />
@@ -29,7 +29,7 @@
 
 	<!-- Gutter styling. -->
 	<gutterBorder color="17181C" />
-	<lineNumbers fg="5f5e65" currentFG="c4c4c8"/>
+	<lineNumbers fg="5f5e65" currentFG="c4c4c8" />
 	<foldIndicator fg="6A8088" armedFg="c4c4c8" iconBg="2f383c" iconArmedBg="3f484c" />
 	<iconRowHeader activeLineRange="3399ff" />
 
