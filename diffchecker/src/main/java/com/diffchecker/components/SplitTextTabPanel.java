@@ -35,19 +35,20 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class SplitTextTabPanel extends JPanel {
     // WORD HIGHLIGHT
-    private static final Color LINE_REMOVED = new Color(0x40191D);
-    private static final Color LINE_ADDED = new Color(0x12342B);
-    private static final Color WORD_REMOVED = new Color(0x8B1E1D);
-    private static final Color WORD_ADDED = new Color(0x137B5A);
+    private static final Color LINE_REMOVED_DARK = new Color(0x40191D);
+    private static final Color LINE_ADDED_DARK = new Color(0x12342B);
+    private static final Color WORD_REMOVED_DARK = new Color(0x8B1E1D);
+    private static final Color WORD_ADDED_DARK = new Color(0x137B5A);
+
+    // private static final Color LINE_REMOVED_LIGHT = new Color(0x40191D);
+    // private static final Color LINE_ADDED_LIGHT = new Color(0x12342B);
+    // private static final Color WORD_REMOVED_LIGHT = new Color(0x8B1E1D);
+    // private static final Color WORD_ADDED_LIGHT = new Color(0x137B5A);
 
     // FONT COLORS
     private static final Color EDITOR_BACKGROUND = new Color(0x17181C); // Dark gray
-    private static final Color EDITOR_FONT_COLOR = new Color(0xD4D4D4); // Light text
     private static final Color EDITOR_BORDER_COLOR = new Color(0x242526); // Light text
     private static final Color ACTIVE_BORDER_COLOR = new Color(0x00744d);
-
-    // CARRET COLOR
-    private static final Color EDITOR_CARRET_COLOR = new Color(0xD4D4D4); // Light text
 
     // BACKGROUND COLOR
     private final Color BACKGROUND_DARK = new Color(0x17181C);
@@ -58,7 +59,6 @@ public class SplitTextTabPanel extends JPanel {
     private static final Color BTN_COLOR_BLACK = new Color(0x242526);
 
     // DEFAULT DECLARATIONS
-    private static final String PACKAGE_NAME = "diffchecker";
     private RSyntaxTextArea jt1;
     private RSyntaxTextArea jt2;
 
@@ -886,20 +886,20 @@ public class SplitTextTabPanel extends JPanel {
 
             switch (delta.getType()) {
                 case DELETE:
-                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED);
+                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED_DARK);
                     int startOffsetLeft = jt1.getLineStartOffset(origPos);
                     group.left = new EditorUtils.HighlightInfo(jt1, startOffsetLeft, startOffsetLeft);
                     break;
 
                 case INSERT:
-                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED);
+                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED_DARK);
                     int startOffsetRight = jt2.getLineStartOffset(revPos);
                     group.right = new EditorUtils.HighlightInfo(jt2, startOffsetRight, startOffsetRight);
                     break;
 
                 case CHANGE:
-                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED);
-                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED);
+                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), LINE_REMOVED_DARK);
+                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), LINE_ADDED_DARK);
 
                     int lOff = jt1.getLineStartOffset(origPos);
                     int rOff = jt2.getLineStartOffset(revPos);
@@ -913,12 +913,12 @@ public class SplitTextTabPanel extends JPanel {
                                     jt1, origPos + i,
                                     delta.getSource().getLines().get(i),
                                     delta.getTarget().getLines().get(i),
-                                    WORD_REMOVED, true);
+                                    WORD_REMOVED_DARK, true);
                             EditorUtils.highlightWordDiffs(
                                     jt2, revPos + i,
                                     delta.getSource().getLines().get(i),
                                     delta.getTarget().getLines().get(i),
-                                    WORD_ADDED, false);
+                                    WORD_ADDED_DARK, false);
                         }
                     }
                     break;
