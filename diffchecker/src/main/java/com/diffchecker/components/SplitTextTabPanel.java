@@ -49,8 +49,10 @@ public class SplitTextTabPanel extends JPanel {
     private static final Color EDITOR_BORDER_COLOR = new Color(0x242526);
     private static final Color ACTIVE_BORDER_COLOR = new Color(0x00744d);
 
-    // DARK MODE BACKGROUND COLOR
-    private final Color BACKGROUND_DARK = new Color(0xffffff);
+    // DARK AND LIGHT MODE BACKGROUND COLORS
+    private final Color BACKGROUND_DARK = new Color(0x17181C);
+    private final Color BACKGROUND_LIGHT = new Color(0xffffff);
+    private final Color BACKGROUND_TEST = new Color(0x04395E);
 
     // BUTTON COLOR AND HOVER COLOR
     private static final Color BTN_COLOR = new Color(0x00af74);
@@ -73,10 +75,21 @@ public class SplitTextTabPanel extends JPanel {
     private RoundedButton highlightToggleBtn;
     private RoundedButton wordWrapToggleBtn;
 
+    // SCROLLBAR CORNER PANELS TO REMOVE WHITE SQUARES
     JPanel scroll1CornerLeft;
     JPanel scroll2CornerLeft;
     JPanel scroll1CornerRight;
     JPanel scroll2CornerRight;
+
+    // EDITOR AND BUTTON BACKGROUND PANELS
+    JPanel leftButtonPanel;
+    JPanel centerButtonPanel;
+    JPanel rightButtonPanel;
+
+    // PANELS DIRECTLY SURROUNDING THE TEXT EDITORS (LIKE MARGINS)
+    JPanel sideBySidePanel;
+    JPanel contentPanel;
+    JPanel bottomPanel;
 
     // CHECKING IF GREEN BORDER IS ACTIVE OR NOT
     private boolean jt1IsActive = false;
@@ -280,15 +293,13 @@ public class SplitTextTabPanel extends JPanel {
         p2.add(scroll2, BorderLayout.CENTER);
 
         // SIDE BY SIDE TEXT AREAS
-        JPanel sideBySidePanel = new JPanel(new GridLayout(1, 2, 10, 0)); // 10px gap between areas
-        sideBySidePanel.setBackground(BACKGROUND_DARK); // Match theme
+        sideBySidePanel = new JPanel(new GridLayout(1, 2, 10, 0)); // 10px gap between areas
         sideBySidePanel.add(p1);
         sideBySidePanel.add(p2);
 
         // add(splitPane, BorderLayout.CENTER);
-        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel = new JPanel(new BorderLayout());
         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // top, left, bottom, right
-        contentPanel.setBackground(BACKGROUND_DARK); // match your theme
         contentPanel.add(sideBySidePanel, BorderLayout.CENTER);
 
         add(contentPanel, BorderLayout.CENTER);
@@ -448,20 +459,16 @@ public class SplitTextTabPanel extends JPanel {
         highlightToggleBtn.setToolTipText("<html><strong>Toggle Word Highlight</strong> <br> ( Alt + E )</html>");
         wordWrapToggleBtn.setToolTipText("<html><strong>Toggle Word Wrap</strong> <br> ( Alt + Q )</html>");
 
-        JPanel bottomPanel = new JPanel(new BorderLayout()); // CENTER = button centered
-        bottomPanel.setBackground(BACKGROUND_DARK);
+        bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
-        // bottomPanel.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 
-        JPanel leftButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        leftButtonPanel.setBackground(BACKGROUND_DARK);
+        leftButtonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         leftButtonPanel.add(clearBtn);
         leftButtonPanel.add(deleteBtn);
         bottomPanel.add(leftButtonPanel, BorderLayout.WEST);
 
         // CENTER: diffcheckBtn, previousBtn, nextBtn
-        JPanel centerButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        centerButtonPanel.setBackground(BACKGROUND_DARK);
+        centerButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerButtonPanel.add(wordWrapToggleBtn);
         centerButtonPanel.add(highlightToggleBtn);
         centerButtonPanel.add(diffcheckBtn);
@@ -469,8 +476,7 @@ public class SplitTextTabPanel extends JPanel {
         centerButtonPanel.add(nextBtn);
         bottomPanel.add(centerButtonPanel, BorderLayout.CENTER);
 
-        JPanel rightButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        rightButtonPanel.setBackground(BACKGROUND_DARK);
+        rightButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         rightButtonPanel.add(findBtn);
         rightButtonPanel.add(saveBtn);
         bottomPanel.add(rightButtonPanel, BorderLayout.EAST);
@@ -649,48 +655,44 @@ public class SplitTextTabPanel extends JPanel {
     }
 
     private void applyTheme(boolean dark) {
-        // Color bg, fg, border, caret;
+        Color scrollColor, scrollCornerColor, panelColor, editorMarginBackgroundColor;
 
-        scroll1.getHorizontalScrollBar().setBackground(BACKGROUND_DARK);
-        scroll2.getHorizontalScrollBar().setBackground(BACKGROUND_DARK);
-        scroll1.getVerticalScrollBar().setBackground(BACKGROUND_DARK);
-        scroll2.getVerticalScrollBar().setBackground(BACKGROUND_DARK);
+        if (dark) {
+            // DARK THEME
+            scrollColor = BACKGROUND_DARK;
+            scrollCornerColor = BACKGROUND_DARK;
+            panelColor = BACKGROUND_DARK;
+            editorMarginBackgroundColor = BACKGROUND_DARK;
+        } else {
+            // LIGHT THEME
+            scrollColor = BACKGROUND_LIGHT;
+            scrollCornerColor = BACKGROUND_LIGHT;
+            panelColor = BACKGROUND_LIGHT;
+            editorMarginBackgroundColor = BACKGROUND_LIGHT;
+        }
+
+        scroll1.getHorizontalScrollBar().setBackground(scrollColor);
+        scroll2.getHorizontalScrollBar().setBackground(scrollColor);
+        scroll1.getVerticalScrollBar().setBackground(scrollColor);
+        scroll2.getVerticalScrollBar().setBackground(scrollColor);
 
         // REMOVING THE WHITE SQUARES AT THE INTERSCTION OF THE SCROLLBARS
-        scroll1CornerLeft.setBackground(BACKGROUND_DARK);
-        scroll1CornerRight.setBackground(BACKGROUND_DARK);
-        scroll2CornerLeft.setBackground(BACKGROUND_DARK);
-        scroll2CornerRight.setBackground(BACKGROUND_DARK);
+        scroll1CornerLeft.setBackground(scrollCornerColor);
+        scroll1CornerRight.setBackground(scrollCornerColor);
+        scroll2CornerLeft.setBackground(scrollCornerColor);
+        scroll2CornerRight.setBackground(scrollCornerColor);
 
-        // if (dark) {
-        // // DARK THEME
-        // bg = EDITOR_BACKGROUND;
-        // fg = EDITOR_FONT_COLOR;
-        // border = EDITOR_BORDER_COLOR;
-        // caret = EDITOR_CARRET_COLOR;
-        // } else {
-        // // LIGHT THEME
-        // bg = Color.WHITE;
-        // fg = Color.BLACK;
-        // border = EDITOR_BORDER_COLOR;
-        // caret = EDITOR_CARRET_COLOR;
-        // }
+        // BUTTONS AND TEXT EDITORS PANELS
+        leftButtonPanel.setBackground(panelColor);
+        centerButtonPanel.setBackground(panelColor);
+        rightButtonPanel.setBackground(panelColor);
 
-        // jt2.setBackground(bg);
-        // jt2.setForeground(fg);
-        // jt2.setCaretColor(caret);
+        sideBySidePanel.setBackground(editorMarginBackgroundColor);
+        contentPanel.setBackground(editorMarginBackgroundColor);
+        bottomPanel.setBackground(editorMarginBackgroundColor);
 
-        // // Apply to both editors
-        // jt1.setBackground(bg);
-        // jt1.setForeground(fg);
-        // jt1.setCaretColor(caret);
-
-        // jt2.setBackground(bg);
-        // jt2.setForeground(fg);
-        // jt2.setCaretColor(caret);
-
-        // revalidate();
-        // repaint();
+        revalidate();
+        repaint();
 
         String themePath = dark ? "/diffchecker/themes/dark.xml"
                 : "/diffchecker/themes/light.xml";
@@ -711,7 +713,6 @@ public class SplitTextTabPanel extends JPanel {
                 Font firaCode = Font.createFont(Font.TRUETYPE_FONT, fontStream);
 
                 firaCode = firaCode.deriveFont(Font.PLAIN, sizeFromXML);
-
                 jt1.setFont(firaCode);
                 jt2.setFont(firaCode);
             }
