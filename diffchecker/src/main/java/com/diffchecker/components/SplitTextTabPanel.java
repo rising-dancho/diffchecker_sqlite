@@ -166,6 +166,18 @@ public class SplitTextTabPanel extends JPanel {
         }
     };
 
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        if (findReplace1 == null || findReplace2 == null) {
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            if (frame != null) {
+                findReplace1 = new FindReplaceSupport(frame, jt1);
+                findReplace2 = new FindReplaceSupport(frame, jt2);
+            }
+        }
+    }
+
     public SplitTextTabPanel() {
         setLayout(new BorderLayout());
         setKeyboardShortcuts();
@@ -201,6 +213,9 @@ public class SplitTextTabPanel extends JPanel {
         scroll1 = new RTextScrollPane(jt1);
         scroll2 = new RTextScrollPane(jt2);
 
+        // SET FONT FAMILY AND SIZE
+        fontFamilyAndSize();
+
         // CUSTOM SCROLLBARS
         scroll1.getVerticalScrollBar().setUI(new CustomScrollBarUI());
         scroll2.getVerticalScrollBar().setUI(new CustomScrollBarUI());
@@ -224,31 +239,13 @@ public class SplitTextTabPanel extends JPanel {
         scroll2.setOpaque(false);
         scroll2.getViewport().setOpaque(false);
 
-        // FONT FAMILY OF THE TEXTAREAS
-        try {
-            InputStream is = getClass().getResourceAsStream(
-                    "/" + PACKAGE_NAME + "/fonts/FiraCode-Regular.ttf");
-            Font firaCode = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.PLAIN, 16f);
-
-            jt1.setFont(firaCode);
-            jt2.setFont(firaCode);
-        } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
-            // Fallback if font fails to load
-            jt1.setFont(new Font("Monospaced", Font.PLAIN, 14));
-            jt2.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        }
-
         // REMOVE DEFAULT BORDERS
         jt1.setBorder(BorderFactory.createEmptyBorder());
         jt2.setBorder(BorderFactory.createEmptyBorder());
 
-        // jt1.setBorder(BorderFactory.createLineBorder(Color.BLUE));
-
-        // Synchronize vertical scrolling
+        // SYNCHRONIZED VERTICAL SCROLLING
         JScrollBar vBar1 = scroll1.getVerticalScrollBar();
         JScrollBar vBar2 = scroll2.getVerticalScrollBar();
-
         vBar1.addAdjustmentListener(e -> {
             if (vBar2.getValue() != vBar1.getValue()) {
                 vBar2.setValue(vBar1.getValue());
@@ -481,7 +478,24 @@ public class SplitTextTabPanel extends JPanel {
         activatedEditorBorderStyle();
 
         // APPLY SYNTAX HIGHLIGHT THEME
-        // applySyntaxHighlightTheme();
+        applySyntaxHighlightTheme();
+    }
+
+    private void fontFamilyAndSize() {
+        // FONT FAMILY OF THE TEXTAREAS
+        try {
+            InputStream is = getClass().getResourceAsStream(
+                    "/" + PACKAGE_NAME + "/fonts/FiraCode-Regular.ttf");
+            Font firaCode = Font.createFont(Font.TRUETYPE_FONT, is).deriveFont(Font.PLAIN, 16f);
+
+            jt1.setFont(firaCode);
+            jt2.setFont(firaCode);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            // Fallback if font fails to load
+            jt1.setFont(new Font("Monospaced", Font.PLAIN, 14));
+            jt2.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        }
     }
 
     // KEYBOARD SHORTCUTS
@@ -664,18 +678,6 @@ public class SplitTextTabPanel extends JPanel {
         });
     }
 
-    @Override
-    public void addNotify() {
-        super.addNotify();
-        if (findReplace1 == null || findReplace2 == null) {
-            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-            if (frame != null) {
-                findReplace1 = new FindReplaceSupport(frame, jt1);
-                findReplace2 = new FindReplaceSupport(frame, jt2);
-            }
-        }
-    }
-
     // APPLY THEME
     private void applyTheme(boolean dark) {
         Color bg, fg, border, caret;
@@ -691,7 +693,7 @@ public class SplitTextTabPanel extends JPanel {
             bg = Color.WHITE;
             fg = Color.BLACK;
             border = EDITOR_BORDER_COLOR;
-            caret =  EDITOR_CARRET_COLOR;
+            caret = EDITOR_CARRET_COLOR;
         }
 
         jt2.setBackground(bg);
