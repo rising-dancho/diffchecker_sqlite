@@ -655,7 +655,7 @@ public class SplitTextTabPanel extends JPanel {
     }
 
     private void applyTheme(boolean dark) {
-        Color scrollColor, scrollCornerColor, panelColor, editorMarginBackgroundColor;
+        Color scrollColor, scrollCornerColor, panelColor, editorMarginBackgroundColor, trackColor;
 
         if (dark) {
             // DARK THEME
@@ -663,12 +663,30 @@ public class SplitTextTabPanel extends JPanel {
             scrollCornerColor = BACKGROUND_DARK;
             panelColor = BACKGROUND_DARK;
             editorMarginBackgroundColor = BACKGROUND_DARK;
+            trackColor = BACKGROUND_DARK;
         } else {
             // LIGHT THEME
             scrollColor = BACKGROUND_LIGHT;
             scrollCornerColor = BACKGROUND_LIGHT;
             panelColor = BACKGROUND_LIGHT;
             editorMarginBackgroundColor = BACKGROUND_LIGHT;
+            trackColor = BACKGROUND_LIGHT;
+        }
+
+        // FOR scroll1 TRACK BAR COLOR: value is passed down to each CustomScrollBarUI
+        if (scroll1.getVerticalScrollBar().getUI() instanceof CustomScrollBarUI ui1) {
+            ui1.setTrackColor(trackColor);
+        }
+        if (scroll1.getHorizontalScrollBar().getUI() instanceof CustomScrollBarUI ui2) {
+            ui2.setTrackColor(trackColor);
+        }
+
+        // For scroll2 TRACK BAR COLOR
+        if (scroll2.getVerticalScrollBar().getUI() instanceof CustomScrollBarUI ui3) {
+            ui3.setTrackColor(trackColor);
+        }
+        if (scroll2.getHorizontalScrollBar().getUI() instanceof CustomScrollBarUI ui4) {
+            ui4.setTrackColor(trackColor);
         }
 
         scroll1.getHorizontalScrollBar().setBackground(scrollColor);
