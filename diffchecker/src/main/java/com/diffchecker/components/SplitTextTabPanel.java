@@ -34,6 +34,28 @@ import org.fife.ui.rtextarea.*;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class SplitTextTabPanel extends JPanel {
+    // WORD HIGHLIGHT
+    private static final Color LINE_REMOVED = new Color(0x40191D);
+    private static final Color LINE_ADDED = new Color(0x12342B);
+    private static final Color WORD_REMOVED = new Color(0x8B1E1D);
+    private static final Color WORD_ADDED = new Color(0x137B5A);
+
+    // FONT COLORS
+    private static final Color EDITOR_BACKGROUND = new Color(0x17181C); // Dark gray
+    private static final Color EDITOR_FONT_COLOR = new Color(0xD4D4D4); // Light text
+    private static final Color EDITOR_BORDER_COLOR = new Color(0x242526); // Light text
+    private static final Color ACTIVE_BORDER_COLOR = new Color(0x00744d);
+
+    // CARRET COLOR
+    private static final Color EDITOR_CARRET_COLOR = new Color(0xD4D4D4); // Light text
+
+    // BACKGROUND COLOR
+    private final Color BACKGROUND_DARK = new Color(0x17181C);
+
+    // BUTTON COLOR AND HOVER COLOR
+    private static final Color BTN_COLOR = new Color(0x00af74);
+    private static final Color BTN_COLOR_DARKER = new Color(0x00744d);
+    private static final Color BTN_COLOR_BLACK = new Color(0x242526);
 
     // DEFAULT DECLARATIONS
     private static final String PACKAGE_NAME = "diffchecker";
@@ -69,28 +91,22 @@ public class SplitTextTabPanel extends JPanel {
         EditorUtils.HighlightInfo right;
     }
 
-    // WORD HIGHLIGHT
-    private static final Color LINE_REMOVED = new Color(0x40191D);
-    private static final Color LINE_ADDED = new Color(0x12342B);
-    private static final Color WORD_REMOVED = new Color(0x8B1E1D);
-    private static final Color WORD_ADDED = new Color(0x137B5A);
+    // TOGGLE WORD HIGHLIGHT
+    private boolean wordHighlightEnabled = false;
 
-    // FONT COLORS
-    private static final Color EDITOR_BACKGROUND = new Color(0x17181C); // Dark gray
-    private static final Color EDITOR_FONT_COLOR = new Color(0xD4D4D4); // Light text
-    private static final Color EDITOR_BORDER_COLOR = new Color(0x242526); // Light text
-    private static final Color ACTIVE_BORDER_COLOR = new Color(0x00744d);
+    // TOGGLE WORD WRAP
+    private boolean wordWrapEnabled = false;
 
-    // CARRET COLOR
-    private static final Color EDITOR_CARRET_COLOR = new Color(0xD4D4D4); // Light text
+    private RSyntaxTextArea lastFocusedEditor;
 
-    // BACKGROUND COLOR
-    private final Color BACKGROUND_DARK = new Color(0x17181C);
-
-    // BUTTON COLOR AND HOVER COLOR
-    private static final Color BTN_COLOR = new Color(0x00af74);
-    private static final Color BTN_COLOR_DARKER = new Color(0x00744d);
-    private static final Color BTN_COLOR_BLACK = new Color(0x242526);
+    private final FocusAdapter trackFocus = new FocusAdapter() {
+        @Override
+        public void focusGained(FocusEvent e) {
+            if (e.getComponent() instanceof RSyntaxTextArea) {
+                lastFocusedEditor = (RSyntaxTextArea) e.getComponent();
+            }
+        }
+    };
 
     private void markDirty() {
         if (!isDirty) {
@@ -147,23 +163,6 @@ public class SplitTextTabPanel extends JPanel {
 
         public void changedUpdate(DocumentEvent e) {
             markDirty();
-        }
-    };
-
-    // TOGGLE WORD HIGHLIGHT
-    private boolean wordHighlightEnabled = false;
-
-    // TOGGLE WORD WRAP
-    private boolean wordWrapEnabled = false;
-
-    private RSyntaxTextArea lastFocusedEditor; // <-- add this
-
-    private final FocusAdapter trackFocus = new FocusAdapter() {
-        @Override
-        public void focusGained(FocusEvent e) {
-            if (e.getComponent() instanceof RSyntaxTextArea) {
-                lastFocusedEditor = (RSyntaxTextArea) e.getComponent();
-            }
         }
     };
 
@@ -998,7 +997,7 @@ public class SplitTextTabPanel extends JPanel {
         }
     }
 
-    // GHOST CODES FOR REFERENCE
+    // GHOST CODES FOR REVIEW PURPOSES
     public void ghostCodes() {
     }
 
