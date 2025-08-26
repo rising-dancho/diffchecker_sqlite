@@ -656,47 +656,78 @@ public class SplitTextTabPanel extends JPanel {
     }
 
     // APPLY THEME
+    // private void applyTheme(boolean dark) {
+    // Color bg, fg, border, caret;
+
+    // if (dark) {
+    // // DARK THEME
+    // bg = EDITOR_BACKGROUND;
+    // fg = EDITOR_FONT_COLOR;
+    // border = EDITOR_BORDER_COLOR;
+    // caret = EDITOR_CARRET_COLOR;
+    // } else {
+    // // LIGHT THEME
+    // bg = Color.WHITE;
+    // fg = Color.BLACK;
+    // border = EDITOR_BORDER_COLOR;
+    // caret = EDITOR_CARRET_COLOR;
+    // }
+
+    // jt2.setBackground(bg);
+    // jt2.setForeground(fg);
+    // jt2.setCaretColor(caret);
+
+    // // Apply to both editors
+    // jt1.setBackground(bg);
+    // jt1.setForeground(fg);
+    // jt1.setCaretColor(caret);
+
+    // jt2.setBackground(bg);
+    // jt2.setForeground(fg);
+    // jt2.setCaretColor(caret);
+
+    // // Apply to scroll panes
+    // scroll1.getViewport().setBackground(bg);
+    // scroll2.getViewport().setBackground(bg);
+    // scroll1.setBorder(BorderFactory.createLineBorder(border));
+    // scroll2.setBorder(BorderFactory.createLineBorder(border));
+
+    // revalidate();
+    // repaint();
+    // }
+
     private void applyTheme(boolean dark) {
-        Color bg, fg, border, caret;
+        String themePath = dark ? "/diffchecker/themes/dark.xml"
+                : "/diffchecker/themes/light.xml";
 
-        if (dark) {
-            // DARK THEME
-            bg = EDITOR_BACKGROUND;
-            fg = EDITOR_FONT_COLOR;
-            border = EDITOR_BORDER_COLOR;
-            caret = EDITOR_CARRET_COLOR;
-        } else {
-            // LIGHT THEME
-            bg = Color.WHITE;
-            fg = Color.BLACK;
-            border = EDITOR_BORDER_COLOR;
-            caret = EDITOR_CARRET_COLOR;
+        try (InputStream in = getClass().getResourceAsStream(themePath)) {
+            if (in != null) {
+                Theme theme = Theme.load(in);
+                theme.apply(jt1);
+                theme.apply(jt2);
+
+                // If you also want scroll pane borders/background consistent:
+                Color bg = jt1.getBackground();
+                scroll1.getViewport().setBackground(bg);
+                scroll2.getViewport().setBackground(bg);
+
+                // Load embedded Fira Code
+                InputStream fontStream = getClass().getResourceAsStream("/diffchecker/fonts/FiraCode-Regular.ttf");
+                Font firaCode = Font.createFont(Font.TRUETYPE_FONT, fontStream);
+
+                // Keep the XML's size
+                int sizeFromXML = 16; // match your <baseFont size="20"/>
+                firaCode = firaCode.deriveFont(Font.PLAIN, sizeFromXML);
+
+                jt1.setFont(firaCode);
+                jt2.setFont(firaCode);
+            }
+        } catch (IOException | FontFormatException e) {
+            e.printStackTrace();
         }
-
-        jt2.setBackground(bg);
-        jt2.setForeground(fg);
-        jt2.setCaretColor(caret);
-
-        // Apply to both editors
-        jt1.setBackground(bg);
-        jt1.setForeground(fg);
-        jt1.setCaretColor(caret);
-
-        jt2.setBackground(bg);
-        jt2.setForeground(fg);
-        jt2.setCaretColor(caret);
-
-        // Apply to scroll panes
-        scroll1.getViewport().setBackground(bg);
-        scroll2.getViewport().setBackground(bg);
-        scroll1.setBorder(BorderFactory.createLineBorder(border));
-        scroll2.setBorder(BorderFactory.createLineBorder(border));
-
-        revalidate();
-        repaint();
     }
 
-    // APPLY THEME
+    // // APPLY THEME
     public void applySyntaxHighlightTheme() {
         try {
             // Load theme
