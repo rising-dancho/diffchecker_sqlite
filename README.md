@@ -14,7 +14,12 @@
 - https://github.com/bobbylight/RSyntaxTextArea/wiki/Example:-Setting-the-theme
 
 # sample
-<img width="1085" height="724" alt="image" src="https://github.com/user-attachments/assets/d2ee4907-91be-480a-ab01-0f47991f1c00" />
+#### dark theme
+<img width="1086" height="727" alt="image" src="https://github.com/user-attachments/assets/a412fecb-ab37-4ff4-844c-e863a8e80cd3" />
+
+#### light theme
+<img width="1087" height="728" alt="image" src="https://github.com/user-attachments/assets/f69a178e-9f66-4d33-bead-8b2c1d8e72f3" />
+
 
 # installation
 - 
