@@ -1,5 +1,10 @@
-# adfinem diffchecker 🧗 (latest version)
-[Download here](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
+# adfinem diffchecker 🧗 
+
+# roadmap
+- https://trello.com/b/5SvchChT/diffchecker
+  
+# download now
+- ***(latest version)*** [download installer](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
 
 # sample
 #### dark theme
@@ -28,10 +33,6 @@
 <img width="507" height="398" alt="image" src="https://github.com/user-attachments/assets/2a57832b-3fb2-4c31-8634-8b7e0fcece7e" />
 <img width="505" height="393" alt="image" src="https://github.com/user-attachments/assets/50e53d72-9ad7-49cc-82e6-9c2c614f622f" />
 <img width="504" height="397" alt="image" src="https://github.com/user-attachments/assets/d99f8fc1-728f-40eb-9755-2e9c8757752e" />
-
-
-# roadmap
-- https://trello.com/b/5SvchChT/diffchecker
 
 # dependencies: 
 - https://github.com/bobbylight/RSyntaxTextArea
