@@ -1,7 +1,5 @@
-# adfinem diffchecker 🧗
-
-# download (latest version)
-https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe
+# adfinem diffchecker 🧗 (latest version)
+[Download here](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
 
 # sample
 #### dark theme
