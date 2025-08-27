@@ -1,7 +1,20 @@
 # adfinem diffchecker 🧗 
 
+# installer
+- ***(latest version ver.0.1.2)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
+
 # roadmap
 - https://trello.com/b/5SvchChT/diffchecker
+
+# dependencies: 
+- https://github.com/bobbylight/RSyntaxTextArea
+- https://github.com/bobbylight/RSTAUI
+- https://github.com/java-diff-utils/java-diff-utils
+- https://mvnrepository.com/artifact/com.formdev/flatlaf | https://mvnrepository.com/artifact/com.formdev/flatlaf-extras
+- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
+
+# changing the RSyntaxTextArea theme
+- https://github.com/bobbylight/RSyntaxTextArea/wiki/Example:-Setting-the-theme
   
 # sample
 #### dark theme
@@ -9,9 +22,6 @@
 
 #### light theme
 <img width="1086" height="726" alt="image" src="https://github.com/user-attachments/assets/1234af24-c3ba-4cf3-98cb-b0f28f756f3c" />
-
-# installer
-- ***(latest version ver.0.1.2)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
 
 # installation instructions
 - about the "Run anyway" screen, in order for me to remove this warning for this desktop app i would need to pay a trusted Certificate Authority for a ***"Code Signing Certificate" (around $70 – $500 PER YEAR)*** from Sectigo (Comodo), GoDaddy, SSL.com etc. in order for Windows to not flag me as a ***"Unknown Publisher"*** source: https://chatgpt.com/share/68af5fd5-c628-8000-ba36-dfcf1ff7596c
@@ -34,12 +44,4 @@
 <img width="505" height="393" alt="image" src="https://github.com/user-attachments/assets/50e53d72-9ad7-49cc-82e6-9c2c614f622f" />
 <img width="504" height="397" alt="image" src="https://github.com/user-attachments/assets/d99f8fc1-728f-40eb-9755-2e9c8757752e" />
 
-# dependencies: 
-- https://github.com/bobbylight/RSyntaxTextArea
-- https://github.com/bobbylight/RSTAUI
-- https://github.com/java-diff-utils/java-diff-utils
-- https://mvnrepository.com/artifact/com.formdev/flatlaf | https://mvnrepository.com/artifact/com.formdev/flatlaf-extras
-- https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc
 
-# changing the RSyntaxTextArea theme
-- https://github.com/bobbylight/RSyntaxTextArea/wiki/Example:-Setting-the-theme
