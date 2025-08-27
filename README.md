@@ -16,3 +16,5 @@
 # sample
 <img width="1085" height="724" alt="image" src="https://github.com/user-attachments/assets/d2ee4907-91be-480a-ab01-0f47991f1c00" />
 
+# installation
+- 
