@@ -3,9 +3,6 @@
 # roadmap
 - https://trello.com/b/5SvchChT/diffchecker
   
-# installer
-- ***(latest version ver.0.1.2)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
-
 # sample
 #### dark theme
 <img width="1086" height="727" alt="image" src="https://github.com/user-attachments/assets/a412fecb-ab37-4ff4-844c-e863a8e80cd3" />
@@ -13,7 +10,10 @@
 #### light theme
 <img width="1086" height="726" alt="image" src="https://github.com/user-attachments/assets/1234af24-c3ba-4cf3-98cb-b0f28f756f3c" />
 
-# installation instruction
+# installer
+- ***(latest version ver.0.1.2)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
+
+# installation instructions
 - about the "Run anyway" screen, in order for me to remove this warning for this desktop app i would need to pay a trusted Certificate Authority for a ***"Code Signing Certificate" (around $70 – $500 PER YEAR)*** from Sectigo (Comodo), GoDaddy, SSL.com etc. in order for Windows to not flag me as a ***"Unknown Publisher"*** source: https://chatgpt.com/share/68af5fd5-c628-8000-ba36-dfcf1ff7596c
 - yep, i dont have that kind of money lol
 - this is a ***free*** tool lmao 😂😂😂
