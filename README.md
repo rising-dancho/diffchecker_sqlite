@@ -3,8 +3,8 @@
 # roadmap
 - https://trello.com/b/5SvchChT/diffchecker
   
-# download now
-- ***(latest version)*** [download installer](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
+# installer
+- ***(latest version)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
 
 # sample
 #### dark theme
