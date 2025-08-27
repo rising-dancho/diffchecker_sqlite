@@ -4,7 +4,7 @@
 - https://trello.com/b/5SvchChT/diffchecker
   
 # installer
-- ***(latest version)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
+- ***(latest version ver.0.1.2)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.2/diffchecker_setup.exe)
 
 # sample
 #### dark theme
