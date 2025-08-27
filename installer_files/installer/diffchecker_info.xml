@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\installer\jar\diffchecker.jar</jar>
+  <outfile>C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\installer\exe\diffchecker.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl></downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\logo.ico</icon>
+  <classPath>
+    <mainClass>com.diffchecker.Main</mainClass>
+  </classPath>
+  <jre>
+    <path>%JAVA_HOME%;%PATH%</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>false</requires64Bit>
+    <minVersion></minVersion>
+    <maxVersion></maxVersion>
+  </jre>
+  <versionInfo>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0.0.0</txtFileVersion>
+    <fileDescription>adfinem diffchecker is a lightweight text comparison tool designed to quickly spot differences between two versions of text.  </fileDescription>
+    <copyright>© 2025 adfinem</copyright>
+    <productVersion>1.2.0.0</productVersion>
+    <txtProductVersion>1.2.beta-release</txtProductVersion>
+    <productName>adfinem diffchecker</productName>
+    <companyName>adfinem, Inc.</companyName>
+    <internalName>adfinem_diffchecker</internalName>
+    <originalFilename>adfinem_diffchecker.exe</originalFilename>
+    <trademarks>© 2025 adfinem</trademarks>
+    <language>ENGLISH_US</language>
+  </versionInfo>
+</launch4jConfig>
