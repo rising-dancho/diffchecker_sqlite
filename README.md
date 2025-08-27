@@ -23,7 +23,7 @@
 
 # installation instructions
 - about the **"Run anyway"** screen, in order for me to remove this warning for this desktop app i would need to pay a trusted Certificate Authority for a **"Code Signing Certificate" (around $70 – $500 PER YEAR)** from Sectigo (Comodo), GoDaddy, SSL.com etc. in order for Windows to not flag me as a **"Unknown Publisher"** source: https://chatgpt.com/share/68af5fd5-c628-8000-ba36-dfcf1ff7596c
-- yep, i dont have that kind of money lol
+- yep, i dont have that kind of money 
 - this is a ***free*** tool lmao 😂😂😂
 
 #### Download the installer 
