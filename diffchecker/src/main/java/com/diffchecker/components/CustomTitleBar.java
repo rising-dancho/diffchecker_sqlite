@@ -123,15 +123,17 @@ public class CustomTitleBar extends JPanel {
 
     // Example popup menu
     JPopupMenu popup = new JPopupMenu();
-    JMenu appearance = new JMenu("Appearance");
-    JMenuItem toggleThemeItem = new JMenuItem("Light/Dark Theme");
-    toggleThemeItem.setToolTipText("<html><strong>Toggle Light/Dark Theme</strong> <br> ( Ctrl + G )</html>");
-    toggleThemeItem.addActionListener(e -> {
-      // flip theme state in SplitTextTabPane
-      splitPanel.toggleTheme();
-    });
-    appearance.add(toggleThemeItem);
-    popup.add(appearance);
+    // APPEARANCE MENU
+    // JMenu appearance = new JMenu("Appearance");
+    // JMenuItem toggleThemeItem = new JMenuItem("Light/Dark Theme");
+    // toggleThemeItem.setToolTipText("<html><strong>Toggle Light/Dark
+    // Theme</strong> <br> ( Ctrl + G )</html>");
+    // toggleThemeItem.addActionListener(e -> {
+    // // flip theme state in SplitTextTabPane
+    // splitPanel.toggleTheme();
+    // });
+    // appearance.add(toggleThemeItem);
+    // popup.add(appearance);
     // SYNTAX HIGHLIGHTING MENU
     popup.add(createSyntaxMenu(splitPanel));
 

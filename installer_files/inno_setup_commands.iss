@@ -22,9 +22,9 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
 LicenseFile=C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\license_mit_for_diffchecker.txt
-InfoBeforeFile=C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\intro.txt
+InfoBeforeFile=C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\pre_install.txt
 InfoAfterFile=C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\post_install.txt
-OutputDir=C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\exe files
+OutputDir=C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\installer
 OutputBaseFilename=diffchecker_setup
 SetupIconFile=C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\logo.ico
 Compression=lzma
@@ -38,8 +38,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\logo.ico"; DestDir: "{app}"
-Source: "C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\exe files\diffchecker.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\exe files\diffchecker.jar"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\installer\exe\diffchecker.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\installer\jar\diffchecker.jar"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

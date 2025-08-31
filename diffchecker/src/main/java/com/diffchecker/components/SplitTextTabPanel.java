@@ -89,8 +89,11 @@ public class SplitTextTabPanel extends JPanel {
     private FindReplaceSupport findReplace1;
     private FindReplaceSupport findReplace2;
 
+    // TOGGLES
     private RoundedButton highlightToggleBtn;
     private RoundedButton wordWrapToggleBtn;
+    private RoundedButton lineHighlightToggleBtn;
+    private RoundedButton themeToggleBtn;
 
     // SCROLLBAR CORNER PANELS TO REMOVE WHITE SQUARES
     JPanel scroll1CornerLeft;
@@ -358,23 +361,46 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        // RoundedButton themeBtn = new RoundedButton("🌙");
-        // themeBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
-        // themeBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
-        // themeBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
-        // themeBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
-        // themeBtn.setBorderThickness(2);
-        // themeBtn.setCornerRadius(10);
-        // themeBtn.setMargin(new Insets(5, 10, 5, 10));
-        // themeBtn.addActionListener(e -> {
-        // darkThemeEnabled = !darkThemeEnabled;
-        // applyTheme(darkThemeEnabled);
-        // });
+        themeToggleBtn = new RoundedButton();
+        themeToggleBtn.setText(null);
+        // Load local SVG (supports recoloring and scaling)
+        FlatSVGIcon themeIcon = new FlatSVGIcon("diffchecker/images/icons/sun.svg", 20, 20);
+        // turn the icon monochrome white
+        themeIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
+        themeToggleBtn.setIcon(themeIcon);
+        themeToggleBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
+        themeToggleBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
+        themeToggleBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
+        themeToggleBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
+        themeToggleBtn.setBorderThickness(2);
+        themeToggleBtn.setCornerRadius(10);
+        themeToggleBtn.setMargin(new Insets(5, 5, 5, 5));
+        themeToggleBtn.addActionListener(e -> {
+            toggleTheme();
+        });
+
+        lineHighlightToggleBtn = new RoundedButton();
+        lineHighlightToggleBtn.setText(null);
+        // Load local SVG (supports recoloring and scaling)
+        FlatSVGIcon codeIcon = new FlatSVGIcon("diffchecker/images/icons/code.svg", 20, 20);
+        // turn the icon monochrome white
+        codeIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
+        lineHighlightToggleBtn.setIcon(codeIcon);
+        lineHighlightToggleBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
+        lineHighlightToggleBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
+        lineHighlightToggleBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
+        lineHighlightToggleBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
+        lineHighlightToggleBtn.setBorderThickness(2);
+        lineHighlightToggleBtn.setCornerRadius(10);
+        lineHighlightToggleBtn.setMargin(new Insets(5, 5, 5, 5));
+        lineHighlightToggleBtn.addActionListener(e -> {
+            
+        });
 
         highlightToggleBtn = new RoundedButton();
         highlightToggleBtn.setText(null);
         // Load local SVG (supports recoloring and scaling)
-        FlatSVGIcon highlightIcon = new FlatSVGIcon("diffchecker/images/icons/highlight.svg", 20, 20);
+        FlatSVGIcon highlightIcon = new FlatSVGIcon("diffchecker/images/icons/highlighter.svg", 20, 20);
         // turn the icon monochrome white
         highlightIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
         highlightToggleBtn.setIcon(highlightIcon);
@@ -401,7 +427,7 @@ public class SplitTextTabPanel extends JPanel {
         });
 
         wordWrapToggleBtn = new RoundedButton();
-        highlightToggleBtn.setText(null);
+        wordWrapToggleBtn.setText(null);
         // Load local SVG (supports recoloring and scaling)
         FlatSVGIcon wordWrapIcon = new FlatSVGIcon("diffchecker/images/icons/wrap_text.svg", 20, 20);
         // turn the icon monochrome white
@@ -492,6 +518,7 @@ public class SplitTextTabPanel extends JPanel {
         clearBtn.setToolTipText("<html><strong>Clear</strong> <br> ( Ctrl + R )</html>");
         deleteBtn.setToolTipText("<html><strong>Delete</strong> <br> ( Ctrl + Shift + X )</html>");
         findBtn.setToolTipText("<html><strong>Find/Replace</strong> <br> ( Ctrl + F )</html>");
+        themeToggleBtn.setToolTipText("<html><strong>Toggle Light/Dark Theme</strong> <br> ( Ctrl + G )</html>");
         saveBtn.setToolTipText("<html><strong>Save</strong> <br> ( Ctrl + S )</html>");
         highlightToggleBtn.setToolTipText("<html><strong>Toggle Word Highlight</strong> <br> ( Alt + E )</html>");
         wordWrapToggleBtn.setToolTipText("<html><strong>Toggle Word Wrap</strong> <br> ( Alt + Q )</html>");
@@ -508,12 +535,14 @@ public class SplitTextTabPanel extends JPanel {
         centerButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerButtonPanel.add(wordWrapToggleBtn);
         centerButtonPanel.add(highlightToggleBtn);
+        centerButtonPanel.add(lineHighlightToggleBtn);
         centerButtonPanel.add(diffcheckBtn);
         centerButtonPanel.add(previousBtn);
         centerButtonPanel.add(nextBtn);
         bottomPanel.add(centerButtonPanel, BorderLayout.CENTER);
 
         rightButtonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        rightButtonPanel.add(themeToggleBtn);
         rightButtonPanel.add(findBtn);
         rightButtonPanel.add(saveBtn);
         bottomPanel.add(rightButtonPanel, BorderLayout.EAST);
@@ -634,7 +663,7 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        // CTRL + T HOTKEY FOR TOGGLING THEME
+        // CTRL + G HOTKEY FOR TOGGLING THEME
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(KeyStroke.getKeyStroke("control G"), "toggleTheme");
 
