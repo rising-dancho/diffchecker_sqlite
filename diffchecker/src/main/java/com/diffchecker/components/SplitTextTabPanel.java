@@ -90,7 +90,7 @@ public class SplitTextTabPanel extends JPanel {
     private FindReplaceSupport findReplace2;
 
     // TOGGLES
-    private RoundedButton highlightToggleBtn;
+    private RoundedButton wordHighlightToggleBtn;
     private RoundedButton wordWrapToggleBtn;
     private RoundedButton lineHighlightToggleBtn;
     private RoundedButton themeToggleBtn;
@@ -130,6 +130,9 @@ public class SplitTextTabPanel extends JPanel {
 
     // TOGGLE WORD HIGHLIGHT
     private boolean wordHighlightEnabled = false;
+
+    // TOGGLE LINE WRAP
+    private boolean lineHighlightEnabled = false;
 
     // TOGGLE WORD WRAP
     private boolean wordWrapEnabled = false;
@@ -394,26 +397,37 @@ public class SplitTextTabPanel extends JPanel {
         lineHighlightToggleBtn.setCornerRadius(10);
         lineHighlightToggleBtn.setMargin(new Insets(5, 5, 5, 5));
         lineHighlightToggleBtn.addActionListener(e -> {
-            
+            lineHighlightEnabled = !lineHighlightEnabled; // toggle state
+            lineHighlightToggleBtn.setSelectedState(lineHighlightEnabled);
+
+            try {
+                // clear old highlights
+                jt1.getHighlighter().removeAllHighlights();
+                jt2.getHighlighter().removeAllHighlights();
+                EditorUtils.highlightPositions.clear();
+                highlightDiffs();
+            } catch (BadLocationException ex) {
+                ex.printStackTrace();
+            }
         });
 
-        highlightToggleBtn = new RoundedButton();
-        highlightToggleBtn.setText(null);
+        wordHighlightToggleBtn = new RoundedButton();
+        wordHighlightToggleBtn.setText(null);
         // Load local SVG (supports recoloring and scaling)
-        FlatSVGIcon highlightIcon = new FlatSVGIcon("diffchecker/images/icons/highlighter.svg", 20, 20);
+        FlatSVGIcon wordIcon = new FlatSVGIcon("diffchecker/images/icons/word.svg", 20, 20);
         // turn the icon monochrome white
-        highlightIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
-        highlightToggleBtn.setIcon(highlightIcon);
-        highlightToggleBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
-        highlightToggleBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
-        highlightToggleBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
-        highlightToggleBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
-        highlightToggleBtn.setBorderThickness(2);
-        highlightToggleBtn.setCornerRadius(10);
-        highlightToggleBtn.setMargin(new Insets(5, 5, 5, 5));
-        highlightToggleBtn.addActionListener(e -> {
+        wordIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
+        wordHighlightToggleBtn.setIcon(wordIcon);
+        wordHighlightToggleBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
+        wordHighlightToggleBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
+        wordHighlightToggleBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
+        wordHighlightToggleBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
+        wordHighlightToggleBtn.setBorderThickness(2);
+        wordHighlightToggleBtn.setCornerRadius(10);
+        wordHighlightToggleBtn.setMargin(new Insets(5, 5, 5, 5));
+        wordHighlightToggleBtn.addActionListener(e -> {
             wordHighlightEnabled = !wordHighlightEnabled; // toggle state
-            highlightToggleBtn.setSelectedState(wordHighlightEnabled);
+            wordHighlightToggleBtn.setSelectedState(wordHighlightEnabled);
 
             try {
                 // clear old highlights
@@ -520,7 +534,8 @@ public class SplitTextTabPanel extends JPanel {
         findBtn.setToolTipText("<html><strong>Find/Replace</strong> <br> ( Ctrl + F )</html>");
         themeToggleBtn.setToolTipText("<html><strong>Toggle Light/Dark Theme</strong> <br> ( Ctrl + G )</html>");
         saveBtn.setToolTipText("<html><strong>Save</strong> <br> ( Ctrl + S )</html>");
-        highlightToggleBtn.setToolTipText("<html><strong>Toggle Word Highlight</strong> <br> ( Alt + E )</html>");
+        wordHighlightToggleBtn.setToolTipText("<html><strong>Toggle Word Highlight</strong> <br> ( Alt + W )</html>");
+        lineHighlightToggleBtn.setToolTipText("<html><strong>Toggle Line Highlight</strong> <br> ( Alt + E )</html>");
         wordWrapToggleBtn.setToolTipText("<html><strong>Toggle Word Wrap</strong> <br> ( Alt + Q )</html>");
 
         bottomPanel = new JPanel(new BorderLayout());
@@ -534,7 +549,7 @@ public class SplitTextTabPanel extends JPanel {
         // CENTER: diffcheckBtn, previousBtn, nextBtn
         centerButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         centerButtonPanel.add(wordWrapToggleBtn);
-        centerButtonPanel.add(highlightToggleBtn);
+        centerButtonPanel.add(wordHighlightToggleBtn);
         centerButtonPanel.add(lineHighlightToggleBtn);
         centerButtonPanel.add(diffcheckBtn);
         centerButtonPanel.add(previousBtn);
@@ -569,7 +584,7 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        // CTRL + Q HOTKEY FOR TOGGLING WORD WRAP
+        // ALT + Q HOTKEY FOR TOGGLING WORD WRAP
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(KeyStroke.getKeyStroke("alt Q"), "toggleWordWrap");
 
@@ -580,14 +595,25 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        // CTRL + E HOTKEY FOR TOGGLING WORD HIGHLIGHT
+        // ALT + W HOTKEY FOR TOGGLING WORD HIGHLIGHT
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
-                .put(KeyStroke.getKeyStroke("alt E"), "toggleHighlightWord");
+                .put(KeyStroke.getKeyStroke("alt W"), "toggleHighlightWord");
 
         getActionMap().put("toggleHighlightWord", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                highlightWordToggle();
+                highlightToggle();
+            }
+        });
+
+        // ALT + E HOTKEY FOR TOGGLING WORD HIGHLIGHT
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("alt E"), "toggleHighlightLine");
+
+        getActionMap().put("toggleHighlightLine", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                highlightToggle();
             }
         });
 
@@ -695,6 +721,12 @@ public class SplitTextTabPanel extends JPanel {
     }
 
     private void highlightDiffs() throws BadLocationException {
+        // always start clean
+        jt1.getHighlighter().removeAllHighlights();
+        jt2.getHighlighter().removeAllHighlights();
+        EditorUtils.highlightPositions.clear();
+
+        
         diffGroups.clear();
         currentGroupIndex = -1;
 
@@ -710,32 +742,37 @@ public class SplitTextTabPanel extends JPanel {
             int origPos = delta.getSource().getPosition();
             int revPos = delta.getTarget().getPosition();
 
-            // we'll keep the first line of each side as the "jump" point
             DiffGroup group = new DiffGroup();
 
             switch (delta.getType()) {
                 case DELETE:
-                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), lineRemovedColor);
+                    if (lineHighlightEnabled) {
+                        EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), lineRemovedColor);
+                    }
                     int startOffsetLeft = jt1.getLineStartOffset(origPos);
                     group.left = new EditorUtils.HighlightInfo(jt1, startOffsetLeft, startOffsetLeft);
                     break;
 
                 case INSERT:
-                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), lineAddedColor);
+                    if (lineHighlightEnabled) {
+                        EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), lineAddedColor);
+                    }
                     int startOffsetRight = jt2.getLineStartOffset(revPos);
                     group.right = new EditorUtils.HighlightInfo(jt2, startOffsetRight, startOffsetRight);
                     break;
 
                 case CHANGE:
-                    EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), lineRemovedColor);
-                    EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), lineAddedColor);
+                    if (lineHighlightEnabled) {
+                        EditorUtils.highlightFullLines(jt1, origPos, delta.getSource().size(), lineRemovedColor);
+                        EditorUtils.highlightFullLines(jt2, revPos, delta.getTarget().size(), lineAddedColor);
+                    }
 
                     int lOff = jt1.getLineStartOffset(origPos);
                     int rOff = jt2.getLineStartOffset(revPos);
                     group.left = new EditorUtils.HighlightInfo(jt1, lOff, lOff);
                     group.right = new EditorUtils.HighlightInfo(jt2, rOff, rOff);
 
-                    // Word-level highlighting (only if toggle ON)
+                    // Word-level highlighting
                     if (wordHighlightEnabled) {
                         for (int i = 0; i < Math.min(delta.getSource().size(), delta.getTarget().size()); i++) {
                             EditorUtils.highlightWordDiffs(
@@ -918,9 +955,9 @@ public class SplitTextTabPanel extends JPanel {
             jt2.setSyntaxEditingStyle(style);
     }
 
-    private void highlightWordToggle() {
+    private void highlightToggle() {
         wordHighlightEnabled = !wordHighlightEnabled; // toggle state
-        highlightToggleBtn.setSelectedState(wordHighlightEnabled);
+        wordHighlightToggleBtn.setSelectedState(wordHighlightEnabled);
 
         try {
             // clear old highlights
