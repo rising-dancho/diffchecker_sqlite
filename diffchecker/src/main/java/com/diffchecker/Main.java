@@ -65,6 +65,20 @@ public class Main extends JFrame {
         // ── Final Steps ────────────────────────────────────────────────────────
         centerWindow();
         enableResizing();
+
+        // 🟢 Hook into window closing
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                if (!confirmCloseApplication()) {
+                    // cancel close
+                    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                } else {
+                    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                }
+            }
+        });
+
         setVisible(true);
     }
 
@@ -314,4 +328,46 @@ public class Main extends JFrame {
                 new Dimension(100, 100),
                 this);
     }
+
+    private boolean confirmCloseApplication() {
+        boolean hasUnsaved = false;
+
+        // Check if there’s at least one unsaved tab
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+            Component comp = tabbedPane.getComponentAt(i);
+            if (comp instanceof SplitTextTabPanel panel && panel.hasUnsavedChanges()) {
+                hasUnsaved = true;
+                break;
+            }
+        }
+
+        if (!hasUnsaved) {
+            return true; // no unsaved changes → exit freely
+        }
+
+        // Ask once for all tabs
+        int option = JOptionPane.showConfirmDialog(
+                this,
+                "You have unsaved changes in one or more tabs. Save before exiting?",
+                "Unsaved Changes",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.WARNING_MESSAGE);
+
+        if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.CLOSED_OPTION) {
+            return false; // cancel exit
+        }
+
+        if (option == JOptionPane.YES_OPTION) {
+            // Save ALL unsaved tabs
+            for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+                Component comp = tabbedPane.getComponentAt(i);
+                if (comp instanceof SplitTextTabPanel panel && panel.hasUnsavedChanges()) {
+                    panel.saveToDatabase();
+                }
+            }
+        }
+
+        return true; // allow exit (either saved or discarded)
+    }
+
 }

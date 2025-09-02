@@ -108,7 +108,8 @@ public class CustomTitleBar extends JPanel {
         e -> toggleMaximize());
 
     closeButton = createButton("close_def.png", "close_hover.png",
-        e -> System.exit(0));
+        e -> frame.dispatchEvent(new java.awt.event.WindowEvent(
+            frame, java.awt.event.WindowEvent.WINDOW_CLOSING)));
 
     RoundedButton menuButton = new RoundedButton("☰");
     menuButton.setBackgroundColor(BTN_COLOR_BLACK);
