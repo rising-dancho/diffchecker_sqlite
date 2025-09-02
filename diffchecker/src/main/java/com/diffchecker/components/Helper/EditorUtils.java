@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
@@ -19,7 +20,6 @@ import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.InputMap;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
@@ -32,7 +32,6 @@ import javax.swing.Timer;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaEditorKit;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
-import org.sqlite.Function.Window;
 
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.Patch;
@@ -184,7 +183,7 @@ public class EditorUtils {
   }
 
   // toast popup centered on screen
-  public static void showCenteredToast(String message, java.awt.Window parent) {
+  public static void showCenteredToast(String message, Window parent) {
     JWindow toast = (parent != null) ? new JWindow(parent) : new JWindow();
     toast.setBackground(new Color(0, 0, 0, 0));
     toast.setBackground(new Color(0, 0, 0, 0));
