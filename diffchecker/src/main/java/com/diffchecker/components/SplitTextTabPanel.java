@@ -804,8 +804,13 @@ public class SplitTextTabPanel extends JPanel {
                 default:
                     break;
             }
-
             diffGroups.add(group);
+        }
+
+        // 👉 Jump to first difference if available
+        if (!diffGroups.isEmpty()) {
+            currentGroupIndex = 0;
+            focusDiffGroup(diffGroups.get(0));
         }
     }
 
