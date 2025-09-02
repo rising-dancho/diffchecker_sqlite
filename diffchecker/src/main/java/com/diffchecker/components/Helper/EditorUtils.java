@@ -19,6 +19,7 @@ import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
 import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
@@ -31,6 +32,8 @@ import javax.swing.Timer;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaEditorKit;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.sqlite.Function.Window;
+
 import com.github.difflib.DiffUtils;
 import com.github.difflib.patch.Patch;
 
@@ -181,8 +184,9 @@ public class EditorUtils {
   }
 
   // toast popup centered on screen
-  public static void showCenteredToast(String message) {
-    JWindow toast = new JWindow();
+  public static void showCenteredToast(String message, java.awt.Window parent) {
+    JWindow toast = (parent != null) ? new JWindow(parent) : new JWindow();
+    toast.setBackground(new Color(0, 0, 0, 0));
     toast.setBackground(new Color(0, 0, 0, 0));
 
     JLabel label = new JLabel(message);
@@ -195,15 +199,22 @@ public class EditorUtils {
     toast.add(label);
     toast.pack();
 
-    // center on screen
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    int x = (screenSize.width - toast.getWidth()) / 2;
-    int y = (screenSize.height - toast.getHeight()) / 2;
-    toast.setLocation(x, y);
+    if (parent != null) {
+      int x = parent.getX() + (parent.getWidth() - toast.getWidth()) / 2;
+      int y = parent.getY() + (parent.getHeight() - toast.getHeight()) / 2;
+      toast.setLocation(x, y);
+    } else {
+      // fallback: center on screen
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      int x = (screenSize.width - toast.getWidth()) / 2;
+      int y = (screenSize.height - toast.getHeight()) / 2;
+      toast.setLocation(x, y);
+    }
 
+    toast.setAlwaysOnTop(true); // 👈 keep above parent
     toast.setVisible(true);
 
-    new Timer(3000, (ActionEvent e) -> toast.dispose()).start(); // disappear after 3s
+    new Timer(3000, (ActionEvent e) -> toast.dispose()).start();
   }
 
   // helper method

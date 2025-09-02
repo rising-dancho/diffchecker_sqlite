@@ -397,6 +397,8 @@ public class SplitTextTabPanel extends JPanel {
         lineHighlightToggleBtn.setBorderThickness(2);
         lineHighlightToggleBtn.setCornerRadius(10);
         lineHighlightToggleBtn.setMargin(new Insets(5, 5, 5, 5));
+        // Initial state sync (startup) STARTS ENABLED
+        lineHighlightToggleBtn.setSelectedState(lineHighlightEnabled);
         lineHighlightToggleBtn.addActionListener(e -> {
             lineHighlightEnabled = !lineHighlightEnabled; // toggle state
             lineHighlightToggleBtn.setSelectedState(lineHighlightEnabled);
@@ -736,8 +738,9 @@ public class SplitTextTabPanel extends JPanel {
         String rightText = jt2.getText();
 
         // Check if both are exactly the same
+        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         if (leftText.equals(rightText)) {
-            EditorUtils.showCenteredToast("No differences found — both text editors are empty or identical!");
+            EditorUtils.showCenteredToast("No differences found — both text editors are empty or identical!", frame);
             return; // nothing else to do
         }
 
@@ -1174,9 +1177,4 @@ public class SplitTextTabPanel extends JPanel {
             markSaved();
         }
     }
-
-    // GHOST CODES FOR REVIEW PURPOSES
-    public void ghostCodes() {
-    }
-
 }
