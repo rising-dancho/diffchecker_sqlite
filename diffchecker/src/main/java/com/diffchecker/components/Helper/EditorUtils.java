@@ -39,7 +39,7 @@ import com.github.difflib.patch.Patch;
 public class EditorUtils {
 
   private static final Color EDITOR_BACKGROUND = new Color(0x17181C);
-  private static final Color EDITOR_FONT_COLOR = new Color(0xD4D4D4);
+  private static final Color EDITOR_FONT_COLOR = new Color(0xa9b7c6);
   public static final java.util.List<HighlightInfo> highlightPositions = new ArrayList<>();
 
   public static class HighlightInfo {
