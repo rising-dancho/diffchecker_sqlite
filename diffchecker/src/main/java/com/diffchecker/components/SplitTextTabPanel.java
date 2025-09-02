@@ -342,14 +342,20 @@ public class SplitTextTabPanel extends JPanel {
             }
         });
 
-        RoundedButton findBtn = new RoundedButton("🔍︎");
+        RoundedButton findBtn = new RoundedButton();
+        findBtn.setText(null);
+        // Load local SVG (supports recoloring and scaling)
+        FlatSVGIcon findIcon = new FlatSVGIcon("diffchecker/images/icons/find.svg", 20, 20);
+        // turn the icon monochrome white
+        findIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
+        findBtn.setIcon(findIcon);
         findBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
         findBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
         findBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
         findBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
         findBtn.setBorderThickness(2);
         findBtn.setCornerRadius(10);
-        findBtn.setMargin(new Insets(5, 10, 5, 10));
+        findBtn.setMargin(new Insets(5, 5, 5, 5));
         // Hook the 🔍 button
         findBtn.addActionListener(e -> {
             RSyntaxTextArea target = lastFocusedEditor;
@@ -507,13 +513,20 @@ public class SplitTextTabPanel extends JPanel {
             repaint();
         });
 
-        RoundedButton deleteBtn = new RoundedButton("✖");
-        deleteBtn.setBackgroundColor(BTN_COLOR_BLACK);
-        deleteBtn.setHoverBackgroundColor(BTN_COLOR_DARKER);
-        deleteBtn.setBorderColor(BTN_COLOR_BLACK);
-        deleteBtn.setHoverBorderColor(BTN_COLOR_DARKER);
+        RoundedButton deleteBtn = new RoundedButton();
+        deleteBtn.setText(null);
+        // Load local SVG (supports recoloring and scaling)
+        FlatSVGIcon deleteIcon = new FlatSVGIcon("diffchecker/images/icons/trash.svg", 20, 20);
+        // turn the icon monochrome white
+        deleteIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
+        deleteBtn.setIcon(deleteIcon);
+        deleteBtn.setBackgroundColor(BTN_COLOR_BLACK); // <- normal color
+        deleteBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
+        deleteBtn.setBorderColor(BTN_COLOR_BLACK);// <- normal color
+        deleteBtn.setHoverBorderColor(BTN_COLOR_DARKER); // <- hover color
         deleteBtn.setBorderThickness(2);
         deleteBtn.setCornerRadius(10);
+        deleteBtn.setMargin(new Insets(5, 5, 5, 5));
         deleteBtn.addActionListener(e -> {
             deleteDiff();
         });
@@ -740,7 +753,8 @@ public class SplitTextTabPanel extends JPanel {
         // Check if both are exactly the same
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         if (leftText.equals(rightText)) {
-            EditorUtils.showCenteredToast("No differences found — both text editors are either empty or identical!", frame);
+            EditorUtils.showCenteredToast("No differences found — both text editors are either empty or identical!",
+                    frame);
             return; // nothing else to do
         }
 

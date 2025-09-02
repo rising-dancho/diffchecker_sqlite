@@ -24,18 +24,4 @@
     <minVersion></minVersion>
     <maxVersion></maxVersion>
   </jre>
-  <versionInfo>
-    <fileVersion>1.0.0.0</fileVersion>
-    <txtFileVersion>1.0.0.0</txtFileVersion>
-    <fileDescription>adfinem diffchecker is a lightweight text comparison tool designed to quickly spot differences between two versions of text.  </fileDescription>
-    <copyright>© 2025 adfinem</copyright>
-    <productVersion>1.2.0.0</productVersion>
-    <txtProductVersion>1.2.beta-release</txtProductVersion>
-    <productName>adfinem diffchecker</productName>
-    <companyName>adfinem, Inc.</companyName>
-    <internalName>adfinem_diffchecker</internalName>
-    <originalFilename>adfinem_diffchecker.exe</originalFilename>
-    <trademarks>© 2025 adfinem</trademarks>
-    <language>ENGLISH_US</language>
-  </versionInfo>
 </launch4jConfig>
