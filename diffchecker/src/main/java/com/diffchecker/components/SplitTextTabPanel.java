@@ -132,7 +132,7 @@ public class SplitTextTabPanel extends JPanel {
     private boolean wordHighlightEnabled = false;
 
     // TOGGLE LINE WRAP
-    private boolean lineHighlightEnabled = false;
+    private boolean lineHighlightEnabled = true;
 
     // TOGGLE WORD WRAP
     private boolean wordWrapEnabled = false;
@@ -602,22 +602,22 @@ public class SplitTextTabPanel extends JPanel {
         getActionMap().put("toggleHighlightWord", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                highlightToggle();
+                highlightedWordToggle();
             }
         });
 
-        // ALT + E HOTKEY FOR TOGGLING WORD HIGHLIGHT
+        // ALT + E HOTKEY FOR TOGGLING LINE HIGHLIGHT
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(KeyStroke.getKeyStroke("alt E"), "toggleHighlightLine");
 
         getActionMap().put("toggleHighlightLine", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                highlightToggle();
+                highlightedLineToggle();
             }
         });
 
-        // CTRL + SHIFT + ENTER hotkey for diff checking
+        // ALT + SHIFT + ENTER hotkey for diff checking
         getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
                 .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.ALT_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK),
                         "highlightDiffs");
@@ -724,9 +724,10 @@ public class SplitTextTabPanel extends JPanel {
         // always start clean
         jt1.getHighlighter().removeAllHighlights();
         jt2.getHighlighter().removeAllHighlights();
+        jt1.removeAllLineHighlights();
+        jt2.removeAllLineHighlights();
         EditorUtils.highlightPositions.clear();
 
-        
         diffGroups.clear();
         currentGroupIndex = -1;
 
@@ -738,6 +739,8 @@ public class SplitTextTabPanel extends JPanel {
 
         Patch<String> patch = DiffUtils.diff(leftLines, rightLines);
 
+        // FOR DEBUGGING LINE HIGHLIGHT
+        // System.out.println("Line highlight: " + lineHighlightEnabled);
         for (AbstractDelta<String> delta : patch.getDeltas()) {
             int origPos = delta.getSource().getPosition();
             int revPos = delta.getTarget().getPosition();
@@ -955,7 +958,7 @@ public class SplitTextTabPanel extends JPanel {
             jt2.setSyntaxEditingStyle(style);
     }
 
-    private void highlightToggle() {
+    private void highlightedWordToggle() {
         wordHighlightEnabled = !wordHighlightEnabled; // toggle state
         wordHighlightToggleBtn.setSelectedState(wordHighlightEnabled);
 
@@ -963,6 +966,21 @@ public class SplitTextTabPanel extends JPanel {
             // clear old highlights
             jt1.getHighlighter().removeAllHighlights();
             jt2.getHighlighter().removeAllHighlights();
+            EditorUtils.highlightPositions.clear();
+            highlightDiffs();
+        } catch (BadLocationException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private void highlightedLineToggle() {
+        lineHighlightEnabled = !lineHighlightEnabled; // toggle state
+        lineHighlightToggleBtn.setSelectedState(lineHighlightEnabled);
+
+        try {
+            // clear old highlights
+            jt1.removeAllLineHighlights();
+            jt2.removeAllLineHighlights();
             EditorUtils.highlightPositions.clear();
             highlightDiffs();
         } catch (BadLocationException ex) {
