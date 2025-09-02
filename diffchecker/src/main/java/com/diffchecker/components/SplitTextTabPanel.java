@@ -740,7 +740,7 @@ public class SplitTextTabPanel extends JPanel {
         // Check if both are exactly the same
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         if (leftText.equals(rightText)) {
-            EditorUtils.showCenteredToast("No differences found — both text editors are empty or identical!", frame);
+            EditorUtils.showCenteredToast("No differences found — both text editors are either empty or identical!", frame);
             return; // nothing else to do
         }
 
