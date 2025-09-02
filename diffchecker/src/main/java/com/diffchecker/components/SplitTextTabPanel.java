@@ -46,8 +46,8 @@ public class SplitTextTabPanel extends JPanel {
     // WORD HIGHLIGHT
     private static final Color LINE_REMOVED_DARK = new Color(0x40191D);
     private static final Color LINE_ADDED_DARK = new Color(0x12342B);
-    private static final Color WORD_REMOVED_DARK = new Color(0x8B1E1D);
-    private static final Color WORD_ADDED_DARK = new Color(0x137B5A);
+    private static final Color WORD_REMOVED_DARK = new Color(0x6f1817);
+    private static final Color WORD_ADDED_DARK = new Color(0x0f6248);
 
     private static final Color LINE_REMOVED_LIGHT = new Color(0xFCC7C7);
     private static final Color LINE_ADDED_LIGHT = new Color(0xADECD5);
