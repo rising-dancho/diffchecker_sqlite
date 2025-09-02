@@ -9,6 +9,7 @@ com\diffchecker\components\CustomTitleBar$2.class
 com\diffchecker\components\SplitTextTabPanel$15.class
 com\diffchecker\backup\java_fundamentals\swing_and_awt\TextAreaFocusDemo.class
 com\diffchecker\backup\java_fundamentals\swing_and_awt\JSplit_pane.class
+com\diffchecker\Main$4.class
 com\diffchecker\backup\java_fundamentals\swing_and_awt\pos_system\CustomersPanel.class
 com\diffchecker\backup\java_fundamentals\swing_and_awt\JTool_bar.class
 com\diffchecker\backup\java_fundamentals\swing_and_awt\JMenu_bar$1.class
@@ -80,6 +81,7 @@ com\diffchecker\Main$3.class
 com\diffchecker\components\SplitTextTabPanel$6.class
 com\diffchecker\backup\java_fundamentals\JavaFundamentals_data_type_conversion.class
 com\diffchecker\backup\java_fundamentals\swing_and_awt\pos_system\CustomersPanel$2.class
+com\diffchecker\components\SplitTextTabPanel$17.class
 com\diffchecker\components\Database\DiffData.class
 com\diffchecker\components\ComponentResizer.class
 com\diffchecker\backup\java_fundamentals\swing_and_awt\BlackTextAreaWithMargin.class
