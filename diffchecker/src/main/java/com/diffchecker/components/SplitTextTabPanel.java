@@ -94,6 +94,7 @@ public class SplitTextTabPanel extends JPanel {
     private RoundedButton wordWrapToggleBtn;
     private RoundedButton lineHighlightToggleBtn;
     private RoundedButton themeToggleBtn;
+    private RoundedButton diffcheckBtn;
 
     // SCROLLBAR CORNER PANELS TO REMOVE WHITE SQUARES
     JPanel scroll1CornerLeft;
@@ -325,7 +326,7 @@ public class SplitTextTabPanel extends JPanel {
         add(contentPanel, BorderLayout.CENTER);
 
         // CUSTOM BUTTON
-        RoundedButton diffcheckBtn = new RoundedButton("Find Difference");
+        diffcheckBtn = new RoundedButton("Find Difference");
         diffcheckBtn.setBackgroundColor(BTN_COLOR); // <- normal color
         diffcheckBtn.setHoverBackgroundColor(BTN_COLOR_DARKER); // <- hover color
         diffcheckBtn.setBorderColor(BTN_COLOR);// <- normal color
@@ -733,6 +734,12 @@ public class SplitTextTabPanel extends JPanel {
 
         String leftText = jt1.getText();
         String rightText = jt2.getText();
+
+        // Check if both are exactly the same
+        if (leftText.equals(rightText)) {
+            EditorUtils.showCenteredToast("No differences found — both text editors are empty or identical!");
+            return; // nothing else to do
+        }
 
         List<String> leftLines = Arrays.asList(leftText.split("\n"));
         List<String> rightLines = Arrays.asList(rightText.split("\n"));

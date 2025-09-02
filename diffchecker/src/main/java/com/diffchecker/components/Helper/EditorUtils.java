@@ -1,6 +1,7 @@
 package com.diffchecker.components.Helper;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -174,6 +175,32 @@ public class EditorUtils {
     toast.setLocation(x, y);
 
     // Show and auto-hide
+    toast.setVisible(true);
+
+    new Timer(3000, (ActionEvent e) -> toast.dispose()).start(); // disappear after 3s
+  }
+
+  // toast popup centered on screen
+  public static void showCenteredToast(String message) {
+    JWindow toast = new JWindow();
+    toast.setBackground(new Color(0, 0, 0, 0));
+
+    JLabel label = new JLabel(message);
+    label.setOpaque(true);
+    label.setBackground(new Color(50, 50, 50, 220));
+    label.setForeground(Color.WHITE);
+    label.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
+    label.setFont(label.getFont().deriveFont(Font.PLAIN, 14f));
+
+    toast.add(label);
+    toast.pack();
+
+    // center on screen
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    int x = (screenSize.width - toast.getWidth()) / 2;
+    int y = (screenSize.height - toast.getHeight()) / 2;
+    toast.setLocation(x, y);
+
     toast.setVisible(true);
 
     new Timer(3000, (ActionEvent e) -> toast.dispose()).start(); // disappear after 3s
