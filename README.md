@@ -16,10 +16,11 @@
   
 # sample
 #### dark theme
-<img width="1086" height="727" alt="image" src="https://github.com/user-attachments/assets/a412fecb-ab37-4ff4-844c-e863a8e80cd3" />
+<img width="1087" height="726" alt="image" src="https://github.com/user-attachments/assets/0b87e557-7914-40aa-be44-55bb2acc5d44" />
 
 #### light theme
-<img width="1086" height="726" alt="image" src="https://github.com/user-attachments/assets/1234af24-c3ba-4cf3-98cb-b0f28f756f3c" />
+<img width="1086" height="729" alt="image" src="https://github.com/user-attachments/assets/916ff8f5-5ca1-4d57-b325-480f79a34ae0" />
+
 
 # installation instructions
 - about the **"Run anyway"** screen, in order for me to remove ***that*** warning for this desktop app i would need to pay a trusted Certificate Authority for a **"Code Signing Certificate" (around $70 – $500 PER YEAR)** from Sectigo (Comodo), GoDaddy, SSL.com etc. in order for Windows to not flag me as an **"Unknown Publisher."**
