@@ -114,8 +114,8 @@ public class CustomTitleBar extends JPanel {
             frame, java.awt.event.WindowEvent.WINDOW_CLOSING)));
 
     RoundedButton menuButton = new RoundedButton();
-    menuButton.setText("Diffchecker");
-    menuButton.setFont(menuButton.getFont().deriveFont(Font.BOLD, 10f));
+    menuButton.setText("adfinem diff");
+    // menuButton.setFont(menuButton.getFont().deriveFont(Font.PLAIN, 10f));
     FlatSVGIcon menuIcon = new FlatSVGIcon("diffchecker/images/icons/menu.svg", 20, 20);
     menuIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
     menuButton.setIcon(menuIcon);

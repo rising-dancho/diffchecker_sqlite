@@ -85,6 +85,7 @@ public class ClosableTabTitleComponent extends JPanel {
                 titleLabel.setForeground(INACTIVE_COLOR);
             }
         });
+        // TAB TITLE FONT WEIGHT AND SIZE
         Font base = new Font("SansSerif", Font.BOLD, titleLabel.getFont().getSize());
         titleLabel.setFont(base.deriveFont(14f));
 
