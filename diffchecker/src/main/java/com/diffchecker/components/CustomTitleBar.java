@@ -4,6 +4,8 @@ import javax.swing.*;
 
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Map;
@@ -111,7 +113,17 @@ public class CustomTitleBar extends JPanel {
         e -> frame.dispatchEvent(new java.awt.event.WindowEvent(
             frame, java.awt.event.WindowEvent.WINDOW_CLOSING)));
 
-    RoundedButton menuButton = new RoundedButton("☰");
+    RoundedButton menuButton = new RoundedButton();
+    menuButton.setText("Diffchecker");
+    menuButton.setFont(menuButton.getFont().deriveFont(Font.BOLD, 10f));
+    FlatSVGIcon menuIcon = new FlatSVGIcon("diffchecker/images/icons/menu.svg", 20, 20);
+    menuIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
+    menuButton.setIcon(menuIcon);
+    menuButton.setHorizontalTextPosition(SwingConstants.LEFT); // ✅ text after icon
+    menuButton.setIconTextGap(4); // ✅ padding between icon and text
+    menuButton.setHorizontalAlignment(SwingConstants.CENTER); // center the whole content horizontally
+    menuButton.setVerticalAlignment(SwingConstants.CENTER); // center icon+text as a block
+    menuButton.setVerticalTextPosition(SwingConstants.NORTH); // align text vertically with the icon
     menuButton.setBackgroundColor(BTN_COLOR_BLACK);
     menuButton.setHoverBackgroundColor(BTN_COLOR_DARKER);
     menuButton.setBorderColor(BTN_COLOR_BLACK);
