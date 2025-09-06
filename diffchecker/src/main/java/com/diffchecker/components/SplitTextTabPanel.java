@@ -335,7 +335,7 @@ public class SplitTextTabPanel extends JPanel {
         diffcheckBtn.setCornerRadius(10);
         diffcheckBtn.addActionListener(e -> {
             try {
-                highlightDiffs();
+                highlightDiffs(true);
             } catch (BadLocationException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
@@ -414,7 +414,7 @@ public class SplitTextTabPanel extends JPanel {
                 jt1.getHighlighter().removeAllHighlights();
                 jt2.getHighlighter().removeAllHighlights();
                 EditorUtils.highlightPositions.clear();
-                highlightDiffs();
+                highlightDiffs(false);
             } catch (BadLocationException ex) {
                 ex.printStackTrace();
             }
@@ -443,7 +443,7 @@ public class SplitTextTabPanel extends JPanel {
                 jt1.getHighlighter().removeAllHighlights();
                 jt2.getHighlighter().removeAllHighlights();
                 EditorUtils.highlightPositions.clear();
-                highlightDiffs();
+                highlightDiffs(false);
             } catch (BadLocationException ex) {
                 ex.printStackTrace();
             }
@@ -642,7 +642,7 @@ public class SplitTextTabPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    highlightDiffs();
+                    highlightDiffs(true);
                 } catch (BadLocationException ex) {
                     ex.printStackTrace();
                 }
@@ -736,7 +736,7 @@ public class SplitTextTabPanel extends JPanel {
         });
     }
 
-    private void highlightDiffs() throws BadLocationException {
+    private void highlightDiffs(boolean diffCheckerBtnInitiated) throws BadLocationException {
         // always start clean
         jt1.getHighlighter().removeAllHighlights();
         jt2.getHighlighter().removeAllHighlights();
@@ -753,8 +753,11 @@ public class SplitTextTabPanel extends JPanel {
         // Check if both are exactly the same
         JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
         if (leftText.equals(rightText)) {
-            EditorUtils.showCenteredToast("No differences found — both text editors are either empty or identical!",
-                    frame);
+            if (diffCheckerBtnInitiated) {
+                EditorUtils.showCenteredToast(
+                        "No differences found — both text editors are either empty or identical!",
+                        frame);
+            }
             return; // nothing else to do
         }
 
@@ -973,7 +976,7 @@ public class SplitTextTabPanel extends JPanel {
         EditorUtils.highlightPositions.clear();
 
         try {
-            highlightDiffs();
+            highlightDiffs(false);
         } catch (BadLocationException e) {
             e.printStackTrace();
         }
@@ -996,7 +999,7 @@ public class SplitTextTabPanel extends JPanel {
             jt1.getHighlighter().removeAllHighlights();
             jt2.getHighlighter().removeAllHighlights();
             EditorUtils.highlightPositions.clear();
-            highlightDiffs();
+            highlightDiffs(false);
         } catch (BadLocationException ex) {
             ex.printStackTrace();
         }
@@ -1011,7 +1014,7 @@ public class SplitTextTabPanel extends JPanel {
             jt1.removeAllLineHighlights();
             jt2.removeAllLineHighlights();
             EditorUtils.highlightPositions.clear();
-            highlightDiffs();
+            highlightDiffs(false);
         } catch (BadLocationException ex) {
             ex.printStackTrace();
         }
