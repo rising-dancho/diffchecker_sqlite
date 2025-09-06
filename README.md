@@ -1,4 +1,4 @@
-# adfinem diffchecker 🧗 
+# adfinem diff 🧗 
 - ***(latest version ver.0.1.3)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.3/diffchecker_setup.exe) 
 
 # roadmap
