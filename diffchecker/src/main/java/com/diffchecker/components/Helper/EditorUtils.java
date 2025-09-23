@@ -216,7 +216,6 @@ public class EditorUtils {
     new Timer(3000, (ActionEvent e) -> toast.dispose()).start();
   }
 
-  // helper method
   public static void scrollToOffset(JTextComponent area, int offset) {
     try {
       // hide caret so theme doesn't trigger

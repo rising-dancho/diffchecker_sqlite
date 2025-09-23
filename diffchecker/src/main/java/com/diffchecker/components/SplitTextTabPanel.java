@@ -33,7 +33,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 // RSyntaxTextArea search and replace dependencies
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-public class SplitTextTabPanel extends JPanel {
+public class SplitTextTabPanel extends JPanel implements ThemedComponent {
     // Keep the XML's size
     private static final int sizeFromXML = 15; // match your <baseFont size="16"/>
 
@@ -385,9 +385,7 @@ public class SplitTextTabPanel extends JPanel {
         themeToggleBtn.setBorderThickness(2);
         themeToggleBtn.setCornerRadius(10);
         themeToggleBtn.setMargin(new Insets(5, 5, 5, 5));
-        themeToggleBtn.addActionListener(e -> {
-            toggleTheme();
-        });
+        themeToggleBtn.addActionListener(e -> ThemeManager.toggleTheme());
 
         lineHighlightToggleBtn = new RoundedButton();
         lineHighlightToggleBtn.setText(null);
@@ -584,7 +582,7 @@ public class SplitTextTabPanel extends JPanel {
         activatedEditorBorderStyle();
 
         // PRE APPLY THEME TO RUN DEFAULT
-        applyTheme(darkThemeEnabled);
+        ThemeManager.register(this);
     }
 
     // KEYBOARD SHORTCUTS
@@ -712,14 +710,9 @@ public class SplitTextTabPanel extends JPanel {
         getActionMap().put("toggleTheme", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                toggleTheme();
+                ThemeManager.toggleTheme();
             }
         });
-    }
-
-    public void toggleTheme() {
-        darkThemeEnabled = !darkThemeEnabled;
-        applyTheme(darkThemeEnabled);
     }
 
     public void activatedEditorBorderStyle() {
@@ -831,7 +824,8 @@ public class SplitTextTabPanel extends JPanel {
         }
     }
 
-    private void applyTheme(boolean dark) {
+    @Override
+    public void applyTheme(boolean dark) {
         Color scrollColor, scrollCornerColor, panelColor, editorMarginBackgroundColor, trackColor, defaultBorderColor,
                 activeBorderColor;
 
