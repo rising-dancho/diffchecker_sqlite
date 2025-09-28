@@ -35,6 +35,9 @@ public class Main extends JFrame {
     JTabbedPane tabbedPane;
     private final Runnable onTabEmptyFallback = () -> addNewTab(tabbedPane);
 
+    // hold a reference so we can inject the tabbedPane after it's created
+    private CustomTitleBar titleBarComponent;
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(Main::new);
     }
@@ -44,9 +47,14 @@ public class Main extends JFrame {
         // Initialize first tab panel
         splitArea = new SplitTextTabPanel();
         JPanel wrapper = initWrapper(); // 2. Background wrapper
-        JPanel titleBar = buildTitleBar(splitArea); // 3. Custom title bar
+        JPanel titleBar = buildTitleBar(); // 3. Custom title bar (no tabbedPane yet)
         // JPanel menuPanel = buildMenuPanel(); // 4. Menu bar
         JPanel content = buildMainContent(); // 5. Main tabbed pane area
+
+        // Inject the tabbedPane into the title bar now that it's created
+        if (titleBarComponent != null && tabbedPane != null) {
+            titleBarComponent.setTabs(tabbedPane);
+        }
 
         // FOR DEBUGGING PURPOSES ONLY
         // menuPanel.setBorder(BorderFactory.createLineBorder(Color.GREEN));
@@ -114,11 +122,11 @@ public class Main extends JFrame {
     }
 
     // ─── 3. Title Bar Panel ────────────────────────────────────────────────────
-    private JPanel buildTitleBar(SplitTextTabPanel splitPanel) {
+    // note: no longer accepts a SplitTextTabPanel
+    private JPanel buildTitleBar() {
 
-        CustomTitleBar titleBar = new CustomTitleBar(
+        titleBarComponent = new CustomTitleBar(
                 this,
-                splitPanel,
                 "",
                 PACKAGE_NAME,
                 "/" + PACKAGE_NAME + "/images/logo/logo_24x24.png",
@@ -126,12 +134,12 @@ public class Main extends JFrame {
                 33);
 
         // FOR DEBUGGING PURPOSES ONLY
-        // titleBar.setBorder(BorderFactory.createLineBorder(Color.RED));
+        // titleBarComponent.setBorder(BorderFactory.createLineBorder(Color.RED));
 
         JPanel titleWrapper = new JPanel(new BorderLayout());
         titleWrapper.setOpaque(false);
         // titleWrapper.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-        titleWrapper.add(titleBar, BorderLayout.NORTH);
+        titleWrapper.add(titleBarComponent, BorderLayout.NORTH);
 
         return titleWrapper;
     }
@@ -141,16 +149,6 @@ public class Main extends JFrame {
         container.setBackground(new Color(0x242526));
         container.setLayout(new BorderLayout());
         container.setBorder(null);
-
-        // FOR DEBUGGING PURPOSES ONLY
-        // container.setBorder(
-        // BorderFactory.createCompoundBorder(
-        // BorderFactory.createLineBorder(Color.BLUE), // outer border
-        // BorderFactory.createEmptyBorder(0, 5, 5, 5) // inner padding
-        // ));
-
-        // container.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
-        // container.setBorder(BorderFactory.createLineBorder(Color.BLUE));
 
         tabbedPane = new JTabbedPane();
 
@@ -211,12 +209,12 @@ public class Main extends JFrame {
         List<DiffData> diffs = repo.getAllDiffs();
         for (DiffData data : diffs) {
             SplitTextTabPanel panel = new SplitTextTabPanel();
-            panel.loadFromDatabase(data);
+            panel.loadFromDatabase(data); // populate the text areas
             int index = tabbedPane.getTabCount();
             tabbedPane.insertTab(data.title, null, panel, null, index);
             tabbedPane.setTabComponentAt(index,
-                    new ClosableTabTitleComponent(tabbedPane, data.title, onTabEmptyFallback,
-                            tabIndex -> closeTabAt(tabIndex)));
+                    new ClosableTabTitleComponent(
+                            tabbedPane, data.title, onTabEmptyFallback, tabIndex -> closeTabAt(tabIndex)));
         }
 
         // ✅ Always add one Untitled tab AFTER loading saved tabs
@@ -362,3 +360,5 @@ public class Main extends JFrame {
     }
 
 }
+
+// SYNTAX HIGHLIGHTING FIXED: https://chatgpt.com/share/68d9734f-1c94-8000-afaf-0e8cb6776802

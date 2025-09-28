@@ -35,7 +35,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 public class SplitTextTabPanel extends JPanel implements ThemedComponent {
     // Keep the XML's size
-    private static final int sizeFromXML = 15; // match your <baseFont size="16"/>
+    private static final int sizeFromXML = 15; // match your <baseFont size="15"/>
 
     // Active highlight colors (switch based on theme)
     private Color lineRemovedColor;
@@ -980,6 +980,16 @@ public class SplitTextTabPanel extends JPanel implements ThemedComponent {
     public void setSyntaxStyleBoth(String style) {
         if (jt1 != null)
             jt1.setSyntaxEditingStyle(style);
+        if (jt2 != null)
+            jt2.setSyntaxEditingStyle(style);
+    }
+
+    public void setSyntaxStyleLeft(String style) {
+        if (jt1 != null)
+            jt1.setSyntaxEditingStyle(style);
+    }
+
+    public void setSyntaxStyleRight(String style) {
         if (jt2 != null)
             jt2.setSyntaxEditingStyle(style);
     }

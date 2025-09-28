@@ -21,7 +21,6 @@ public class CustomTitleBar extends JPanel {
   private final JPanel controlPanel;
 
   private final Color FONT_COLOR = new Color(0xd6d6d6);
-  // private final Color ICON_COLOR = new Color(0xc4c4c8);
 
   private Dimension previousSize;
 
@@ -53,11 +52,13 @@ public class CustomTitleBar extends JPanel {
   private static final Color BTN_COLOR_DARKER = new Color(0x00744d);
   private static final Color BTN_COLOR_BLACK = new Color(0x242526);
 
-  // package‑level config
+  // package-level config
   private static String PACKAGE_NAME;
 
+  // Lazy-injected tabs reference (set by Main after tabs are created)
+  private JTabbedPane tabs;
+
   public CustomTitleBar(JFrame frame,
-      SplitTextTabPanel splitPanel,
       String title,
       String packageName,
       String iconPath,
@@ -81,9 +82,6 @@ public class CustomTitleBar extends JPanel {
     setMaximumSize(fixedSize);
     setMinimumSize(new Dimension(0, height));
 
-    // debug: red border already added from Main, but we can keep this too
-    // setBorder(BorderFactory.createLineBorder(Color.RED));
-
     // ── Title label (optional icon) --------------------------------------------
     titleLabel = new JLabel(title);
     titleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
@@ -101,7 +99,6 @@ public class CustomTitleBar extends JPanel {
     controlPanel = new JPanel();
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.X_AXIS));
     controlPanel.setOpaque(false);
-    controlPanel.setOpaque(false);
 
     minimizeButton = createButton("minimize_def.png", "minimize_hover.png",
         e -> frame.setState(JFrame.ICONIFIED));
@@ -114,16 +111,14 @@ public class CustomTitleBar extends JPanel {
             frame, java.awt.event.WindowEvent.WINDOW_CLOSING)));
 
     RoundedButton menuButton = new RoundedButton();
-    // menuButton.setText("");
-    // menuButton.setFont(menuButton.getFont().deriveFont(Font.PLAIN, 10f));
     FlatSVGIcon menuIcon = new FlatSVGIcon("diffchecker/images/icons/menu.svg", 20, 20);
     menuIcon.setColorFilter(new FlatSVGIcon.ColorFilter(c -> Color.WHITE));
     menuButton.setIcon(menuIcon);
-    menuButton.setHorizontalTextPosition(SwingConstants.LEFT); // ✅ text after icon
-    menuButton.setIconTextGap(4); // ✅ padding between icon and text
-    menuButton.setHorizontalAlignment(SwingConstants.CENTER); // center the whole content horizontally
-    menuButton.setVerticalAlignment(SwingConstants.CENTER); // center icon+text as a block
-    menuButton.setVerticalTextPosition(SwingConstants.NORTH); // align text vertically with the icon
+    menuButton.setHorizontalTextPosition(SwingConstants.LEFT); // text after icon
+    menuButton.setIconTextGap(4);
+    menuButton.setHorizontalAlignment(SwingConstants.CENTER);
+    menuButton.setVerticalAlignment(SwingConstants.CENTER);
+    menuButton.setVerticalTextPosition(SwingConstants.NORTH);
     menuButton.setBackgroundColor(BTN_COLOR_BLACK);
     menuButton.setHoverBackgroundColor(BTN_COLOR_DARKER);
     menuButton.setBorderColor(BTN_COLOR_BLACK);
@@ -132,23 +127,10 @@ public class CustomTitleBar extends JPanel {
     menuButton.setCornerRadius(10);
     menuButton.setMargin(new Insets(0, 0, 0, 0));
     menuButton.setFont(menuButton.getFont().deriveFont(14f));
-    // menuButton.setForeground(ICON_COLOR);
 
     // Example popup menu
     JPopupMenu popup = new JPopupMenu();
-    // APPEARANCE MENU
-    // JMenu appearance = new JMenu("Appearance");
-    // JMenuItem toggleThemeItem = new JMenuItem("Light/Dark Theme");
-    // toggleThemeItem.setToolTipText("<html><strong>Toggle Light/Dark
-    // Theme</strong> <br> ( Ctrl + G )</html>");
-    // toggleThemeItem.addActionListener(e -> {
-    // // flip theme state in SplitTextTabPane
-    // splitPanel.toggleTheme();
-    // });
-    // appearance.add(toggleThemeItem);
-    // popup.add(appearance);
-    // SYNTAX HIGHLIGHTING MENU
-    popup.add(createSyntaxMenu(splitPanel));
+    popup.add(createSyntaxMenu());
 
     menuButton.addActionListener(e -> popup.show(menuButton, 0, menuButton.getHeight()));
 
@@ -158,16 +140,15 @@ public class CustomTitleBar extends JPanel {
 
     JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
     rightPanel.setOpaque(false);
-    // rightPanel.add(themeToggleButton); // add theme toggle first
-    rightPanel.add(controlPanel); // then add minimize/maximize/close
+    rightPanel.add(controlPanel); // add minimize/maximize/close
 
     JPanel centerPanel = new JPanel();
     centerPanel.setOpaque(false);
     centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
 
     centerPanel.add(titleLabel);
-    centerPanel.add(Box.createRigidArea(new Dimension(10, 0))); // optional gap
-    centerPanel.add(menuButton); // now appears after the title
+    centerPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+    centerPanel.add(menuButton);
 
     add(centerPanel, BorderLayout.CENTER);
     add(rightPanel, BorderLayout.EAST);
@@ -184,7 +165,26 @@ public class CustomTitleBar extends JPanel {
   }
 
   private void initUI() {
-    // your existing menu button setup...
+    // existing UI setup if needed
+  }
+
+  // allow Main to inject tabs after they are created
+  public void setTabs(JTabbedPane tabs) {
+    this.tabs = tabs;
+  }
+
+  // resolve the currently selected SplitTextTabPanel (handles wrappers)
+  private SplitTextTabPanel activeSplitPanel() {
+    if (tabs == null) return null;
+    Component c = tabs.getSelectedComponent();
+    if (c instanceof SplitTextTabPanel s1) return s1;
+
+    // If you wrap panels in scroll panes or other containers:
+    if (c instanceof JScrollPane sp) {
+        Component view = sp.getViewport().getView();
+        if (view instanceof SplitTextTabPanel s2) return s2;
+    }
+    return null;
   }
 
   // ------------------------------------------------------------------ utilities
@@ -194,7 +194,7 @@ public class CustomTitleBar extends JPanel {
 
     JButton templateButton = new JButton(new ImageIcon(
         getClass().getResource("/" + PACKAGE_NAME + "/images/" + defIcon)));
-    int size = 32; // or 32 depending on your icons
+    int size = 32; // icon size
     templateButton.setPreferredSize(new Dimension(size, size));
     templateButton.setBorderPainted(false);
     templateButton.setFocusPainted(false);
@@ -220,64 +220,39 @@ public class CustomTitleBar extends JPanel {
 
   // ───────────────────────────── SYNTAX MENU ────────────────────────────────
   // Dynamically create menu items from SYNTAX_STYLES map
-  private JMenu createSyntaxMenu(SplitTextTabPanel splitPanel) {
+  private JMenu createSyntaxMenu() {
     JMenu syntaxHighlighting = new JMenu("Syntax Highlighting");
 
-    // 1. Always add "None" and favorite Languages first
-    String noneStyle = SYNTAX_STYLES.get("None");
-    JMenuItem noneItem = new JMenuItem("None");
-    noneItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(noneStyle));
-    syntaxHighlighting.add(noneItem);
+    // Helper to add an item that applies to the active tab at click time
+    java.util.function.BiConsumer<String, String> addItem = (label, styleConst) -> {
+        JMenuItem item = new JMenuItem(label);
+        item.addActionListener(e -> {
+            SplitTextTabPanel s = activeSplitPanel();
+            if (s != null) {
+                s.setSyntaxStyleBoth(styleConst);
+            } else {
+                Toolkit.getDefaultToolkit().beep();
+            }
+        });
+        syntaxHighlighting.add(item);
+    };
 
-    String javaStyle = SYNTAX_STYLES.get("Java");
-    JMenuItem javaItem = new JMenuItem("Java");
-    javaItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(javaStyle));
-    syntaxHighlighting.add(javaItem);
-
-    String javaScriptStyle = SYNTAX_STYLES.get("JavaScript");
-    JMenuItem javaScriptItem = new JMenuItem("JavaScript");
-    javaScriptItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(javaScriptStyle));
-    syntaxHighlighting.add(javaScriptItem);
-
-    String dartStyle = SYNTAX_STYLES.get("Dart");
-    JMenuItem dartItem = new JMenuItem("Dart");
-    dartItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(dartStyle));
-    syntaxHighlighting.add(dartItem);
-
-    String typeScriptStyle = SYNTAX_STYLES.get("TypeScript");
-    JMenuItem typeScriptItem = new JMenuItem("TypeScript");
-    typeScriptItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(typeScriptStyle));
-    syntaxHighlighting.add(typeScriptItem);
-
-    String cssStyle = SYNTAX_STYLES.get("CSS");
-    JMenuItem cssItem = new JMenuItem("CSS");
-    cssItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(cssStyle));
-    syntaxHighlighting.add(cssItem);
-
-    String sqlStyle = SYNTAX_STYLES.get("SQL");
-    JMenuItem sqlItem = new JMenuItem("SQL");
-    sqlItem.addActionListener(e -> splitPanel.setSyntaxStyleBoth(sqlStyle));
-    syntaxHighlighting.add(sqlItem);
+    // Favorites first
+    addItem.accept("None", SYNTAX_STYLES.get("None"));
+    addItem.accept("Java", SYNTAX_STYLES.get("Java"));
+    addItem.accept("JavaScript", SYNTAX_STYLES.get("JavaScript"));
+    addItem.accept("Dart", SYNTAX_STYLES.get("Dart"));
+    addItem.accept("TypeScript", SYNTAX_STYLES.get("TypeScript"));
+    addItem.accept("CSS", SYNTAX_STYLES.get("CSS"));
+    addItem.accept("SQL", SYNTAX_STYLES.get("SQL"));
 
     Set<String> favorites = Set.of("None", "Java", "JavaScript", "Dart", "TypeScript", "CSS", "SQL");
 
-    // 2. Add the rest (skip "None")
+    // 2. Add the rest (skip "None" and favorites already added)
     for (Map.Entry<String, String> entry : SYNTAX_STYLES.entrySet()) {
       if (favorites.contains(entry.getKey()))
         continue;
-      String displayName = entry.getKey();
-      String styleConstant = entry.getValue();
-
-      JMenuItem item = new JMenuItem(displayName);
-      item.addActionListener(e -> {
-        // Example: apply to both editors
-        splitPanel.setSyntaxStyleBoth(styleConstant);
-
-        // OR, if you want left/right separately:
-        // splitPanel.setSyntaxStyleLeft(styleConstant);
-        // splitPanel.setSyntaxStyleRight(styleConstant);
-      });
-      syntaxHighlighting.add(item);
+      addItem.accept(entry.getKey(), entry.getValue());
     }
 
     return syntaxHighlighting;
