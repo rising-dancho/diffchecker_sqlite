@@ -154,14 +154,6 @@ public class Main extends JFrame {
 
         tabbedPane = new JTabbedPane();
 
-        // Add the first tab
-        tabbedPane.addTab("Untitled-1", splitArea);
-        tabbedPane.setTabComponentAt(0,
-                new ClosableTabTitleComponent(tabbedPane, "Untitled-1",
-                        onTabEmptyFallback,
-                        tabIndex -> closeTabAt(tabIndex)));
-        tabbedPane.setSelectedIndex(0);
-
         InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
         ActionMap actionMap = getRootPane().getActionMap();
 
@@ -211,27 +203,26 @@ public class Main extends JFrame {
         addButton.setForeground(FONT_COLOR);
         addButton.setFont(addButton.getFont().deriveFont(13.8f));
         addButton.setToolTipText("<html><strong>New Tab</strong> <br> ( Ctrl + T )</html>");
-        // ---- Restore last session (load all diffs from DB) ----
+
+        // ---- RESTORE LAST SESSION (load all diffs from DB) ----
         DB db = new DB();
         DiffRepository repo = new DiffRepository(db);
 
         List<DiffData> diffs = repo.getAllDiffs();
         for (DiffData data : diffs) {
             SplitTextTabPanel panel = new SplitTextTabPanel();
-            panel.loadFromDatabase(data); // populate the text areas
+            panel.loadFromDatabase(data);
             int index = tabbedPane.getTabCount();
             tabbedPane.insertTab(data.title, null, panel, null, index);
             tabbedPane.setTabComponentAt(index,
-                    new ClosableTabTitleComponent(
-                            tabbedPane, data.title, onTabEmptyFallback, tabIndex -> closeTabAt(tabIndex)));
+                    new ClosableTabTitleComponent(tabbedPane, data.title, onTabEmptyFallback,
+                            tabIndex -> closeTabAt(tabIndex)));
         }
 
-        // Only add an empty "Untitled" tab if nothing was loaded from DB
-        if (tabbedPane.getTabCount() == 0) {
-            addNewTab(tabbedPane);
-        }
+        // ✅ Always add one Untitled tab AFTER loading saved tabs
+        addNewTab(tabbedPane);
 
-        // Add the + button as the *last* tab
+        // ✅ Add the + button as the last tab
         tabbedPane.addTab("", null);
         tabbedPane.setTabComponentAt(tabbedPane.getTabCount() - 1, addButton);
 
