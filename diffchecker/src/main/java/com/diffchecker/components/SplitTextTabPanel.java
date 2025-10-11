@@ -1132,9 +1132,6 @@ public class SplitTextTabPanel extends JPanel implements ThemedComponent, Syntax
                         // After removing, check tab count:
                         int totalTabs = tabbedPane.getTabCount();
 
-                        // Assuming the **last tab** is ALWAYS your "+" tab:
-                        boolean plusTabIsLast = true; // adjust if needed
-
                         // If we just deleted the last *content* tab (now only the '+' tab remains)
                         if (totalTabs == 1) {
                             // Create a new blank tab instead of leaving only the "+" tab
