@@ -1,5 +1,5 @@
 # adfinem diff 🧗 
-- ***(latest version ver.0.1.4)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.4/diffchecker_setup.exe)  
+- ***(latest version ver.1.0.0)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v1.0.0/diffchecker_setup.exe)  
 
 # roadmap
 - https://trello.com/b/5SvchChT/diffchecker
@@ -45,4 +45,4 @@ source: https://chatgpt.com/share/68af5fd5-c628-8000-ba36-dfcf1ff7596c
 <img width="505" height="393" alt="image" src="https://github.com/user-attachments/assets/50e53d72-9ad7-49cc-82e6-9c2c614f622f" />
 
 # download latest version here! 🚀
-- ***(latest version ver.0.1.4)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v0.1.4/diffchecker_setup.exe) 
+- ***(latest version ver.1.0.0)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v1.0.0/diffchecker_setup.exe)  
