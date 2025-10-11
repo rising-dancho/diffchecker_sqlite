@@ -582,11 +582,11 @@ public class SplitTextTabPanel extends JPanel implements ThemedComponent, Syntax
         rightButtonPanel.add(saveBtn);
 
         // SYNTAX HIGHLIGHT TEST BUTTON
-        RoundedButton syntaxBtn = new RoundedButton("Java Syntax");
-        syntaxBtn.addActionListener(e -> {
-            SyntaxManager.setSyntax("text/java");
-        });
-        rightButtonPanel.add(syntaxBtn);
+        // RoundedButton syntaxBtn = new RoundedButton("Java Syntax");
+        // syntaxBtn.addActionListener(e -> {
+        //     SyntaxManager.setSyntax("text/java");
+        // });
+        // rightButtonPanel.add(syntaxBtn);
 
         bottomPanel.add(rightButtonPanel, BorderLayout.EAST);
 

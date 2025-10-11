@@ -11,7 +11,7 @@ public class ThemeManager {
     private static final List<ThemedComponent> components = new ArrayList<>();
 
     static {
-        Preferences prefs = Preferences.userRoot().node(PREF_NODE);
+        Preferences prefs = Preferences.userRoot().node(PREF_NODE); // THE THEME TOGGLE IS BEING SAVED IN THE PREFERENCES
         darkThemeEnabled = prefs.getBoolean(PREF_KEY, true); // default dark
     }
 
