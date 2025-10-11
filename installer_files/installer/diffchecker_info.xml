@@ -14,9 +14,6 @@
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
   <icon>C:\Users\adfinem\Documents\Github\diffchecker_sqlite\installer_files\logo.ico</icon>
-  <classPath>
-    <mainClass>com.diffchecker.Main</mainClass>
-  </classPath>
   <jre>
     <path>%JAVA_HOME%;%PATH%</path>
     <requiresJdk>false</requiresJdk>

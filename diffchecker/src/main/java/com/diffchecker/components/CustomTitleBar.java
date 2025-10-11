@@ -175,14 +175,17 @@ public class CustomTitleBar extends JPanel {
 
   // resolve the currently selected SplitTextTabPanel (handles wrappers)
   private SplitTextTabPanel activeSplitPanel() {
-    if (tabs == null) return null;
+    if (tabs == null)
+      return null;
     Component c = tabs.getSelectedComponent();
-    if (c instanceof SplitTextTabPanel s1) return s1;
+    if (c instanceof SplitTextTabPanel s1)
+      return s1;
 
     // If you wrap panels in scroll panes or other containers:
     if (c instanceof JScrollPane sp) {
-        Component view = sp.getViewport().getView();
-        if (view instanceof SplitTextTabPanel s2) return s2;
+      Component view = sp.getViewport().getView();
+      if (view instanceof SplitTextTabPanel s2)
+        return s2;
     }
     return null;
   }
@@ -225,16 +228,11 @@ public class CustomTitleBar extends JPanel {
 
     // Helper to add an item that applies to the active tab at click time
     java.util.function.BiConsumer<String, String> addItem = (label, styleConst) -> {
-        JMenuItem item = new JMenuItem(label);
-        item.addActionListener(e -> {
-            SplitTextTabPanel s = activeSplitPanel();
-            if (s != null) {
-                s.setSyntaxStyleBoth(styleConst);
-            } else {
-                Toolkit.getDefaultToolkit().beep();
-            }
-        });
-        syntaxHighlighting.add(item);
+      JMenuItem item = new JMenuItem(label);
+      item.addActionListener(e -> {
+        SyntaxManager.setSyntax(styleConst);
+      });
+      syntaxHighlighting.add(item);
     };
 
     // Favorites first

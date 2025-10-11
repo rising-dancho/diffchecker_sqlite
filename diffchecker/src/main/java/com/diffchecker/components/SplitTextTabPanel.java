@@ -33,7 +33,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 // RSyntaxTextArea search and replace dependencies
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-public class SplitTextTabPanel extends JPanel implements ThemedComponent {
+public class SplitTextTabPanel extends JPanel implements ThemedComponent, SyntaxHighlightable {
     // Keep the XML's size
     private static final int sizeFromXML = 15; // match your <baseFont size="15"/>
 
@@ -127,6 +127,12 @@ public class SplitTextTabPanel extends JPanel implements ThemedComponent {
     private static class DiffGroup {
         EditorUtils.HighlightInfo left;
         EditorUtils.HighlightInfo right;
+    }
+
+    @Override
+    public void applySyntaxStyle(String syntaxStyle) {
+        jt1.setSyntaxEditingStyle(syntaxStyle);
+        jt2.setSyntaxEditingStyle(syntaxStyle);
     }
 
     // TOGGLE WORD HIGHLIGHT
@@ -574,6 +580,14 @@ public class SplitTextTabPanel extends JPanel implements ThemedComponent {
         rightButtonPanel.add(themeToggleBtn);
         rightButtonPanel.add(findBtn);
         rightButtonPanel.add(saveBtn);
+
+        // SYNTAX HIGHLIGHT TEST BUTTON
+        RoundedButton syntaxBtn = new RoundedButton("Java Syntax");
+        syntaxBtn.addActionListener(e -> {
+            SyntaxManager.setSyntax("text/java");
+        });
+        rightButtonPanel.add(syntaxBtn);
+
         bottomPanel.add(rightButtonPanel, BorderLayout.EAST);
 
         add(bottomPanel, BorderLayout.SOUTH);
@@ -583,6 +597,7 @@ public class SplitTextTabPanel extends JPanel implements ThemedComponent {
 
         // PRE APPLY THEME TO RUN DEFAULT
         ThemeManager.register(this);
+        SyntaxManager.register(this);
     }
 
     // KEYBOARD SHORTCUTS
