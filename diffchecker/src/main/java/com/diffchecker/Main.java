@@ -45,7 +45,7 @@ public class Main extends JFrame {
     public Main() {
         initFrame(); // 1. Frame setup
         // Initialize first tab panel
-        splitArea = new SplitTextTabPanel();
+        splitArea = new SplitTextTabPanel(() -> addNewTab(tabbedPane));
         JPanel wrapper = initWrapper(); // 2. Background wrapper
         JPanel titleBar = buildTitleBar(); // 3. Custom title bar (no tabbedPane yet)
         // JPanel menuPanel = buildMenuPanel(); // 4. Menu bar
@@ -208,7 +208,7 @@ public class Main extends JFrame {
 
         List<DiffData> diffs = repo.getAllDiffs();
         for (DiffData data : diffs) {
-            SplitTextTabPanel panel = new SplitTextTabPanel();
+            SplitTextTabPanel panel = new SplitTextTabPanel(() -> addNewTab(tabbedPane));
             panel.loadFromDatabase(data); // populate the text areas
             int index = tabbedPane.getTabCount();
             tabbedPane.insertTab(data.title, null, panel, null, index);
@@ -264,9 +264,9 @@ public class Main extends JFrame {
 
         tabbedPane.remove(index);
 
-        // if only "+" tab is left, run fallback
+        // ✅ If only the "+" tab remains, create and select a new real tab
         if (tabbedPane.getTabCount() == 1) {
-            onTabEmptyFallback.run();
+            addNewTab(tabbedPane);
             return;
         }
 
@@ -294,7 +294,7 @@ public class Main extends JFrame {
         }
 
         String title = "Untitled-" + untitledCounter++;
-        splitArea = new SplitTextTabPanel();
+        splitArea = new SplitTextTabPanel(() -> addNewTab(tabbedPane));
 
         tabbedPane.insertTab(title, null, splitArea, null, insertIndex);
         tabbedPane.setTabComponentAt(
@@ -361,4 +361,5 @@ public class Main extends JFrame {
 
 }
 
-// SYNTAX HIGHLIGHTING FIXED: https://chatgpt.com/share/68d9734f-1c94-8000-afaf-0e8cb6776802
+// SYNTAX HIGHLIGHTING FIXED:
+// https://chatgpt.com/share/68d9734f-1c94-8000-afaf-0e8cb6776802

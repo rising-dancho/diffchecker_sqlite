@@ -37,6 +37,9 @@ public class SplitTextTabPanel extends JPanel implements ThemedComponent, Syntax
     // Keep the XML's size
     private static final int sizeFromXML = 15; // match your <baseFont size="15"/>
 
+    // FOR CREATING NEW TABS
+    private final Runnable newTabCallback; // ✅ store callback
+
     // Active highlight colors (switch based on theme)
     private Color lineRemovedColor;
     private Color lineAddedColor;
@@ -228,9 +231,12 @@ public class SplitTextTabPanel extends JPanel implements ThemedComponent, Syntax
         }
     }
 
-    public SplitTextTabPanel() {
+    public SplitTextTabPanel(Runnable newTabCallback) {
         setLayout(new BorderLayout());
         setKeyboardShortcuts();
+
+        // FOR ADDING NEW TAB
+        this.newTabCallback = newTabCallback; // or your existing setup code
 
         // DECLARE TEXT AREAS
         jt1 = EditorUtils.createRSyntaxArea();
@@ -584,7 +590,7 @@ public class SplitTextTabPanel extends JPanel implements ThemedComponent, Syntax
         // SYNTAX HIGHLIGHT TEST BUTTON
         // RoundedButton syntaxBtn = new RoundedButton("Java Syntax");
         // syntaxBtn.addActionListener(e -> {
-        //     SyntaxManager.setSyntax("text/java");
+        // SyntaxManager.setSyntax("text/java");
         // });
         // rightButtonPanel.add(syntaxBtn);
 
@@ -1119,8 +1125,31 @@ public class SplitTextTabPanel extends JPanel implements ThemedComponent, Syntax
                 if (parent instanceof JTabbedPane) {
                     JTabbedPane tabbedPane = (JTabbedPane) parent;
                     int index = tabbedPane.indexOfComponent(this);
+
                     if (index != -1) {
                         tabbedPane.remove(index);
+
+                        // After removing, check tab count:
+                        int totalTabs = tabbedPane.getTabCount();
+
+                        // Assuming the **last tab** is ALWAYS your "+" tab:
+                        boolean plusTabIsLast = true; // adjust if needed
+
+                        // If we just deleted the last *content* tab (now only the '+' tab remains)
+                        if (totalTabs == 1) {
+                            // Create a new blank tab instead of leaving only the "+" tab
+                            if (newTabCallback != null) {
+                                newTabCallback.run();
+                            }
+                            return;
+                        } else {
+                            // Otherwise, select the previous tab if available
+                            if (index > 0) {
+                                tabbedPane.setSelectedIndex(index - 1);
+                            } else {
+                                tabbedPane.setSelectedIndex(0);
+                            }
+                        }
                     }
                 }
             } else {
