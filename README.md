@@ -5,7 +5,7 @@
 - https://trello.com/b/5SvchChT/diffchecker
 
 # algorithm (for text comparison):
-#### diff-match-patch by Neil Fraser (Google)
+### diff-match-patch by Neil Fraser (Google)
 "com.google.diffmatchpatch.DiffMatchPatch"
 
 # dependencies: 
