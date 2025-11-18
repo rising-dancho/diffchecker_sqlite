@@ -4,6 +4,10 @@
 # roadmap
 - https://trello.com/b/5SvchChT/diffchecker
 
+# algorithm (for text comparison):
+"diff-match-patch by Neil Fraser (Google)"
+- com.google.diffmatchpatch.DiffMatchPatch
+
 # dependencies: 
 - https://github.com/bobbylight/RSyntaxTextArea
 - https://github.com/bobbylight/RSTAUI
