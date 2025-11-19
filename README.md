@@ -36,7 +36,7 @@ source: https://chatgpt.com/share/68af5fd5-c628-8000-ba36-dfcf1ff7596c
 https://www.oracle.com/java/technologies/downloads/
 
 <img width="975" height="650" alt="image" src="https://github.com/user-attachments/assets/26a2295e-ff4e-46a9-ba52-8416b6713bc5" />
--	Download the latest version of java JDK 21 or higher. For this example, x64 Windows Installer is applicable for this desktop application 
+-	Download the latest version of java JDK 21 or higher. x64 Windows Installer is applicable for this desktop application 
 
 #### Step 2: Download the installer 
 <img width="352" height="100" alt="image" src="https://github.com/user-attachments/assets/c8e882d8-0f2e-4dcb-a795-d0aebda2ca01" />
