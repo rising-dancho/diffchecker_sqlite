@@ -39,6 +39,7 @@ https://www.oracle.com/java/technologies/downloads/
 -	Download the latest version of java JDK 21 or higher. x64 Windows Installer is applicable for this desktop application 
 
 #### Step 2: Download the installer 
+- ***(latest version ver.1.0.0)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v1.0.0/diffchecker_setup.exe)  
 <img width="352" height="100" alt="image" src="https://github.com/user-attachments/assets/c8e882d8-0f2e-4dcb-a795-d0aebda2ca01" />
 
 #### Click "More Info" > "Run anyway"
