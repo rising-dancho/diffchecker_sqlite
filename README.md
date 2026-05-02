@@ -1,5 +1,5 @@
 # adfinem diff 🧗 
-- ***(latest version ver.1.0.0)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v1.0.0/diffchecker_setup.exe)  
+- ***(latest version ver.1.0.0)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/tag/v1.0.0)  
 
 # roadmap
 - https://trello.com/b/5SvchChT/diffchecker
@@ -56,4 +56,4 @@ https://www.oracle.com/java/technologies/downloads/
 <img width="505" height="393" alt="image" src="https://github.com/user-attachments/assets/50e53d72-9ad7-49cc-82e6-9c2c614f622f" />
 
 # download latest version here! 🚀
-- ***(latest version ver.1.0.0)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/download/v1.0.0/diffchecker_setup.exe)  
+- ***(latest version ver.1.0.0)*** [download now](https://github.com/rising-dancho/diffchecker_sqlite/releases/tag/v1.0.0)  
